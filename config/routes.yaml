@@ -9,3 +9,12 @@
 
 controllers:
     resource: routing.controllers
+
+# config/routes.yaml
+api_doc:
+    path: /docs.{_format}
+    controller: api_platform.action.documentation
+    methods: ['GET', 'HEAD']
+    defaults:
+        _api_respond: true
+        _format: null
