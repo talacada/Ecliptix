@@ -19,3 +19,14 @@ docker compose exec app php bin/console doctrine:migrations:migrate
 ```
 
 The database is exposed only on `127.0.0.1:5432` for local tools.
+
+Database credentials:
+
+```text
+Network type: PostgreSQL (TCP/IP)
+Hostname / IP: 127.0.0.1
+Port: 5432
+User: app
+Password: DBpassword
+Database: app
+```
