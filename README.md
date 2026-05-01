@@ -1,7 +1,21 @@
-`docker compose up -d` to start the application, then open http://localhost:8000 in your browser.
+# Ecliptix
 
-`symfony serve -d` to start the server, then open http://localhost:8000 in your browser.
+## Development
 
-`php bin/console make:migration` to create a migration file, then `php bin/console doctrine:migrations:migrate` to run the migration and create the database schema.
+Start the Docker environment:
 
-In container `composer install` to install the dependencies.
+```bash
+docker compose up -d --build
+```
+
+Open the application at `https://localhost:8443`.
+
+Run Symfony and Composer commands through the app container unless your local PHP is 8.4:
+
+```bash
+docker compose exec app php bin/console about
+docker compose exec app composer install
+docker compose exec app php bin/console doctrine:migrations:migrate
+```
+
+The database is exposed only on `127.0.0.1:5432` for local tools.

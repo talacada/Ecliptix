@@ -1,0 +1,12 @@
+.git/
+.idea/
+.phpunit.cache/
+var/
+vendor/
+public/assets/
+public/bundles/
+assets/vendor/
+.env.local
+.env.*.local
+docker-compose*.override.yml
+compose.override.yaml
