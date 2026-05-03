@@ -18,3 +18,15 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# PhpStorm / IntelliJ project settings:
+# for this project, share most project config across machines
+# and keep only user-local workspace/plugin state ignored.
+/.idea/*
+!/.idea/.gitignore
+!/.idea/ecliptix.iml
+!/.idea/modules.xml
+!/.idea/php.xml
+!/.idea/phpspec.xml
+!/.idea/phpunit.xml
+!/.idea/vcs.xml
