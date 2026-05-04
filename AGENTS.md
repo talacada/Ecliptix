@@ -96,6 +96,7 @@ Aby spolupráce fungovala dlouhodobě dobře:
   - dopad na runtime
   - dopad na konfiguraci
   - dopad na testy
+- Pokud agent vytvoří nový soubor nebo přejmenuje soubor tak, že vznikne nový git path, má tento soubor rovnou přidat do git indexu (`git add`), aby nezůstal jen jako untracked.
 - Pokud se mění chování API, uvést i dopad na kontrakt (status code, serializace, validace).
 - Preferovat explicitní, čitelné řešení před „magickým“.
 
@@ -108,3 +109,60 @@ Pokud by se pravidla dostala do konfliktu:
 2. Preferuj přímou implementaci u Symfony infrastruktury.
 3. Vždy transparentně vysvětli rozhodnutí.
 
+---
+
+## 9) Kontext projektu a zadání
+
+Tento projekt je **lokální výukový projekt** pro studium **Symfony + API Platform**.
+Doménově jde o **zjednodušenou browser RPG hru inspirovanou Shakes & Fidget**.
+Cílem není vytvořit produkční hru, ale menší backendový projekt, na kterém se bude uživatel učit:
+
+- návrh entit a vztahů
+- návrh API resource a custom operací
+- aplikační logiku přes Processory/Providery a služby
+- validaci, serializaci, persistence flow a testovatelnost
+
+### 9.1 Aktuální MVP scope
+
+Agent má při návrzích a diskusi vycházet primárně z tohoto scope:
+
+- hráčská postava
+- staty postavy
+- měny postavy: `gold`, `diamonds`
+- definice itemů
+- konkrétní itemy vlastněné postavou
+- jednoduchý fight flow
+- jednoduchý shop flow
+
+### 9.2 Doménový záměr pro začátek
+
+Pro první iterace projektu platí tento doporučený mentální model:
+
+- aktuální hlavní entita je `Character` a představuje **hráčskou postavu**
+- staty mají být vázané těsně na postavu; pro MVP je v pořádku mít je přímo na postavě nebo jako úzce navázanou 1:1 strukturu
+- měny nemají být na začátku zbytečně překomplikované obecnou entitou `Currency`, pokud pro to není jasný use-case
+- oddělení **definice itemu** a **konkrétní vlastněné instance itemu** je považováno za vhodný směr
+
+### 9.3 Preferovaný přístup při mentoringu
+
+Když se bude řešit doménový model této hry, agent má:
+
+- preferovat malé, srozumitelné MVP kroky před generickým nebo přeinženýrovaným modelem
+- upozornit, když návrh zavádí zbytečnou abstrakci příliš brzy
+- vysvětlovat rozdíl mezi:
+  - datovým modelem
+  - API kontraktem
+  - aplikační akcí typu `fight`, `buy`, `sell`
+- navrhovat nejdřív jednoduchý funkční vertikální slice a až potom rozšiřování o další mechaniky
+
+### 9.4 První očekávané use-cases
+
+Agent může při návrzích vycházet z těchto základních use-cases:
+
+- zobrazit postavu a její staty
+- zobrazit inventář
+- zobrazit shop nabídku
+- koupit item
+- provést fight
+- po fightu připsat odměnu
+- po nákupu odečíst měnu a přidat item do inventáře

@@ -2,17 +2,17 @@
 
 namespace App\Repository;
 
-use App\Entity\User;
+use App\Entity\Character;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<User>
+ * @extends ServiceEntityRepository<Character>
  */
-class UserRepository extends ServiceEntityRepository
+class CharacterRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, User::class);
+        parent::__construct($registry, Character::class);
     }
 }

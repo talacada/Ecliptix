@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\UserRepository;
+use App\Repository\CharacterRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Entity(repositoryClass: CharacterRepository::class)]
+#[ORM\Table(name: 'character')]
 #[ApiResource]
-class User
+class Character
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
