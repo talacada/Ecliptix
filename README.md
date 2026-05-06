@@ -35,27 +35,22 @@ sudo update-ca-certificates
 
 Windows:
 
-1. Export the certificate:
+1. Open `localhost-root.crt`.
+2. Click `Install Certificate...`.
+3. Choose `Local Machine`.
+4. Select `Place all certificates in the following store`.
+5. Choose `Trusted Root Certification Authorities`.
 
-   ```powershell
-   docker compose cp app:/data/caddy/pki/authorities/local/root.crt .\localhost-root.crt
-   ```
-
-2. Open `localhost-root.crt`.
-3. Click `Install Certificate...`.
-4. Choose `Local Machine`.
-5. Select `Place all certificates in the following store`.
-6. Choose `Trusted Root Certification Authorities`.
-7. Finish the wizard and restart the browser.
-
-After the certificate is trusted, open `https://localhost:8443` again.
 
 Run Symfony and Composer commands through the app container unless your local PHP is 8.4:
 
 ```bash
-docker compose exec app composer install
+docker compose exec --user $(id -u):$(id -g) app composer install
+make entity
 make migrate
 ```
+
+When a command writes to the project tree, prefer `docker compose exec --user $(id -u):$(id -g) ...` or the provided `make` targets. Without that, files created from the container can end up owned by `root` or `nobody` on the bind mount and become read-only from your editor.
 
 The database is exposed only on `127.0.0.1:5432` for local tools.
 
