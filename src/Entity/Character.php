@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CharacterRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
@@ -39,6 +41,17 @@ class Character
 
     #[ORM\Column]
     private int $health = 1;
+
+    /**
+     * @var Collection<int, ShopRotation>
+     */
+    #[ORM\OneToMany(targetEntity: ShopRotation::class, mappedBy: 'character', orphanRemoval: true)]
+    private Collection $shopRotations;
+
+    public function __construct()
+    {
+        $this->shopRotations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -137,6 +150,36 @@ class Character
     public function setHealth(int $health): static
     {
         $this->health = $health;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ShopRotation>
+     */
+    public function getShopRotations(): Collection
+    {
+        return $this->shopRotations;
+    }
+
+    public function addShopRotation(ShopRotation $shopRotation): static
+    {
+        if (!$this->shopRotations->contains($shopRotation)) {
+            $this->shopRotations->add($shopRotation);
+            $shopRotation->setCharacter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShopRotation(ShopRotation $shopRotation): static
+    {
+        if ($this->shopRotations->removeElement($shopRotation)) {
+            // set the owning side to null (unless already changed)
+            if ($shopRotation->getCharacter() === $this) {
+                $shopRotation->setCharacter(null);
+            }
+        }
 
         return $this;
     }
