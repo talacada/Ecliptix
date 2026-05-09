@@ -4,11 +4,18 @@ FROM dunglas/frankenphp:1.4-php8.4
 # Instalace základních utilit a systémových závislostí
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        curl \
         git \
+        gnupg \
         unzip \
         libzip-dev \
         libicu-dev \
         libpq-dev \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
+    && apt-get install -y --no-install-recommends \
+        symfony-cli \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalace potřebných PHP rozšíření (pro PostgreSQL je nutné pdo_pgsql)

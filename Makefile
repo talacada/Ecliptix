@@ -13,7 +13,11 @@ down:
 
 .PHONY: bash
 bash:
-	docker compose exec --user $(shell id -u):$(shell id -g) app bash
+	docker compose exec \
+		-e HOME=/tmp \
+		-e XDG_CONFIG_HOME=/tmp/.config \
+		--user $(shell id -u):$(shell id -g) \
+		app bash
 
 # FROM CONTAINER
 .PHONY: cc
