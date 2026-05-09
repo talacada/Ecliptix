@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ShopRotationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,6 +27,17 @@ class ShopRotation
     #[ORM\ManyToOne(inversedBy: 'shopRotations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Character $character = null;
+
+    /**
+     * @var Collection<int, ShopOffer>
+     */
+    #[ORM\OneToMany(targetEntity: ShopOffer::class, mappedBy: 'rotation', orphanRemoval: true)]
+    private Collection $shopOffers;
+
+    public function __construct()
+    {
+        $this->shopOffers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -63,6 +76,36 @@ class ShopRotation
     public function setCharacter(?Character $character): static
     {
         $this->character = $character;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ShopOffer>
+     */
+    public function getShopOffers(): Collection
+    {
+        return $this->shopOffers;
+    }
+
+    public function addShopOffer(ShopOffer $shopOffer): static
+    {
+        if (!$this->shopOffers->contains($shopOffer)) {
+            $this->shopOffers->add($shopOffer);
+            $shopOffer->setRotation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShopOffer(ShopOffer $shopOffer): static
+    {
+        if ($this->shopOffers->removeElement($shopOffer)) {
+            // set the owning side to null (unless already changed)
+            if ($shopOffer->getRotation() === $this) {
+                $shopOffer->setRotation(null);
+            }
+        }
 
         return $this;
     }
