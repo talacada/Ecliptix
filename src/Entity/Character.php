@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CharacterRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -159,7 +160,18 @@ class Character
      */
     public function getShopRotations(): Collection
     {
-        return $this->shopRotations;
+        $allRotations = $this->shopRotations;
+        $now = new DateTimeImmutable();
+
+        $showRotation = new ArrayCollection();
+
+        foreach ($allRotations as $rotation) {
+            if ($rotation->getValidFrom() < $now && $rotation->getValidUntil() > $now) {
+                $showRotation->add($rotation);
+            }
+        }
+
+        return $showRotation;
     }
 
     public function addShopRotation(ShopRotation $shopRotation): static

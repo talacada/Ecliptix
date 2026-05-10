@@ -22,7 +22,7 @@ class ShopRotation
     private ?\DateTimeImmutable $validFrom = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $validUntill = null;
+    private ?\DateTimeImmutable $validUntil = null;
 
     #[ORM\ManyToOne(inversedBy: 'shopRotations')]
     #[ORM\JoinColumn(nullable: false)]
@@ -31,7 +31,7 @@ class ShopRotation
     /**
      * @var Collection<int, ShopOffer>
      */
-    #[ORM\OneToMany(targetEntity: ShopOffer::class, mappedBy: 'rotation', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ShopOffer::class, mappedBy: 'rotation', cascade: ['persist'])]
     private Collection $shopOffers;
 
     public function __construct()
@@ -56,14 +56,14 @@ class ShopRotation
         return $this;
     }
 
-    public function getValidUntill(): ?\DateTimeImmutable
+    public function getValidUntil(): ?\DateTimeImmutable
     {
-        return $this->validUntill;
+        return $this->validUntil;
     }
 
-    public function setValidUntill(\DateTimeImmutable $validUntill): static
+    public function setValidUntil(\DateTimeImmutable $validUntil): static
     {
-        $this->validUntill = $validUntill;
+        $this->validUntil = $validUntil;
 
         return $this;
     }
