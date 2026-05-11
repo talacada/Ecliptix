@@ -3,50 +3,83 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\CharacterRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new Post(
+            denormalizationContext: ['groups' => [self::WRITE_GROUP]],
+        ),
+        new Patch(),
+        new Delete(),
+    ],
+    normalizationContext: ['groups' => [self::READ_GROUP]],
+)]
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: 'character')]
-#[ApiResource]
+#[UniqueEntity('username')]
 class Character
 {
+    public const string READ_GROUP = 'character:read';
+    public const string WRITE_GROUP = 'character:create';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
     #[ORM\Column(length: 255)]
+    #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
+    #[Assert\NotBlank(message: 'Username should not be blank.')]
+    #[Assert\Length(min: 4, max: 20, minMessage: 'Username must be at least {{ limit }} characters long.', maxMessage: 'Username cannot be longer than {{ limit }} characters.')]
     private string $username;
 
     #[ORM\Column(length: 255)]
+    #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
+    #[Assert\NotBlank(message: 'Email should not be blank.')]
+    #[Assert\Email(message: 'Email should be a valid email address.')]
     private string $email;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private int $gold = 0;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private int $diamonds = 0;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private int $level = 1;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private int $experience = 0;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private int $damage = 1;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private int $health = 1;
 
     /**
      * @var Collection<int, ShopRotation>
      */
     #[ORM\OneToMany(targetEntity: ShopRotation::class, mappedBy: 'character', orphanRemoval: true)]
+    #[Groups([self::READ_GROUP])]
     private Collection $shopRotations;
 
     public function __construct()

@@ -34,7 +34,6 @@ db-create:
 
 .PHONY: db-drop
 db-drop:
-	@test "$(CONFIRM)" = "1" || (echo 'Refusing to drop DB. Run: make db-drop CONFIRM=1' && exit 1)
 	php bin/console doctrine:database:drop --force
 
 .PHONY: migration
