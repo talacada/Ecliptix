@@ -7,7 +7,9 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\ApiResource\Auth\RegisterInput;
 use App\Repository\CharacterRepository;
+use App\State\Processor\RegisterProcessor;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,7 +22,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(),
         new Post(
-            denormalizationContext: ['groups' => [self::WRITE_GROUP]],
+            uriTemplate: '/auth/register',
+            input: RegisterInput::class,
+            processor: RegisterProcessor::class,
         ),
         new Patch(),
         new Delete(),
@@ -30,23 +34,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: 'character')]
 #[UniqueEntity('username')]
+#[UniqueEntity('email')]
 class Character
 {
     public const string READ_GROUP = 'character:read';
-    public const string WRITE_GROUP = 'character:create';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
     #[ORM\Column(length: 255)]
-    #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
-    #[Assert\NotBlank(message: 'Username should not be blank.')]
-    #[Assert\Length(min: 4, max: 20, minMessage: 'Username must be at least {{ limit }} characters long.', maxMessage: 'Username cannot be longer than {{ limit }} characters.')]
+    #[Groups([self::READ_GROUP])]
     private string $username;
 
     #[ORM\Column(length: 255)]
-    #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
     #[Assert\NotBlank(message: 'Email should not be blank.')]
     #[Assert\Email(message: 'Email should be a valid email address.')]
     private string $email;
@@ -81,6 +82,9 @@ class Character
     #[ORM\OneToMany(targetEntity: ShopRotation::class, mappedBy: 'character', orphanRemoval: true)]
     #[Groups([self::READ_GROUP])]
     private Collection $shopRotations;
+
+    #[ORM\Column(length: 255)]
+    private ?string $passwordHash = null;
 
     public function __construct()
     {
@@ -225,6 +229,18 @@ class Character
                 $shopRotation->setCharacter(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPasswordHash(): ?string
+    {
+        return $this->passwordHash;
+    }
+
+    public function setPasswordHash(string $passwordHash): static
+    {
+        $this->passwordHash = $passwordHash;
 
         return $this;
     }
