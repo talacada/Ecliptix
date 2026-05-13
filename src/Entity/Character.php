@@ -15,8 +15,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
@@ -35,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'character')]
 #[UniqueEntity('username')]
 #[UniqueEntity('email')]
-class Character
+class Character implements PasswordAuthenticatedUserInterface
 {
     public const string READ_GROUP = 'character:read';
     #[ORM\Id]
@@ -43,38 +43,36 @@ class Character
     #[ORM\Column]
     private int $id;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Groups([self::READ_GROUP])]
     private string $username;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Email should not be blank.')]
-    #[Assert\Email(message: 'Email should be a valid email address.')]
+    #[ORM\Column(length: 255, unique: true)]
     private string $email;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $gold = 0;
+    private int $gold;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $diamonds = 0;
+    private int $diamonds ;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $level = 1;
+    private int $level;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $experience = 0;
+    private int $experience ;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $damage = 1;
+    private int $damage;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $health = 1;
+    private int $health;
 
     /**
      * @var Collection<int, ShopRotation>
@@ -89,6 +87,12 @@ class Character
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
+        $this->gold = 0;
+        $this->diamonds = 0;
+        $this->level = 1;
+        $this->experience = 0;
+        $this->damage = 0;
+        $this->health = 0;
     }
 
     public function getId(): ?int
@@ -232,8 +236,7 @@ class Character
 
         return $this;
     }
-
-    public function getPasswordHash(): ?string
+    public function getPassword(): ?string
     {
         return $this->passwordHash;
     }
