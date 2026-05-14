@@ -6,7 +6,9 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\RegisterInput;
 use App\Entity\Character;
+use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use mysql_xdevapi\Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 readonly class RegisterProcessor implements ProcessorInterface
@@ -14,6 +16,7 @@ readonly class RegisterProcessor implements ProcessorInterface
     public function __construct(
         private EntityManagerInterface      $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
+        private CharacterRepository $characterRepository,
     ) {
     }
 
@@ -26,7 +29,12 @@ readonly class RegisterProcessor implements ProcessorInterface
 
         assert($data, RegisterInput::class);
 
-        //TODO zkontrolovat jestli username a email uz v db nejsou pomoci CharacterRepository::findByOne
+        if ($this->characterRepository->findOneBy(['email' => $data->getEmail()]) > 0) {
+            throw new Exception("Email already registered");
+        }
+        if ($this->characterRepository->findOneBy(['username' => $data->getEmail()]) > 0) {
+            throw new Exception("username already registered");
+        }
 
         $character = new Character();
 
