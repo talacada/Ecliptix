@@ -35,7 +35,7 @@ readonly class RegisterProcessor implements ProcessorInterface
 
         if ($this->characterRepository->findOneBy(['username' => $data->getUsername()]) !== null) {
             throw new UnprocessableEntityHttpException("Username already registered");
-        }
+        }//test
 
         $character = new Character();
 
