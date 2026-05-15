@@ -8,7 +8,7 @@ use App\ApiResource\Auth\RegisterInput;
 use App\Entity\Character;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use mysql_xdevapi\Exception;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 readonly class RegisterProcessor implements ProcessorInterface
@@ -27,13 +27,14 @@ readonly class RegisterProcessor implements ProcessorInterface
         array $context = []
     ): Character {
 
-        assert($data, RegisterInput::class);
+        assert($data instanceof RegisterInput);
 
-        if ($this->characterRepository->findOneBy(['email' => $data->getEmail()]) > 0) {
-            throw new Exception("Email already registered");
+        if ($this->characterRepository->findOneBy(['email' => $data->getEmail()]) !== null) {
+            throw new UnprocessableEntityHttpException("Email already registered");
         }
-        if ($this->characterRepository->findOneBy(['username' => $data->getEmail()]) > 0) {
-            throw new Exception("username already registered");
+
+        if ($this->characterRepository->findOneBy(['username' => $data->getUsername()]) !== null) {
+            throw new UnprocessableEntityHttpException("Username already registered");
         }
 
         $character = new Character();

@@ -91,8 +91,8 @@ class Character implements PasswordAuthenticatedUserInterface
         $this->diamonds = 0;
         $this->level = 1;
         $this->experience = 0;
-        $this->damage = 0;
-        $this->health = 0;
+        $this->damage = 1;
+        $this->health = 100;
     }
 
     public function getId(): ?int
