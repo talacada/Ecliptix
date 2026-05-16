@@ -7,8 +7,11 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\ApiResource\Auth\LoginInput;
+use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
 use App\Repository\CharacterRepository;
+use App\State\Processor\LoginProcessor;
 use App\State\Processor\RegisterProcessor;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,18 +19,26 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     operations: [
-        new Get(),
+        new Get(security: 'is_granted("ROLE_USER")'),
         new Post(
             uriTemplate: '/auth/register',
             input: RegisterInput::class,
             processor: RegisterProcessor::class,
         ),
-        new Patch(),
-        new Delete(),
+        new Post(
+            uriTemplate: '/auth/login',
+            normalizationContext: ['groups' => ['login:read']],
+            input: LoginInput::class,
+            output: LoginOutput::class,
+            processor: LoginProcessor::class,
+        ),
+        new Patch(security: 'is_granted("ROLE_USER")'),
+        new Delete(security: 'is_granted("ROLE_USER")'),
     ],
     normalizationContext: ['groups' => [self::READ_GROUP]],
 )]
@@ -35,7 +46,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'character')]
 #[UniqueEntity('username')]
 #[UniqueEntity('email')]
-class Character implements PasswordAuthenticatedUserInterface
+class Character implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const string READ_GROUP = 'character:read';
     #[ORM\Id]
@@ -246,5 +257,20 @@ class Character implements PasswordAuthenticatedUserInterface
         $this->passwordHash = $passwordHash;
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ['ROLE_USER'];
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Not needed since we use hashed passwords
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
     }
 }

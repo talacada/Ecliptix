@@ -64,3 +64,20 @@ User: app
 Password: DBpassword
 Database: app
 ```
+
+## JWT Authentication
+
+The application uses JWT for API authentication. JWT key files (`config/jwt/private.pem` and `config/jwt/public.pem`) are in `.gitignore` and must be generated locally.
+
+First time setup:
+
+```bash
+make bash
+php bin/console lexik:jwt:generate-keypair
+```
+
+For API endpoints, send a Bearer token in the `Authorization` header:
+
+```bash
+Authorization: Bearer <your_token>
+```
