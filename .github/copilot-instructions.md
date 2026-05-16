@@ -77,6 +77,17 @@ HTTP Request (POST /auth/register with RegisterInput)
   - Uses `READ_GROUP` for API serialization
   - Relationship: One-to-Many with `ShopRotation` (time-limited shop offers)
 
+### Authentication (JWT)
+- **Email** is the project-wide unique identifier (primary key for Security system)
+- **Username** is secondary (game-specific, can be changed)
+- **JWT tokens** are used for API authorization; sent via `Authorization: Bearer <token>` header
+- Login operations:
+  - `POST /api/auth/register` — Creates a new character (via `RegisterProcessor`)
+  - `POST /api/auth/login` — Authenticates via email+password, returns JWT token (via `LoginProcessor`)
+  - Protected endpoints require valid JWT in Authorization header
+- Files: `src/ApiResource/Auth/LoginInput.php`, `src/State/Processor/LoginProcessor.php`
+- Configuration: `config/packages/lexik_jwt_authentication.yaml`, `config/packages/security.yaml`
+
 ## Key Conventions
 
 ### API Platform & Serialization
