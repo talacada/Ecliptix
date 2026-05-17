@@ -1,6 +1,6 @@
 <?php
 
-namespace App\State\Processor;
+namespace App\State\Processor\Auth;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
@@ -29,7 +29,7 @@ readonly class LoginProcessor implements ProcessorInterface
         assert($data instanceof LoginInput);
 
         $character = $this->characterRepository->findOneBy(['email' => $data->getEmail()]);
-        
+
         if (!$character || !$this->passwordHasher->isPasswordValid($character, $data->getPassword())) {
             throw new UnauthorizedHttpException('', 'Invalid credentials');
         }
