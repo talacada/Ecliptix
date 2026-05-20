@@ -20,16 +20,16 @@ Character 1──N CharacterInventory N──1 Item N──1 ItemDefinition
 
 ## ItemDefinition (katalogový typ — "co to je")
 
-| Property | Type | Default | Popis |
-|---|---|---|---|
-| id | int (PK, auto) | — | |
-| name | string(255) | — | "Iron Sword" |
-| desiredSlot | string(255) | — | helmet / weapon / armor / accessory / consumable |
-| baseDamage | int | 0 | |
-| baseCrit | int | 0 | % krit šance |
-| baseHealth | int | 0 | bonus HP |
-| requiredLevel | int | 1 | min. level pro equip |
-| description | ?string (nullable) | null | flavor text |
+| Property      | Type               | Default | Popis                                            |
+|---------------|--------------------|---------|--------------------------------------------------|
+| id            | int (PK, auto)     | —       |                                                  |
+| name          | string(255)        | —       | "Iron Sword"                                     |
+| desiredSlot   | string(255)        | —       | helmet / weapon / armor / accessory / consumable |
+| baseDamage    | int                | 0       |                                                  |
+| baseCrit      | int                | 0       | % krit šance                                     |
+| baseHealth    | int                | 0       | bonus HP                                         |
+| requiredLevel | int                | 1       | min. level pro equip                             |
+| description   | ?string (nullable) | null    | flavor text                                      |
 
 **Vazby:**
 - OneToMany → Item (`mappedBy: 'definition'`)
@@ -38,13 +38,13 @@ Character 1──N CharacterInventory N──1 Item N──1 ItemDefinition
 
 ## Item (konkrétní instance — "tenhle kus")
 
-| Property | Type | Default | Popis |
-|---|---|---|---|
-| id | int (PK, auto) | — | |
-| definition | M:1 → ItemDefinition (NOT NULL) | — | |
-| bonusDamage | int | 0 | vylepšení nad rámec base hodnoty |
-| bonusCrit | int | 0 | |
-| bonusHealth | int | 0 | |
+| Property    | Type                            | Default | Popis                            | 
+|-------------|---------------------------------|---------|----------------------------------|
+| id          | int (PK, auto)                  | —       |                                  |
+| definition  | M:1 → ItemDefinition (NOT NULL) | —       |                                  |
+| bonusDamage | int                             | 0       | vylepšení nad rámec base hodnoty |
+| bonusCrit   | int                             | 0       |                                  |
+| bonusHealth | int                             | 0       |                                  |
 
 **Výsledný stat:** `definition->getBaseDamage() + bonusDamage` (obdobně pro crit, health)
 
@@ -54,15 +54,15 @@ Character 1──N CharacterInventory N──1 Item N──1 ItemDefinition
 
 ---
 
-## CharacterInventory (vazební — "kdo co vlastní")
+## `CharacterInventory (vazební — "kdo co vlastní")`
 
-| Property | Type | Default | Popis |
-|---|---|---|---|
-| id | int (PK, auto) | — | |
-| character | M:1 → Character (NOT NULL) | — | |
-| item | M:1 → Item (NOT NULL, unique=true) | — | 1 item nemůže být ve 2 inventářích |
-| equipped | bool | false | |
-| quantity | int | 1 | pro stackovatelné itemy (lektvary) |
+| Property  | Type                               | Default | Popis                              |
+|-----------|------------------------------------|---------|------------------------------------|
+| id        | int (PK, auto)                     | —       |                                    |
+| character | M:1 → Character (NOT NULL)         | —       |                                    |
+| item      | M:1 → Item (NOT NULL, unique=true) | —       | 1 item nemůže být ve 2 inventářích |
+| equipped  | bool                               | false   |                                    |
+| quantity  | int                                | 1       | pro stackovatelné itemy (lektvary) |
 
 **Vazby:**
 - ManyToOne → Character (`inversedBy: 'characterInventories'`)
@@ -72,19 +72,19 @@ Character 1──N CharacterInventory N──1 Item N──1 ItemDefinition
 
 ## ShopOffer (upravená existující)
 
-| Změna | Popis |
-|---|---|
-| + itemDefinition | M:1 → ItemDefinition (NOT NULL) |
-| − slot | ruší se — equipment slot je teď na ItemDefinition |
+| Změna            | Popis                                             |
+|------------------|---------------------------------------------------|
+| + itemDefinition | M:1 → ItemDefinition (NOT NULL)                   |
+| − slot           | ruší se — equipment slot je teď na ItemDefinition |
 
 ---
 
 ## Úpravy v Character
 
-| Změna | Popis |
-|---|---|
+| Změna                  | Popis                                                                       |
+|------------------------|-----------------------------------------------------------------------------|
 | + characterInventories | OneToMany → CharacterInventory (mappedBy: 'character', orphanRemoval: true) |
-| + add/remove metody | standardní kolekce management |
+| + add/remove metody    | standardní kolekce management                                               |
 
 ---
 
