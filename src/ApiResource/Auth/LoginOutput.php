@@ -2,7 +2,7 @@
 
 namespace App\ApiResource\Auth;
 
-use App\Entity\Character;
+use App\Entity\Character\Character;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 readonly class LoginOutput

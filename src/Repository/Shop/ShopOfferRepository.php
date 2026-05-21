@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Shop;
 
-use App\Entity\ShopRotation;
+use App\Entity\Shop\ShopOffer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ShopRotation>
+ * @extends ServiceEntityRepository<ShopOffer>
  */
-class ShopRotationRepository extends ServiceEntityRepository
+class ShopOfferRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ShopRotation::class);
+        parent::__construct($registry, ShopOffer::class);
     }
 
     //    /**
-    //     * @return ShopRotation[] Returns an array of ShopRotation objects
+    //     * @return ShopOffer[] Returns an array of ShopOffer objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class ShopRotationRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ShopRotation
+    //    public function findOneBySomeField($value): ?ShopOffer
     //    {
     //        return $this->createQueryBuilder('s')
     //            ->andWhere('s.exampleField = :val')

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -10,7 +10,8 @@ use ApiPlatform\Metadata\Post;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
-use App\Repository\CharacterRepository;
+use App\Entity\Shop\ShopRotation;
+use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
 use DateTimeImmutable;
@@ -95,6 +96,12 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Column(length: 255)]
     private ?string $passwordHash = null;
 
+    /**
+     * @var Collection<int, CharacterInventory>
+     */
+    #[ORM\OneToMany(targetEntity: CharacterInventory::class, mappedBy: 'character')]
+    private Collection $characterInventories;
+
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
@@ -104,6 +111,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->experience = 0;
         $this->damage = 1;
         $this->health = 100;
+        $this->characterInventories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -272,5 +280,35 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
+    }
+
+    /**
+     * @return Collection<int, CharacterInventory>
+     */
+    public function getCharacterInventories(): Collection
+    {
+        return $this->characterInventories;
+    }
+
+    public function addCharacterInventory(CharacterInventory $characterInventory): static
+    {
+        if (!$this->characterInventories->contains($characterInventory)) {
+            $this->characterInventories->add($characterInventory);
+            $characterInventory->setCharacter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCharacterInventory(CharacterInventory $characterInventory): static
+    {
+        if ($this->characterInventories->removeElement($characterInventory)) {
+            // set the owning side to null (unless already changed)
+            if ($characterInventory->getCharacter() === $this) {
+                $characterInventory->setCharacter(null);
+            }
+        }
+
+        return $this;
     }
 }

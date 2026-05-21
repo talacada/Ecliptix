@@ -54,7 +54,7 @@ Character 1──N CharacterInventory N──1 Item N──1 ItemDefinition
 
 ---
 
-## `CharacterInventory (vazební — "kdo co vlastní")`
+## CharacterInventory (vazební — "kdo co vlastní")
 
 | Property  | Type                               | Default | Popis                              |
 |-----------|------------------------------------|---------|------------------------------------|
@@ -70,7 +70,7 @@ Character 1──N CharacterInventory N──1 Item N──1 ItemDefinition
 
 ---
 
-## ShopOffer (upravená existující)
+## `ShopOffer (upravená existující)`
 
 | Změna            | Popis                                             |
 |------------------|---------------------------------------------------|

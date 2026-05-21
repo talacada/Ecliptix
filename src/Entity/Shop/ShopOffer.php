@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Shop;
 
-use App\Repository\ShopOfferRepository;
+use App\Repository\Shop\ShopOfferRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ShopOfferRepository::class)]
