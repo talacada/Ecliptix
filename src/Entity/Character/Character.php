@@ -100,6 +100,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
      * @var Collection<int, CharacterInventory>
      */
     #[ORM\OneToMany(targetEntity: CharacterInventory::class, mappedBy: 'character')]
+    #[Groups([self::READ_GROUP])]
     private Collection $characterInventories;
 
     public function __construct()
