@@ -2,6 +2,7 @@
 
 namespace App\Entity\Shop;
 
+use App\Entity\Item\ItemDefinition;
 use App\Repository\Shop\ShopOfferRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -15,35 +16,40 @@ class ShopOffer
 
     #[ORM\ManyToOne(inversedBy: 'shopOffers')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?ShopRotation $rotation = null;
+    private ShopRotation $rotation;
 
     #[ORM\Column]
-    private ?int $goldPrice = null;
+    private int $goldPrice = 0;
 
     #[ORM\Column]
-    private ?int $diamondPrice = null;
+    private int $diamondPrice = 0;
 
-    #[ORM\Column(length: 255)]
-    private ?string $slot = null;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ItemDefinition $ItemDefinition;
 
+    public function __construct(ShopRotation $rotation, ItemDefinition $ItemDefinition)
+    {
+
+    }
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getRotation(): ?ShopRotation
+    public function getRotation(): ShopRotation
     {
         return $this->rotation;
     }
 
-    public function setRotation(?ShopRotation $rotation): static
+    public function setRotation(ShopRotation $rotation): static
     {
         $this->rotation = $rotation;
 
         return $this;
     }
 
-    public function getGoldPrice(): ?int
+    public function getGoldPrice(): int
     {
         return $this->goldPrice;
     }
@@ -55,7 +61,7 @@ class ShopOffer
         return $this;
     }
 
-    public function getDiamondPrice(): ?int
+    public function getDiamondPrice(): int
     {
         return $this->diamondPrice;
     }
@@ -67,14 +73,14 @@ class ShopOffer
         return $this;
     }
 
-    public function getSlot(): ?string
+    public function getItemDefinition(): ItemDefinition
     {
-        return $this->slot;
+        return $this->ItemDefinition;
     }
 
-    public function setSlot(string $slot): static
+    public function setItemDefinition(ItemDefinition $ItemDefinition): static
     {
-        $this->slot = $slot;
+        $this->ItemDefinition = $ItemDefinition;
 
         return $this;
     }
