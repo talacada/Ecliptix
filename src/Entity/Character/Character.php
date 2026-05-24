@@ -25,7 +25,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     operations: [
-        new Get(security: 'is_granted("ROLE_USER")'),
+        new Get(
+            uriTemplate: '/character/{id}',
+            security: 'is_granted("ROLE_USER")'
+        ),
+        new Get(
+            uriTemplate: '/character',
+            security: 'is_granted("ROLE_USER")',
+            provider: MineCharacterProvider::class
+        ),
         new Post(
             uriTemplate: '/auth/register',
             input: RegisterInput::class,
@@ -38,8 +46,14 @@ use Symfony\Component\Serializer\Attribute\Groups;
             output: LoginOutput::class,
             processor: LoginProcessor::class,
         ),
-        new Patch(security: 'is_granted("ROLE_USER")'),
-        new Delete(security: 'is_granted("ROLE_USER")'),
+        new Patch(
+            uriTemplate: '/character',
+            security: 'is_granted("ROLE_USER")'
+        ),
+        new Delete(
+            uriTemplate: '/character',
+            security: 'is_granted("ROLE_USER")'
+        ),
     ],
     normalizationContext: ['groups' => [self::READ_GROUP]],
 )]
