@@ -14,6 +14,7 @@ use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
+use App\State\Processor\Character\CharacterDeleteProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -53,7 +54,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new Delete(
             uriTemplate: '/character',
-            security: 'is_granted("ROLE_USER")'
+            security: 'is_granted("ROLE_USER")',
+            processor: CharacterDeleteProcessor::class,
         ),
     ],
     normalizationContext: ['groups' => [self::READ_GROUP]],
@@ -114,7 +116,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     /**
      * @var Collection<int, CharacterInventory>
      */
-    #[ORM\OneToMany(targetEntity: CharacterInventory::class, mappedBy: 'character')]
+    #[ORM\OneToMany(targetEntity: CharacterInventory::class, mappedBy: 'character', orphanRemoval: true)]
     #[Groups([self::READ_GROUP])]
     private Collection $characterInventories;
 
