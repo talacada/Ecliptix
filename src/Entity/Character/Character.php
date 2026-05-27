@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
@@ -14,7 +15,6 @@ use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
-use App\State\Processor\Character\CharacterDeleteProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -24,9 +24,28 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
+        new Post(
+            uriTemplate: '/auth/register',
+            openapi: new Operation (
+                tags: ["Auth"]
+            ),
+            input: RegisterInput::class,
+            processor: RegisterProcessor::class
+        ),
+        new Post(
+            uriTemplate: '/auth/login',
+            openapi: new Operation (
+                tags: ["Auth"]
+            ),
+            normalizationContext: ['groups' => ['login:read']],
+            input: LoginInput::class,
+            output: LoginOutput::class,
+            processor: LoginProcessor::class,
+        ),
         new Get(
             uriTemplate: '/character/{id}',
             security: 'is_granted("ROLE_USER")'
@@ -36,26 +55,19 @@ use Symfony\Component\Serializer\Attribute\Groups;
             security: 'is_granted("ROLE_USER")',
             provider: MineCharacterProvider::class
         ),
-        new Post(
-            uriTemplate: '/auth/register',
-            input: RegisterInput::class,
-            processor: RegisterProcessor::class,
-        ),
-        new Post(
-            uriTemplate: '/auth/login',
-            normalizationContext: ['groups' => ['login:read']],
-            input: LoginInput::class,
-            output: LoginOutput::class,
-            processor: LoginProcessor::class,
-        ),
         new Patch(
             uriTemplate: '/character',
-            security: 'is_granted("ROLE_USER")'
+            denormalizationContext: ['groups' => self::UPDATE_GROUP],
+            security: 'is_granted("ROLE_USER")',
+            validationContext: ['groups' => ['Default', self::UPDATE_GROUP]],//TODO patch password
+            read: true,
+            provider: MineCharacterProvider::class
         ),
         new Delete(
             uriTemplate: '/character',
             security: 'is_granted("ROLE_USER")',
-            processor: CharacterDeleteProcessor::class,
+            read: true,
+            provider: MineCharacterProvider::class,
         ),
     ],
     normalizationContext: ['groups' => [self::READ_GROUP]],
@@ -67,13 +79,16 @@ use Symfony\Component\Serializer\Attribute\Groups;
 class Character implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const string READ_GROUP = 'character:read';
+    public const string UPDATE_GROUP = 'update:read';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::UPDATE_GROUP])]
+    #[Assert\NotBlank(groups: [self::UPDATE_GROUP])]
+    #[Assert\Length(min: 4, max: 20, groups: [self::UPDATE_GROUP])]
     private string $username;
 
     #[ORM\Column(length: 255, unique: true)]
