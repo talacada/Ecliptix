@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\Operation;
+use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
@@ -46,6 +47,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             output: LoginOutput::class,
             processor: LoginProcessor::class,
         ),
+        new Post(
+            uriTemplate: '/auth/change-password',
+            security: 'is_granted("ROLE_USER")',
+            input: ChangePasswordInput::class,
+            processor: ChangePasswordProcessor::class,
+        ),
         new Get(
             uriTemplate: '/character/{id}',
             security: 'is_granted("ROLE_USER")'
@@ -59,7 +66,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/character',
             denormalizationContext: ['groups' => self::UPDATE_GROUP],
             security: 'is_granted("ROLE_USER")',
-            validationContext: ['groups' => ['Default', self::UPDATE_GROUP]],//TODO patch password
+            validationContext: ['groups' => ['Default', self::UPDATE_GROUP]],
             read: true,
             provider: MineCharacterProvider::class
         ),
