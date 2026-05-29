@@ -14,6 +14,7 @@ use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
+use App\State\Processor\Auth\ChangePasswordProcessor;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
