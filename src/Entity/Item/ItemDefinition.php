@@ -157,12 +157,7 @@ class ItemDefinition
 
     public function removeItems(Item $item): static
     {
-        if ($this->items->removeElement($item)) {
-            // set the owning side to null (unless already changed)
-            if ($item->getDefinition() === $this) {
-                $item->setDefinition(null);
-            }
-        }
+        $this->items->removeElement($item);
 
         return $this;
     }

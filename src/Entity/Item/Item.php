@@ -13,7 +13,7 @@ class Item
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'bonusDamage')]
+    #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
     private ItemDefinition $definition;
 
@@ -41,7 +41,7 @@ class Item
         return $this->definition;
     }
 
-    public function setDefinition(?ItemDefinition $definition): static
+    public function setDefinition(ItemDefinition $definition): static
     {
         $this->definition = $definition;
 
