@@ -26,13 +26,13 @@ Plus **baťůžek** — `Character.backpackCapacity` (výchozí 5), který omezu
 
 `CharacterInventory` je pivot mezi `Character` a `Item`. **Vzniká až když postava získá item** (nákup, loot…). Žádné prázdné řádky předem.
 
-| Pole | Typ | Význam |
-|------|-----|--------|
-| `character` | ManyToOne→Character | Čí je to item |
-| `item` | OneToOne→Item | Konkrétní item (nullable v DB, ale v praxi vždy nastaven) |
-| `equipped` | bool | `true` = nasazený, `false` = v baťůžku |
-| `slot` | ItemSlot, nullable | `null` = v baťůžku; nastaveno = equipnutý v tomto slotu |
-| `quantity` | int | 1 pro vybavení, 1+ pro elixíry (stackují se) |
+| Pole        | Typ                 | Význam                                                    | 
+|-------------|---------------------|-----------------------------------------------------------|
+| `character` | ManyToOne→Character | Čí je to item                                             |
+| `item`      | OneToOne→Item       | Konkrétní item (nullable v DB, ale v praxi vždy nastaven) |
+| `equipped`  | bool                | `true` = nasazený, `false` = v baťůžku                    |
+| `slot`      | ItemSlot, nullable  | `null` = v baťůžku; nastaveno = equipnutý v tomto slotu   |
+| `quantity`  | int                 | 1 pro vybavení, 1+ pro elixíry (stackují se)              |
 
 **Validační pravidla:**
 
@@ -59,27 +59,27 @@ ShopRotation (jedna denní rotace na charactera)
 
 Šablona itemu — definuje, co item **může být**:
 
-| Pole | Typ | Příklad |
-|------|-----|---------|
-| `name` | string | "Iron Sword" |
-| `desiredSlot` | ItemSlot enum | `Weapon` |
-| `rarity` | Rarity enum | `Common` |
-| `baseDamage` | int | 5 |
-| `baseCrit` | int | 1 |
-| `baseHealth` | int | 0 |
-| `requiredLevel` | int | 1 |
-| `baseGoldPrice` | int | 100 |
-| `baseDiamondPrice` | int | 0 |
+| Pole               | Typ           | Příklad      |
+|--------------------|---------------|--------------|
+| `name`             | string        | "Iron Sword" |
+| `desiredSlot`      | ItemSlot enum | `Weapon`     |
+| `rarity`           | Rarity enum   | `Common`     |
+| `baseDamage`       | int           | 5            |
+| `baseCrit`         | int           | 1            |
+| `baseHealth`       | int           | 0            |
+| `requiredLevel`    | int           | 1            |
+| `baseGoldPrice`    | int           | 100          |
+| `baseDiamondPrice` | int           | 0            |
 
 ### Item (instance)
 
 Když hráč koupí item, vytvoří se `Item` — konkrétní instance s randomizovanými bonus staty:
 
-| Pole | Význam |
-|------|--------|
-| `definition` | ManyToOne→ItemDefinition |
+| Pole          | Význam                          | 
+|---------------|---------------------------------|
+| `definition`  | ManyToOne→ItemDefinition        |
 | `bonusDamage` | Random variance od `baseDamage` |
-| `bonusCrit` | Random variance od `baseCrit` |
+| `bonusCrit`   | Random variance od `baseCrit`   |
 | `bonusHealth` | Random variance od `baseHealth` |
 
 ---
@@ -126,14 +126,14 @@ MVP implementuje jen `Daily`.
 
 ---
 
-## API endpointy
+## `API endpointy-------------------------------`
 
-| Metoda | URI | Fáze | Popis |
-|--------|-----|------|-------|
-| `GET` | `/api/shop_rotations` | F3 | Aktivní rotace hráče (jen čtení). Bez rotace vrátí `[]`. |
-| `POST` | `/api/shop/offers/{id}/buy` | F4 | Koupit item → jde do baťůžku. |
-| `POST` | `/api/character_inventories/{id}/equip` | F5 | Equipnout item z baťůžku do slotu. |
-| `POST` | `/api/character_inventories/{id}/unequip` | F5 | Dát item ze slotu zpět do baťůžku. |
+| Metoda | URI                                       | Fáze | Popis                                                    | 
+|--------|-------------------------------------------|------|----------------------------------------------------------|
+| `GET`  | `/api/shop_rotations`                     | F3   | Aktivní rotace hráče (jen čtení). Bez rotace vrátí `[]`. |
+| `POST` | `/api/shop/offers/{id}/buy`               | F4   | Koupit item → jde do baťůžku.                            |
+| `POST` | `/api/character_inventories/{id}/equip`   | F5   | Equipnout item z baťůžku do slotu.                       |
+| `POST` | `/api/character_inventories/{id}/unequip` | F5   | Dát item ze slotu zpět do baťůžku.                       |
 
 Všechny (kromě registrace) vyžadují `ROLE_USER`.
 
@@ -360,23 +360,23 @@ Vyžaduje `doctrine/doctrine-fixtures-bundle` (doinstalovat jako dev závislost)
 
 **~15–20 definic** pokrývajících všechny sloty:
 
-| Item | Slot | Rarity | Lvl | baseDmg | baseGoldPrice |
-|------|------|--------|-----|---------|---------------|
-| Wooden Sword | Weapon | Common | 1 | 2 | 50 |
-| Iron Sword | Weapon | Common | 1 | 5 | 100 |
-| Steel Sword | Weapon | Uncommon | 3 | 8 | 300 |
-| Leather Cap | Helmet | Common | 1 | 0 | 40 |
-| Iron Helm | Helmet | Common | 2 | 0 | 120 |
-| Cloth Robe | Armour | Common | 1 | 0 | 60 |
-| Chain Mail | Armour | Uncommon | 3 | 0 | 250 |
-| Leather Boots | Boots | Common | 1 | 0 | 40 |
-| Boots of Speed | Boots | Rare | 5 | 0 | 500 |
-| Health Potion | Elixir | Common | 1 | 0 | 25 |
-| Strength Elixir | Elixir | Uncommon | 2 | 0 | 150 |
-| Ring of Protection | RingLeft | Common | 2 | 0 | 180 |
-| Ring of Power | RingRight | Uncommon | 4 | 0 | 400 |
-| Amulet of Health | Necklace | Common | 2 | 0 | 200 |
-| Necklace of Wisdom | Necklace | Rare | 5 | 0 | 600 |
+| Item               | Slot      | Rarity   | Lvl | baseDmg | baseGoldPrice | 
+|--------------------|-----------|----------|-----|---------|---------------|
+| Wooden Sword       | Weapon    | Common   | 1   | 2       | 50            |
+| Iron Sword         | Weapon    | Common   | 1   | 5       | 100           |
+| Steel Sword        | Weapon    | Uncommon | 3   | 8       | 300           |
+| Leather Cap        | Helmet    | Common   | 1   | 0       | 40            |
+| Iron Helm          | Helmet    | Common   | 2   | 0       | 120           |
+| Cloth Robe         | Armour    | Common   | 1   | 0       | 60            |
+| Chain Mail         | Armour    | Uncommon | 3   | 0       | 250           |
+| Leather Boots      | Boots     | Common   | 1   | 0       | 40            |
+| Boots of Speed     | Boots     | Rare     | 5   | 0       | 500           |
+| Health Potion      | Elixir    | Common   | 1   | 0       | 25            |
+| Strength Elixir    | Elixir    | Uncommon | 2   | 0       | 150           |
+| Ring of Protection | RingLeft  | Common   | 2   | 0       | 180           |
+| Ring of Power      | RingRight | Uncommon | 4   | 0       | 400           |
+| Amulet of Health   | Necklace  | Common   | 2   | 0       | 200           |
+| Necklace of Wisdom | Necklace  | Rare     | 5   | 0       | 600           |
 
 (Každá definice má i `baseDiamondPrice` — u Common/Uncommon typicky 0, u Rare+ nenulové.)
 

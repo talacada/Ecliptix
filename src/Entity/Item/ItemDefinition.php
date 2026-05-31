@@ -19,8 +19,6 @@ class ItemDefinition
     #[ORM\Column(length: 255)]
     private string $name = "";
 
-    #[ORM\Column(length: 255)]
-    private string $desiredSlot = "";
 
     #[ORM\Column]
     private int $baseDamage = 0;
@@ -43,6 +41,18 @@ class ItemDefinition
     #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'definition', orphanRemoval: true)]
     private Collection $items;
 
+    #[ORM\Column(enumType: ItemRarityEnum::class)]
+    private ?ItemRarityEnum $rarity = null;
+
+    #[ORM\Column(enumType: ItemSlotEnum::class)]
+    private ?ItemSlotEnum $desiredSlot = null;
+
+    #[ORM\Column]
+    private ?int $baseGoldPrice = null;
+
+    #[ORM\Column]
+    private ?int $baseDiamondPrice = null;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -61,18 +71,6 @@ class ItemDefinition
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getDesiredSlot(): string
-    {
-        return $this->desiredSlot;
-    }
-
-    public function setDesiredSlot(string $desiredSlot): static
-    {
-        $this->desiredSlot = $desiredSlot;
 
         return $this;
     }
@@ -158,6 +156,54 @@ class ItemDefinition
     public function removeItems(Item $item): static
     {
         $this->items->removeElement($item);
+
+        return $this;
+    }
+
+    public function getRarity(): ?ItemRarityEnum
+    {
+        return $this->rarity;
+    }
+
+    public function setRarity(ItemRarityEnum $rarity): static
+    {
+        $this->rarity = $rarity;
+
+        return $this;
+    }
+
+    public function getDesiredSlot(): ?ItemSlotEnum
+    {
+        return $this->desiredSlot;
+    }
+
+    public function setDesiredSlot(ItemSlotEnum $desiredSlot): static
+    {
+        $this->desiredSlot = $desiredSlot;
+
+        return $this;
+    }
+
+    public function getBaseGoldPrice(): ?int
+    {
+        return $this->baseGoldPrice;
+    }
+
+    public function setBaseGoldPrice(int $baseGoldPrice): static
+    {
+        $this->baseGoldPrice = $baseGoldPrice;
+
+        return $this;
+    }
+
+    public function getBaseDiamondPrice(): ?int
+    {
+        return $this->baseDiamondPrice;
+    }
+
+    public function setBaseDiamondPrice(int $baseDiamondPrice): static
+    {
+        $this->baseDiamondPrice = $baseDiamondPrice;
 
         return $this;
     }
