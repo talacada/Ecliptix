@@ -30,7 +30,8 @@ class ShopOffer
 
     public function __construct(ShopRotation $rotation, ItemDefinition $ItemDefinition)
     {
-
+        $this->rotation = $rotation;
+        $this->ItemDefinition = $ItemDefinition;
     }
     public function getId(): ?int
     {

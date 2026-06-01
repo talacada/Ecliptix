@@ -9,7 +9,6 @@ use App\Repository\Character\CharacterInventoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterInventoryRepository::class)]
-#[ApiResource]
 class CharacterInventory
 {
     #[ORM\Id]

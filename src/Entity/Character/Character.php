@@ -143,6 +143,9 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_GROUP])]
     private Collection $characterInventories;
 
+    #[ORM\Column]
+    private ?int $backpackCapacity = null;
+
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
@@ -349,6 +352,18 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
                 $characterInventory->setCharacter(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getBackpackCapacity(): ?int
+    {
+        return $this->backpackCapacity;
+    }
+
+    public function setBackpackCapacity(int $backpackCapacity): static
+    {
+        $this->backpackCapacity = $backpackCapacity;
 
         return $this;
     }

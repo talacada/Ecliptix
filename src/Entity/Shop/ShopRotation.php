@@ -42,6 +42,9 @@ class ShopRotation
     #[ORM\OneToMany(targetEntity: ShopOffer::class, mappedBy: 'rotation', cascade: ['persist'])]
     private Collection $shopOffers;
 
+    #[ORM\Column(enumType: ShopRotationEnum::class)]
+    private ?ShopRotationEnum $RotationType = null;
+
     public function __construct()
     {
         $this->shopOffers = new ArrayCollection();
@@ -114,6 +117,18 @@ class ShopRotation
                 $shopOffer->setRotation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRotationType(): ?ShopRotationEnum
+    {
+        return $this->RotationType;
+    }
+
+    public function setRotationType(ShopRotationEnum $RotationType): static
+    {
+        $this->RotationType = $RotationType;
 
         return $this;
     }

@@ -126,7 +126,7 @@ MVP implementuje jen `Daily`.
 
 ---
 
-## `API endpointy-------------------------------`
+## API endpointy
 
 | Metoda | URI                                       | Fáze | Popis                                                    | 
 |--------|-------------------------------------------|------|----------------------------------------------------------|
@@ -200,7 +200,7 @@ make migrate
 
 ---
 
-### Fáze 1 — RotationGenerator
+### `---------------------------Fáze 1 — RotationGenerator`
 
 **Servisa pro generování denní rotace.** Používá se z cron commandu (F2).
 
