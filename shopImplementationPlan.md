@@ -143,13 +143,13 @@ Všechny (kromě registrace) vyžadují `ROLE_USER`.
 
 ```
 F0 (enumy + schema)
- ├─→ F1 (RotationGenerator)
- │    └─→ F2 (cron command)
- │         └─→ F7 (cron setup)
- ├─→ F3 (GET rotace API)
- │    └─→ F4 (POST buy)
- │         └─→ F5 (equip/unequip)
- └─→ F6 (seed ItemDefinitions)
+ ├─→ F6 (seed ItemDefinitions) ← MUSÍ být před F1
+ │    └─→ F1 (RotationGenerator)
+ │         └─→ F2 (cron command)
+ │              └─→ F7 (cron setup)
+ └─→ F3 (GET rotace API)
+      └─→ F4 (POST buy)
+           └─→ F5 (equip/unequip)
 ```
 
 ---
@@ -200,7 +200,9 @@ make migrate
 
 ---
 
-### `---------------------------Fáze 1 — RotationGenerator`
+### Fáze 1 — RotationGenerator
+
+> **Závislost: Fáze 6 (Seed ItemDefinitions)** — v DB musí být aspoň 8 `ItemDefinition`, jinak generator nemá z čeho losovat. F6 udělej hned po F0.
 
 **Servisa pro generování denní rotace.** Používá se z cron commandu (F2).
 
