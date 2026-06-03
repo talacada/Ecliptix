@@ -144,7 +144,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     private Collection $characterInventories;
 
     #[ORM\Column]
-    private ?int $backpackCapacity = null;
+    private int $backpackCapacity = 4;
 
     public function __construct()
     {
@@ -356,7 +356,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         return $this;
     }
 
-    public function getBackpackCapacity(): ?int
+    public function getBackpackCapacity(): int
     {
         return $this->backpackCapacity;
     }

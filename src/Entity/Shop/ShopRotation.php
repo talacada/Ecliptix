@@ -39,7 +39,7 @@ class ShopRotation
     /**
      * @var Collection<int, ShopOffer>
      */
-    #[ORM\OneToMany(targetEntity: ShopOffer::class, mappedBy: 'rotation', cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: ShopOffer::class, mappedBy: 'rotation', cascade: ['persist', 'remove'])]
     private Collection $shopOffers;
 
     #[ORM\Column(enumType: ShopRotationEnum::class)]

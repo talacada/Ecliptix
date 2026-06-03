@@ -3,6 +3,7 @@
 namespace App\Repository\Shop;
 
 use App\Entity\Shop\ShopRotation;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +41,15 @@ class ShopRotationRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+	public function findAllExpired($character)
+	{
+        return $this->createQueryBuilder('shopRotation')
+            ->andWhere('shopRotation.validUntil <= :now')
+            ->andWhere('shopRotation.character = :character')
+            ->setParameter('now', new DateTimeImmutable('today'))
+            ->setParameter('character', $character)
+            ->getQuery()
+            ->execute()
+        ;
+	}
 }

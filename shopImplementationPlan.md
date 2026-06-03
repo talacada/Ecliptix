@@ -236,7 +236,7 @@ generate(Character): ShopRotation
 
 ---
 
-### Fáze 2 — Cron command
+### `-----------------Fáze 2 — Cron command`
 
 #### Nový soubor: `src/Command/GenerateShopRotationsCommand.php`
 
