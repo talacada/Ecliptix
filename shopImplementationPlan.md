@@ -145,9 +145,8 @@ Všechny (kromě registrace) vyžadují `ROLE_USER`.
 F0 (enumy + schema)
  ├─→ F6 (seed ItemDefinitions) ← MUSÍ být před F1
  │    └─→ F1 (RotationGenerator)
- │         └─→ F2 (cron command)
- │              └─→ F7 (cron setup)
- └─→ F3 (GET rotace API)
+ │         └─→ F2 (CLI command pro ruční generování)
+ └─→ F3 (GET rotace API — lazy generování)
       └─→ F4 (POST buy)
            └─→ F5 (equip/unequip)
 ```
@@ -236,7 +235,7 @@ generate(Character): ShopRotation
 
 ---
 
-### `-----------------Fáze 2 — Cron command`
+### Fáze 2 — CLI command pro ruční generování
 
 #### Nový soubor: `src/Command/GenerateShopRotationsCommand.php`
 
@@ -249,11 +248,13 @@ php bin/console app:shop:generate-rotations
 - Loguje: počet úspěšně vytvořených, počet chyb
 - Error na jednom characterovi **nezastaví** celý běh (try/catch + log)
 
+> **Proč ručně a ne cron?** Toto je testovací aplikace, která nikdy neběží o půlnoci. Cron by se nikdy nespustil. Místo toho se shop rotace generují **líně** při prvním `GET /api/shop_rotations` (viz Fáze 3) a command slouží jen pro ruční testování / reseedování.
+
 ---
 
-### Fáze 3 — Shop Rotation API (GET)
+### `---------Fáze 3 — Shop Rotation API (GET)`
 
-**Jen čtení.** Žádné generování on-demand.
+**Lazy generování.** Pokud character nemá aktivní rotaci, provider ji vygeneruje on-the-fly přes `RotationGenerator`.
 
 #### Úpravy entit (serializační groups)
 
@@ -276,8 +277,10 @@ implements ProviderInterface
 ```
 
 - Získá autentizovaného charactera (`Security::getUser()`)
-- Zavolá `$character->getShopRotations()` (getter filtruje podle data — jen aktivní)
-- Vrátí jako pole `[$rotation]` (nebo `[]` když žádná aktivní rotace není)
+- Podívá se, jestli character má aktivní rotaci (`validFrom <= now && validUntil >= now`)
+- **Pokud nemá** → zavolá `RotationGenerator::generate($character)` a vygeneruje ji líně
+- **Pokud má** → vrátí existující
+- Vrátí jako pole `[$rotation]` (nebo `[]` když se nepodařilo vygenerovat)
 
 ---
 
@@ -384,31 +387,15 @@ Vyžaduje `doctrine/doctrine-fixtures-bundle` (doinstalovat jako dev závislost)
 
 ---
 
-### Fáze 7 — Cron setup
-
-Zajistit spouštění `php bin/console app:shop:generate-rotations` každou půlnoc.
-
-**Varianta A — hostitelský cron:**
-```
-0 0 * * * cd /path/to/project && docker compose exec -T app php bin/console app:shop:generate-rotations
-```
-
-**Varianta B — cron container v compose.yaml** (čistší, vše v Dockeru):
-- Samostatná služba se stejným image jako `app`, command `crond -f`
-- Crontab nastavený na `0 0 * * * php /app/bin/console app:shop:generate-rotations`
-
----
-
 ## Verifikace (checklist)
 
 - [ ] **F0:** `make migration && make migrate` projde čistě
 - [ ] **F1:** Unit test — `generate()` vrátí rotaci s 8 offery, staré smazané, ceny ±20 %
 - [ ] **F2:** `php bin/console app:shop:generate-rotations` vytvoří rotace, druhé spuštění je idempotentní
-- [ ] **F3:** `GET /api/shop_rotations` vrátí rotaci, nebo `[]` když žádná neexistuje
+- [ ] **F3:** `GET /api/shop_rotations` vrátí rotaci (vygeneruje líně), nebo `[]` když selže
 - [ ] **F4:** `POST /api/shop/offers/{id}/buy` → 200, gold odečten, offer smazán, item v baťůžku (`equipped=false, slot=null`)
 - [ ] **F5:** Equip → `slot` nastaven. Unequip → `slot=null`. Duplicitní equip → 422. Plný baťůžek → 422.
 - [ ] **F6:** Po fixtures aspoň 8 definic v DB
-- [ ] **F7:** Cron o půlnoci vygeneruje rotace
 
 ---
 
