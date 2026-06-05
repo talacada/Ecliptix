@@ -2,11 +2,13 @@
 
 namespace App\Entity\Item;
 
+use App\Entity\Shop\ShopRotation;
 use App\Repository\Item\ItemDefinitionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ItemDefinitionRepository::class)]
 class ItemDefinition
@@ -17,22 +19,27 @@ class ItemDefinition
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(ShopRotation::READ_GROUP)]
     private string $name = "";
 
-
     #[ORM\Column]
+    #[Groups(ShopRotation::READ_GROUP)]
     private int $baseDamage = 0;
 
     #[ORM\Column]
+    #[Groups(ShopRotation::READ_GROUP)]
     private int $baseCrit = 0;
 
     #[ORM\Column]
+    #[Groups(ShopRotation::READ_GROUP)]
     private int $baseHealth = 0;
 
     #[ORM\Column]
+    #[Groups(ShopRotation::READ_GROUP)]
     private int $requiredLevel = 1;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(ShopRotation::READ_GROUP)]
     private ?string $description = null;
 
     /**
@@ -42,16 +49,20 @@ class ItemDefinition
     private Collection $items;
 
     #[ORM\Column(enumType: ItemRarityEnum::class)]
-    private ?ItemRarityEnum $rarity = null;
+    #[Groups(ShopRotation::READ_GROUP)]
+    private ItemRarityEnum $rarity;
 
     #[ORM\Column(enumType: ItemSlotEnum::class)]
-    private ?ItemSlotEnum $desiredSlot = null;
+    #[Groups(ShopRotation::READ_GROUP)]
+    private ItemSlotEnum $desiredSlot;
 
     #[ORM\Column]
-    private ?int $baseGoldPrice = null;
+    #[Groups(ShopRotation::READ_GROUP)]
+    private int $baseGoldPrice = 0;
 
     #[ORM\Column]
-    private ?int $baseDiamondPrice = null;
+    #[Groups(ShopRotation::READ_GROUP)]
+    private int $baseDiamondPrice = 0;
 
     public function __construct()
     {

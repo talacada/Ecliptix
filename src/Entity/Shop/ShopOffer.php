@@ -5,6 +5,7 @@ namespace App\Entity\Shop;
 use App\Entity\Item\ItemDefinition;
 use App\Repository\Shop\ShopOfferRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ShopOfferRepository::class)]
 class ShopOffer
@@ -12,6 +13,7 @@ class ShopOffer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(ShopRotation::READ_GROUP)]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'shopOffers')]
@@ -19,13 +21,16 @@ class ShopOffer
     private ShopRotation $rotation;
 
     #[ORM\Column]
+    #[Groups(ShopRotation::READ_GROUP)]
     private int $goldPrice = 0;
 
     #[ORM\Column]
+    #[Groups(ShopRotation::READ_GROUP)]
     private int $diamondPrice = 0;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(ShopRotation::READ_GROUP)]
     private ItemDefinition $ItemDefinition;
 
     public function __construct(ShopRotation $rotation, ItemDefinition $ItemDefinition)
