@@ -5,15 +5,12 @@ namespace App\State\Provider\Character;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Character\Character;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\Security\LoggedInCharacter;
 
 class MineCharacterProvider implements ProviderInterface
 {
-
-
     public function __construct(
-        private Security $security,
+        private LoggedInCharacter $loggedInCharacter,
     ) {
     }
 
@@ -25,12 +22,6 @@ class MineCharacterProvider implements ProviderInterface
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Character
     {
-        $character = $this->security->getUser();
-
-        if (!$character instanceof Character) {
-            throw new UnauthorizedHttpException('Not authenticated');
-        }
-
-        return $character;
+        return $this->loggedInCharacter->getCharacter();
     }
 }

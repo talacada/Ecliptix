@@ -5,16 +5,15 @@ namespace App\State\Processor\Auth;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\ChangePasswordInput;
 use App\Entity\Character\Character;
+use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ChangePasswordProcessor implements ProcessorInterface
 {
     public function __construct(
-        private Security $security,
+        private LoggedInCharacter $loggedInCharacter,
         private UserPasswordHasherInterface $passwordHasher,
         private EntityManagerInterface $entityManager,
     ) {}
@@ -23,11 +22,7 @@ class ChangePasswordProcessor implements ProcessorInterface
         {
             assert($data instanceof ChangePasswordInput);
 
-            $character = $this->security->getUser();
-
-            if (!$character instanceof Character) {
-                throw new UnauthorizedHttpException('Not authenticated');
-            }
+            $character = $this->loggedInCharacter->getCharacter();
 
             if (!$this->passwordHasher->isPasswordValid($character, $data->getOldPassword())) {
                 throw new BadRequestHttpException('Old password is incorrect');
