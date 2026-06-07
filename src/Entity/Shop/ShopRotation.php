@@ -19,10 +19,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(
+            uriTemplate: 'rotation',
             security: 'is_granted("ROLE_USER")',
-            provider: ShopRotationProvider::class,
+            provider: ShopRotationProvider::class
         ),
     ],
+    routePrefix: 'shop/',
     normalizationContext: ['groups' => [self::READ_GROUP]],
 )]
 class ShopRotation
@@ -46,6 +48,10 @@ class ShopRotation
     #[ORM\JoinColumn(nullable: false)]
     private Character $character;
 
+    #[ORM\Column(enumType: ShopRotationEnum::class)]
+    #[Groups(ShopRotation::READ_GROUP)]
+    private ShopRotationEnum $rotationType;
+
     /**
      * @var Collection<int, ShopOffer>
      */
@@ -53,8 +59,6 @@ class ShopRotation
     #[Groups(self::READ_GROUP)]
     private Collection $shopOffers;
 
-    #[ORM\Column(enumType: ShopRotationEnum::class)]
-    private ShopRotationEnum $RotationType;
 
     public function __construct()
     {
@@ -134,12 +138,12 @@ class ShopRotation
 
     public function getRotationType(): ShopRotationEnum
     {
-        return $this->RotationType;
+        return $this->rotationType;
     }
 
-    public function setRotationType(ShopRotationEnum $RotationType): static
+    public function setRotationType(ShopRotationEnum $rotationType): static
     {
-        $this->RotationType = $RotationType;
+        $this->rotationType = $rotationType;
 
         return $this;
     }

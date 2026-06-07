@@ -252,7 +252,7 @@ php bin/console app:shop:generate-rotations
 
 ---
 
-### `---------Fáze 3 — Shop Rotation API (GET)`
+### Fáze 3 — Shop Rotation API (GET)
 
 **Lazy generování.** Pokud character nemá aktivní rotaci, provider ji vygeneruje on-the-fly přes `RotationGenerator`.
 
@@ -284,7 +284,7 @@ implements ProviderInterface
 
 ---
 
-### Fáze 4 — Buy endpoint (POST)
+### `---------Fáze 4 — Buy endpoint (POST)`
 
 #### Nový soubor: `src/State/Processor/Shop/BuyProcessor.php`
 

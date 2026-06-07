@@ -2,6 +2,7 @@
 
 namespace App\Repository\Shop;
 
+use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -41,7 +42,7 @@ class ShopRotationRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-	public function findAllExpired($character)
+	public function findAllExpired(Character $character)
 	{
         return $this->createQueryBuilder('shopRotation')
             ->andWhere('shopRotation.validUntil <= :now')
@@ -52,4 +53,17 @@ class ShopRotationRepository extends ServiceEntityRepository
             ->execute()
         ;
 	}
+
+    public function findAllByCharacter(Character $character)
+    {
+        return $this->createQueryBuilder('shopRotation')
+            ->andWhere('shopRotation.character = :character')
+            ->andWhere('shopRotation.validUntil >= :now')
+            ->andWhere('shopRotation.validFrom <= :now')
+            ->setParameter('character', $character)
+            ->setParameter('now', new DateTimeImmutable('today'))
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }
