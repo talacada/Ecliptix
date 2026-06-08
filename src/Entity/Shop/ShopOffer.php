@@ -2,11 +2,26 @@
 
 namespace App\Entity\Shop;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Item\ItemDefinition;
 use App\Repository\Shop\ShopOfferRepository;
+use App\State\Processor\Shop\Offer\ShopOfferBuyProcessor;
+use App\State\Provider\Shop\Offer\ShopOfferProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '{id}',
+            provider: ShopOfferProvider::class,
+            processor: ShopOfferBuyProcessor::class,
+        )
+    ],
+    routePrefix: 'shop/offer/',
+    security: 'is_granted("ROLE_USER")',
+)]
 #[ORM\Entity(repositoryClass: ShopOfferRepository::class)]
 class ShopOffer
 {

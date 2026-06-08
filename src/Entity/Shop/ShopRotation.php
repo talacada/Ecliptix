@@ -20,12 +20,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             uriTemplate: 'rotation',
-            security: 'is_granted("ROLE_USER")',
             provider: ShopRotationProvider::class
         ),
     ],
     routePrefix: 'shop/',
     normalizationContext: ['groups' => [self::READ_GROUP]],
+    security: 'is_granted("ROLE_USER")',
 )]
 class ShopRotation
 {
