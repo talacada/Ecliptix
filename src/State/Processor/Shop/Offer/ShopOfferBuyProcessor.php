@@ -12,6 +12,11 @@ class ShopOfferBuyProcessor implements ProcessorInterface
     {
         assert($data instanceof ShopOffer);
 
-        dd($data);
+        //TODO validate if has permissions for this, get the rotation. Check if not expired or belongs to him
+
+        //TODO check if has money available
+        //TODO check if has backspace space available
+
+        dd($data->getRotation()->getValidFrom(), $data);
     }
 }
