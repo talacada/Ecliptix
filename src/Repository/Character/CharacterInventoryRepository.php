@@ -2,6 +2,7 @@
 
 namespace App\Repository\Character;
 
+use App\Entity\Character\Character;
 use App\Entity\Character\CharacterInventory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,4 +41,15 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findAllUnequipped(Character $character)
+    {
+        return $this->createQueryBuilder('ci')
+            ->andwhere('ci.character = :character')
+            ->andWhere('ci.equipped = true')
+            ->setParameter('character', $character)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
