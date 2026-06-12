@@ -4,10 +4,12 @@ namespace App\State\Processor\Shop\Offer;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Entity\Item\Item;
 use App\Entity\Shop\ShopOffer;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Repository\Shop\ShopOfferRepository;
 use App\Security\LoggedInCharacter;
+use App\Service\Item\ItemFactory;
 use DateTime;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,6 +19,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private CharacterInventoryRepository $characterInventoryRepository,
+        private ItemFactory $itemFactory,
     ){ }
 
     /**
@@ -50,6 +53,10 @@ class ShopOfferBuyProcessor implements ProcessorInterface
         }
 
         //TODO Create item from definition, add item to backpack, subtract price, delete rotation
+
+
+        $item = $this->itemFactory->createFromDefinition($data->getItemDefinition());
+
 
         dd($this->characterInventoryRepository->findAllUnequipped($character), $data->getRotation()->getValidFrom(), $data);
     }

@@ -26,9 +26,8 @@ class Item
     #[ORM\Column]
     private int $bonusHealth = 0;
 
-    public function __construct(ItemDefinition $definition)
+    public function __construct()
     {
-        $this->definition = $definition;
     }
 
     public function getId(): ?int

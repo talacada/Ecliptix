@@ -38,6 +38,8 @@ class RotationGenerator {
             $offer = new ShopOffer($shopRotation, $itemDefinition);
             $offer->setGoldPrice($itemDefinition->getBaseGoldPrice() * (mt_rand(80, 120) / 100)); // Random price between 80% and 120% of base price
             $offer->setDiamondPrice($itemDefinition->getBaseDiamondPrice() * (mt_rand(80, 120) / 100));
+            //TODO implement $offer->setBonusDamage - soo character knows what is he buying. Item has bonusDamage... that is calculated on top of the definition.
+            $offer->
             $shopRotation->addShopOffer($offer);
         }
 
