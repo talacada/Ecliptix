@@ -48,6 +48,15 @@ class ShopOffer
     #[Groups(ShopRotation::READ_GROUP)]
     private ItemDefinition $ItemDefinition;
 
+    #[ORM\Column]
+    private ?int $bonusDamage = null;
+
+    #[ORM\Column]
+    private ?int $bonusCrit = null;
+
+    #[ORM\Column]
+    private ?int $bonusHealth = null;
+
     public function __construct(ShopRotation $rotation, ItemDefinition $ItemDefinition)
     {
         $this->rotation = $rotation;
@@ -102,6 +111,42 @@ class ShopOffer
     public function setItemDefinition(ItemDefinition $ItemDefinition): static
     {
         $this->ItemDefinition = $ItemDefinition;
+
+        return $this;
+    }
+
+    public function getBonusDamage(): ?int
+    {
+        return $this->bonusDamage;
+    }
+
+    public function setBonusDamage(int $bonusDamage): static
+    {
+        $this->bonusDamage = $bonusDamage;
+
+        return $this;
+    }
+
+    public function getBonusCrit(): ?int
+    {
+        return $this->bonusCrit;
+    }
+
+    public function setBonusCrit(int $bonusCrit): static
+    {
+        $this->bonusCrit = $bonusCrit;
+
+        return $this;
+    }
+
+    public function getBonusHealth(): ?int
+    {
+        return $this->bonusHealth;
+    }
+
+    public function setBonusHealth(int $bonusHealth): static
+    {
+        $this->bonusHealth = $bonusHealth;
 
         return $this;
     }
