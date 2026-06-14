@@ -4,6 +4,7 @@ namespace App\Entity\Shop;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
+use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Item\ItemDefinition;
 use App\Repository\Shop\ShopOfferRepository;
 use App\State\Processor\Shop\Offer\ShopOfferBuyProcessor;
@@ -45,7 +46,6 @@ class ShopOffer
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(ShopRotation::READ_GROUP)]
     private ItemDefinition $ItemDefinition;
 
     #[ORM\Column]
@@ -61,6 +61,15 @@ class ShopOffer
     {
         $this->rotation = $rotation;
         $this->ItemDefinition = $ItemDefinition;
+    }
+
+    #[Groups(ShopRotation::READ_GROUP)]
+    public function getViewItem(): ItemViewDTO
+    {
+        $dto = new ItemViewDTO();
+        $dto->buildDtoOnlyWithBonusStats($this->ItemDefinition, $this->bonusDamage, $this->bonusCrit, $this->bonusHealth);
+
+        return $dto;
     }
     public function getId(): ?int
     {

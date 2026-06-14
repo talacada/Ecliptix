@@ -8,6 +8,7 @@ use App\Entity\Shop\ShopRotation;
 use App\Entity\Shop\ShopRotationEnum;
 use \App\Repository\Item\ItemDefinitionRepository;
 use App\Repository\Shop\ShopRotationRepository;
+use App\Service\Item\ItemFactory;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,6 +18,7 @@ class RotationGenerator {
         private ItemDefinitionRepository $itemDefinitionRepository,
         private EntityManagerInterface $entityManager,
         private ShopRotationRepository $shopRotationRepository,
+        private ItemFactory $itemFactory,
     ){ }
     public function generate(Character $character):ShopRotation
     {
@@ -38,8 +40,10 @@ class RotationGenerator {
             $offer = new ShopOffer($shopRotation, $itemDefinition);
             $offer->setGoldPrice($itemDefinition->getBaseGoldPrice() * (mt_rand(80, 120) / 100)); // Random price between 80% and 120% of base price
             $offer->setDiamondPrice($itemDefinition->getBaseDiamondPrice() * (mt_rand(80, 120) / 100));
-            //TODO implement $offer->setBonusDamage - soo character knows what is he buying. Item has bonusDamage... that is calculated on top of the definition.
-            $offer->
+            [$bonusDamage, $bonusCrit, $bonusHealth] = $this->itemFactory->rollBonusStats($itemDefinition);
+            $offer->setBonusDamage($bonusDamage);
+            $offer->setBonusCrit($bonusCrit);
+            $offer->setBonusHealth($bonusHealth);
             $shopRotation->addShopOffer($offer);
         }
 

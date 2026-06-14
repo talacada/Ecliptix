@@ -20,7 +20,7 @@ final class AppStory extends Story
      * Level range for generated items.
      */
     private const int MIN_LEVEL = 1;
-    private const int MAX_LEVEL = 20;
+    private const int MAX_LEVEL = 5;
 
     public function build(): void
     {
@@ -29,8 +29,6 @@ final class AppStory extends Story
 
     private function generateItemDefinitions(): void
     {
-        $total = 0;
-
         foreach (ItemSlotEnum::cases() as $slot) {
             foreach (ItemRarityEnum::cases() as $rarity) {
                 for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
@@ -42,19 +40,9 @@ final class AppStory extends Story
                                 'requiredLevel' => $level,
                             ])
                             ->create();
-                        $total++;
                     }
                 }
             }
         }
-
-        $this->addNote(sprintf(
-            'Vygenerováno %d ItemDefinitions (%d slotů × %d rarit × %d levelů × %d variant)',
-            $total,
-            count(ItemSlotEnum::cases()),
-            count(ItemRarityEnum::cases()),
-            self::MAX_LEVEL - self::MIN_LEVEL + 1,
-            self::VARIANTS_PER_COMBO,
-        ));
     }
 }

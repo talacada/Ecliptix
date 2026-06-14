@@ -48,7 +48,8 @@ ShopRotation (jedna denní rotace na charactera)
  ├── type: Daily (enum; Weekly a Event přijdou později)
  └── [1:N] ShopOffer (8 nabídek v rotaci)
       ├── goldPrice / diamondPrice (cena s variací ±20 %)
-      └── ItemDefinition (co se prodává)
+      ├── ItemDefinition (co se prodává)
+      └── bonusDamage / bonusCrit / bonusHealth (předrollnuté bonus staty)
 ```
 
 - **Čištění:** Při vygenerování nové rotace se staré daily rotace charactera **smažou** (kaskáda na offery). V DB je vždy jen aktuální rotace.
@@ -73,14 +74,45 @@ ShopRotation (jedna denní rotace na charactera)
 
 ### Item (instance)
 
-Když hráč koupí item, vytvoří se `Item` — konkrétní instance s randomizovanými bonus staty:
+Konkrétní instance itemu vlastněná hráčem. Vzniká přes `ItemFactory` ve chvíli nákupu — **ne při generování rotace**. Bonus staty se randomizují už při generování rotace a ukládají na `ShopOffer`, takže hráč před nákupem vidí přesné hodnoty.
 
 | Pole          | Význam                          | 
 |---------------|---------------------------------|
 | `definition`  | ManyToOne→ItemDefinition        |
-| `bonusDamage` | Random variance od `baseDamage` |
-| `bonusCrit`   | Random variance od `baseCrit`   |
-| `bonusHealth` | Random variance od `baseHealth` |
+| `bonusDamage` | Převzato ze `ShopOffer.bonusDamage` |
+| `bonusCrit`   | Převzato ze `ShopOffer.bonusCrit`   |
+| `bonusHealth` | Převzato ze `ShopOffer.bonusHealth` |
+
+### ItemFactory
+
+**Služba:** `src/Service/Item/ItemFactory.php`
+
+Vytváří `Item` instanci z definice a **předem určených** bonus statů — neobsahuje randomizační logiku. Randomizace probíhá v `RotationGeneratoru`, který bonusové hodnoty uloží na `ShopOffer`. `ItemFactory` je jen "orazítkuje" do `Item` entity.
+
+```php
+createFromDefinition(ItemDefinition $definition, int $bonusDamage, int $bonusCrit, int $bonusHealth): Item
+```
+
+Používá se na **dvou místech**:
+1. **`RotationGenerator`** — pro výpočet bonus statů při generování (hodnoty se uloží na `ShopOffer`)
+2. **`ShopOfferBuyProcessor`** — při koupi, kde jen převezme už určené hodnoty ze `ShopOffer`
+
+### ItemViewDTO
+
+**Soubor:** `src/ApiResource/Item/ItemViewDTO.php` (nebo `src/DTO/Item/ItemViewDTO.php`)
+
+Prezentační objekt, který kombinuje `ItemDefinition` (base staty) a bonusové staty do jednotného výstupu pro frontend. Spočítá finální hodnoty:
+
+```php
+totalDamage = definition.baseDamage + bonusDamage  // např. 50 + 47 = 97
+totalCrit   = definition.baseCrit   + bonusCrit
+totalHealth = definition.baseHealth + bonusHealth
+```
+
+**Použití:** 
+- `ShopOffer.getViewItem(): ItemViewDTO` — getter na entitě, který z definice a bonus statů sestaví DTO
+- API Platform ho automaticky serializuje jako součást `ShopOffer` v odpovědi GET rotace
+- Žádný další provider/netřeba — je to virtuální property na entitě
 
 ---
 
@@ -178,8 +210,10 @@ src/Entity/Shop/RotationType.php
 
 **`src/Entity/Shop/ShopOffer.php`**
 - **Opravit konstruktor** — `$this->rotation = $rotation; $this->ItemDefinition = $ItemDefinition;`
-- Přidat getter/setter pro `rotation` a `ItemDefinition`
+- Nová pole: `int $bonusDamage`, `int $bonusCrit`, `int $bonusHealth` (předrollnuté bonus staty pro Item)
+- Přidat getter/setter pro `rotation`, `ItemDefinition`, bonus staty
 - Přidat serializační groups
+- Přidat getter `getViewItem(): ItemViewDTO` — virtuální property, složí definici + bonus staty do DTO
 
 **`src/Entity/Character/CharacterInventory.php`**
 - Nové pole: `ItemSlot|null $slot` (nullable — `null` = v baťůžku)
@@ -226,6 +260,8 @@ generate(Character): ShopRotation
    - Pokud je v DB méně definic, vezme všechny dostupné (warning do logu).
 4. Pro každou definici vytvoří `ShopOffer`:
    - `goldPrice = baseGoldPrice * (0.8 + mt_rand(0, 40) / 100)` → ±20 %
+	   - **Vyrolluje bonus staty** `bonusDamage`, `bonusCrit`, `bonusHealth` — random variance ±20 % od base statů definice (např. `round(baseDamage * mt_rand(80, 120) / 100)`)
+	   - Aplikuje je přes `setBonusDamage()`, `setBonusCrit()`, `setBonusHealth()`
    - `diamondPrice` stejně z `baseDiamondPrice`
    - Přiřadí k rotaci (`$rotation->addShopOffer($offer)`)
 5. Persistne vše (stačí persistnout rotaci, zbytek cascade).
@@ -265,7 +301,7 @@ php bin/console app:shop:generate-rotations
 - Groups (`shop:read`) na: `id`, `type`, `validFrom`, `validUntil`, `shopOffers`
 
 **`src/Entity/Shop/ShopOffer.php`**
-- Groups (`shop:read`) na: `id`, `goldPrice`, `diamondPrice`, `itemDefinition`
+- Groups (`shop:read`) na: `id`, `goldPrice`, `diamondPrice`, `bonusDamage`, `bonusCrit`, `bonusHealth`, `viewItem` (`ItemViewDTO` — virtuální getter, kombinuje definici + bonus staty)
 
 **`src/Entity/Item/ItemDefinition.php`**
 - Groups (`shop:read`) na: `id`, `name`, `desiredSlot`, `rarity`, `baseDamage`, `baseCrit`, `baseHealth`, `requiredLevel`, `description`, `baseGoldPrice`, `baseDiamondPrice`
@@ -301,9 +337,9 @@ implements ProviderInterface
    - `character.level >= itemDefinition.requiredLevel` → jinak **422**
    - Kapacita baťůžku: počet `CharacterInventory WHERE character=X AND equipped=false` < `backpackCapacity` → jinak **422**
      - *Výjimka pro Elixir:* pokud v baťůžku existuje stack stejné ItemDefinition → inkrementuje se quantity, nezabírá nové místo
-4. Vytvořit `Item` instanci:
-   - `new Item($itemDefinition)`
-   - Nastavit `bonusDamage/Crit/Health` = random variance od base statů (±20 %, škálováno rarity)
+4. Vytvořit `Item` instanci přes `ItemFactory`:
+   - `ItemFactory::createFromDefinition($definition, $offer->getBonusDamage(), $offer->getBonusCrit(), $offer->getBonusHealth())`
+   - **Bez randomizace** — bonus staty jsou už předrollnuté na `ShopOffer`
 5. Vytvořit `CharacterInventory`:
    - `equipped = false`, `slot = null`, `quantity = 1`
    - Pro elixír: najít existující stack se stejnou definicí → `quantity += 1`, nepřidávat nový řádek
