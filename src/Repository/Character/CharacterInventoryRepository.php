@@ -46,7 +46,7 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
-            ->andWhere('ci.equipped = true')
+            ->andWhere('ci.equipped = false')
             ->setParameter('character', $character)
             ->getQuery()
             ->getResult()

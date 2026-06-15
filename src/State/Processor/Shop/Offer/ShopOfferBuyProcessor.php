@@ -4,11 +4,10 @@ namespace App\State\Processor\Shop\Offer;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Entity\Item\Item;
 use App\Entity\Shop\ShopOffer;
 use App\Repository\Character\CharacterInventoryRepository;
-use App\Repository\Shop\ShopOfferRepository;
 use App\Security\LoggedInCharacter;
+use App\Service\Inventory\InventoryManager;
 use App\Service\Item\ItemFactory;
 use DateTime;
 use Exception;
@@ -20,6 +19,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
         private LoggedInCharacter $loggedInCharacter,
         private CharacterInventoryRepository $characterInventoryRepository,
         private ItemFactory $itemFactory,
+        private InventoryManager $inventoryManager,
     ){ }
 
     /**
@@ -52,11 +52,13 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new Exception("Not enough backpack space");
         }
 
-        //TODO Create item from definition, add item to backpack, subtract price, delete rotation
+        $item = $this->itemFactory->createFromDefinitionAndOffer($data->getItemDefinition(), $data);
 
+        //TODO add item to backpack,
+        $inventory = $this->inventoryManager->addToBackpack($character, $item);
 
-        $item = $this->itemFactory->createFromDefinition($data->getItemDefinition());
-
+        //TODO subtract price,
+        //TODO delete rotation
 
         dd($this->characterInventoryRepository->findAllUnequipped($character), $data->getRotation()->getValidFrom(), $data);
     }

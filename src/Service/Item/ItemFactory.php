@@ -4,16 +4,20 @@ namespace App\Service\Item;
 
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemDefinition;
+use App\Entity\Shop\ShopOffer;
 
 class ItemFactory
 {
 
-    public function createFromDefinition(ItemDefinition $definition): Item
+    public function createFromDefinitionAndOffer(ItemDefinition $definition, ShopOffer $offer): Item
     {
         $item = new Item();
 
         $item->setDefinition($definition);
-        //TODO dodělat
+        $item->setBonusDamage($offer->getBonusDamage());
+        $item->setBonusCrit($offer->getBonusCrit());
+        $item->setBonusHealth($offer->getBonusHealth());
+        return $item;
     }
 
     public function rollBonusStats(ItemDefinition $definition): array
