@@ -320,7 +320,7 @@ implements ProviderInterface
 
 ---
 
-### `---------Fáze 4 — Buy endpoint (POST)`
+### Fáze 4 — Buy endpoint (POST)
 
 #### Nový soubor: `src/State/Processor/Shop/BuyProcessor.php`
 
@@ -362,7 +362,7 @@ new Post(
 
 ---
 
-### Fáze 5 — Equip / Unequip
+### `---------Fáze 5 — Equip / Unequip`
 
 #### Nový soubor: `src/State/Processor/Inventory/EquipProcessor.php`
 
