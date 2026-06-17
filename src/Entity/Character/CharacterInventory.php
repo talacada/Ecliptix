@@ -4,16 +4,33 @@ namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
+use App\State\Provider\Character\CharacterInventoryProvider;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: 'character/inventory',
+            //provider: CharacterInventoryProvider::class
+        )
+    ],
+    normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
+    security: 'is_granted("ROLE_USER")',
+)]
 #[ORM\Entity(repositoryClass: CharacterInventoryRepository::class)]
 class CharacterInventory
 {
+    public const READ_GROUP = 'character_inventory:read';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'characterInventories')]
@@ -24,14 +41,26 @@ class CharacterInventory
     private ?Item $item = null;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private bool $equipped = false;
 
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private int $quantity = 1;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    //TODO presunout do provideru
+    #[Groups([self::READ_GROUP])]
+    public function getItemDTO(): ItemViewDTO
+    {
+        $dto = new ItemViewDTO();
+        $dto->buildDtoFromDefinitionAndItem($this->item->getDefinition(), $this->item);
+
+        return $dto;
     }
 
     public function getCharacter(): Character

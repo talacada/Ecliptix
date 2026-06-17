@@ -4,24 +4,24 @@ namespace App\ApiResource\Item;
 
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemDefinition;
-use App\Entity\Shop\ShopRotation;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 class ItemViewDTO
 {
-    #[Groups(ShopRotation::READ_GROUP)]
+    public const string READ_GROUP = 'item:read';
+
     private ?int $id = null;
-    #[Groups(ShopRotation::READ_GROUP)]
+    #[Groups([self::READ_GROUP])]
     private string $name;
-    #[Groups(ShopRotation::READ_GROUP)]
+    #[Groups([self::READ_GROUP])]
     private ?string $description = null;
-    #[Groups(ShopRotation::READ_GROUP)]
+    #[Groups([self::READ_GROUP])]
     private int $damage;
-    #[Groups(ShopRotation::READ_GROUP)]
+    #[Groups([self::READ_GROUP])]
     private int $crit;
-    #[Groups(ShopRotation::READ_GROUP)]
+    #[Groups([self::READ_GROUP])]
     private int $health;
-    #[Groups(ShopRotation::READ_GROUP)]
+    #[Groups([self::READ_GROUP])]
     private int $requiredLevel;
     public function __construct(
     ) {

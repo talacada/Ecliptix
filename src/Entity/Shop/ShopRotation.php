@@ -5,6 +5,7 @@ namespace App\Entity\Shop;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Character\Character;
 use App\Repository\Shop\ShopRotationRepository;
 use App\State\Provider\Shop\Rotation\ShopRotationProvider;
@@ -24,7 +25,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
     ],
     routePrefix: 'shop/',
-    normalizationContext: ['groups' => [self::READ_GROUP]],
+    normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
     security: 'is_granted("ROLE_USER")',
 )]
 class ShopRotation

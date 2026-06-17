@@ -57,6 +57,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Get(
             uriTemplate: '/character/{id}',
+            requirements: ['id' => '\d+'],
             security: 'is_granted("ROLE_USER")'
         ),
         new Get(
