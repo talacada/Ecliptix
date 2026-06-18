@@ -63,7 +63,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
         $character->subtractDiamonds($data->getDiamondPrice());
 
         $itemDto = new ItemViewDTO();
-        $itemDto->buildDtoFromDefinitionAndItem($data->getItemDefinition(), $item);
+        $itemDto->buildDtoFromItem($item);
 
         $this->entityManager->remove($data);
 

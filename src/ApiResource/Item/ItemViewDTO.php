@@ -36,14 +36,14 @@ class ItemViewDTO
         $this->setCrit($definition->getBaseCrit() + $bonusCrit);
         $this->setHealth($definition->getBaseHealth() + $bonusHealth);
     }
-    public function buildDtoFromDefinitionAndItem(ItemDefinition $definition, Item $item): void
+    public function buildDtoFromItem(Item $item): void
     {
-        $this->setName($definition->getName());
-        $this->setDescription($definition->getDescription());
-        $this->setRequiredLevel($definition->getRequiredLevel());
-        $this->setDamage($definition->getBaseDamage() + $item->getBonusDamage());
-        $this->setCrit($definition->getBaseCrit() + $item->getBonusCrit());
-        $this->setHealth($definition->getBaseHealth() + $item->getBonusHealth());
+        $this->setName($item->getDefinition()->getName());
+        $this->setDescription($item->getDefinition()->getDescription());
+        $this->setRequiredLevel($item->getDefinition()->getRequiredLevel());
+        $this->setDamage($item->getDefinition()->getBaseDamage() + $item->getBonusDamage());
+        $this->setCrit($item->getDefinition()->getBaseCrit() + $item->getBonusCrit());
+        $this->setHealth($item->getDefinition()->getBaseHealth() + $item->getBonusHealth());
     }
 
     public function getId(): ?int

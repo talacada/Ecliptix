@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             uriTemplate: 'character/inventory',
-            //provider: CharacterInventoryProvider::class
+            provider: CharacterInventoryProvider::class
         )
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
@@ -48,24 +48,27 @@ class CharacterInventory
     #[Groups([self::READ_GROUP])]
     private int $quantity = 1;
 
+    #[Groups([self::READ_GROUP])]
+    private ?ItemViewDTO $itemViewDTO = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    //TODO presunout do provideru
-    #[Groups([self::READ_GROUP])]
-    public function getItemDTO(): ItemViewDTO
-    {
-        $dto = new ItemViewDTO();
-        $dto->buildDtoFromDefinitionAndItem($this->item->getDefinition(), $this->item);
-
-        return $dto;
-    }
-
     public function getCharacter(): Character
     {
         return $this->character;
+    }
+
+    public function getItemViewDTO(): ?ItemViewDTO
+    {
+        return $this->itemViewDTO;
+    }
+
+    public function setItemViewDTO(?ItemViewDTO $itemViewDTO): void
+    {
+        $this->itemViewDTO = $itemViewDTO;
     }
 
     public function setCharacter(?Character $character): static

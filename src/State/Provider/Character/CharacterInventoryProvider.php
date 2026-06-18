@@ -2,8 +2,10 @@
 
 namespace App\State\Provider\Character;
 
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\ApiResource\Item\ItemViewDTO;
 use App\Security\LoggedInCharacter;
 
 class CharacterInventoryProvider implements ProviderInterface
@@ -15,8 +17,19 @@ class CharacterInventoryProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        $character = $this->loggedInCharacter->getCharacter();
+        if ($operation instanceof GetCollection) {
+            $character = $this->loggedInCharacter->getCharacter();
+            $inventories = $character->getCharacterInventories();
 
-        dd($character);
+            foreach ($inventories as $inv) {
+                $dto = new ItemViewDTO();
+                $dto->buildDtoFromItem(
+                    $inv->getItem()
+                );
+                $inv->setItemViewDTO($dto);
+            }
+
+            return $inventories->toArray();
+        }
     }
 }
