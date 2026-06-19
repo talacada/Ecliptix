@@ -4,20 +4,36 @@ namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
 
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
+use App\State\Processor\Character\Inventory\CharacterInventoryEquipProcessor;
 use App\State\Provider\Character\CharacterInventoryProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ApiResource(
     operations: [
         new GetCollection(
             uriTemplate: 'character/inventory',
             provider: CharacterInventoryProvider::class
+        ),
+        new Post(
+            uriTemplate: 'character/inventory/{inventoryId}/equip',
+            //This is paring unknown uri variable to specific class and property
+            uriVariables: [
+                'inventoryId' => new Link(
+                    fromClass: CharacterInventory::class,
+                    identifiers: ['id']
+                ),
+            ],
+            deserialize: false,
+            provider: CharacterInventoryProvider::class,
+            processor: CharacterInventoryEquipProcessor::class
         )
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
@@ -49,6 +65,7 @@ class CharacterInventory
     private int $quantity = 1;
 
     #[Groups([self::READ_GROUP])]
+    #[SerializedName('item')]
     private ?ItemViewDTO $itemViewDTO = null;
 
     public function getId(): ?int

@@ -151,8 +151,8 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
-        $this->gold = 0;
-        $this->diamonds = 0;
+        $this->gold = 1000000;
+        $this->diamonds = 10000000;
         $this->level = 1;
         $this->experience = 0;
         $this->damage = 1;

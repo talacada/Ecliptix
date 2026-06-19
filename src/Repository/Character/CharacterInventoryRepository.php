@@ -52,4 +52,14 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function getInventoryById(int $inventoryId): ?CharacterInventory
+    {
+        return $this->createQueryBuilder('ci')
+            ->andWhere('ci.id = :inventoryId')
+            ->setParameter('inventoryId', $inventoryId)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
 }
