@@ -1,15 +1,14 @@
 <?php
 
-namespace App\State\Provider\Character;
+namespace App\State\Provider\Character\Inventory;
 
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\Item\ItemViewDTO;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use Exception;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CharacterInventoryProvider implements ProviderInterface
 {
@@ -30,14 +29,18 @@ class CharacterInventoryProvider implements ProviderInterface
             $inventoryId = $uriVariables['inventoryId'];
             $inventorySlot = $this->characterInventoryRepository->getInventoryById($inventoryId);
 
+            if ($inventorySlot === null) {
+                throw new NotFoundHttpException("Inventory slot not found.");
+            }
+
             if ($inventorySlot->getCharacter() !== $character) {
                 throw new Exception("Inventory slot does not belong to the logged-in character.");
             }
 
+
             $dto = new ItemViewDTO();
             $dto->buildDtoFromItem($inventorySlot->getItem());
             $inventorySlot->setItemViewDTO($dto);
-            //TODO at neni itemViewDTO ale jenom ITEM
 
             return $inventorySlot;
         }else {

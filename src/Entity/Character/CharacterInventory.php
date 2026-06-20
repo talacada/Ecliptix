@@ -3,7 +3,6 @@
 namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
-
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
@@ -11,7 +10,8 @@ use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\State\Processor\Character\Inventory\CharacterInventoryEquipProcessor;
-use App\State\Provider\Character\CharacterInventoryProvider;
+use App\State\Processor\Character\Inventory\CharacterInventorySellProcessor;
+use App\State\Provider\Character\Inventory\CharacterInventoryProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
@@ -34,6 +34,18 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             deserialize: false,
             provider: CharacterInventoryProvider::class,
             processor: CharacterInventoryEquipProcessor::class
+        ),
+        new Post (
+            uriTemplate: 'character/inventory/{inventoryId}/sell',
+            uriVariables: [
+                'inventoryId' => new Link(
+                    fromClass: CharacterInventory::class,
+                    identifiers: ['id']
+                )
+            ],
+            deserialize: false,
+            provider: CharacterInventoryProvider::class,
+            processor: CharacterInventorySellProcessor::class
         )
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
@@ -54,7 +66,8 @@ class CharacterInventory
     private Character $character;
 
     #[ORM\OneToOne]
-    private ?Item $item = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private Item $item;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
@@ -95,12 +108,12 @@ class CharacterInventory
         return $this;
     }
 
-    public function getItem(): ?Item
+    public function getItem(): Item
     {
         return $this->item;
     }
 
-    public function setItem(?Item $item): static
+    public function setItem(Item $item): static
     {
         $this->item = $item;
 

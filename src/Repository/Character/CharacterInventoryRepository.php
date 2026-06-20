@@ -42,14 +42,14 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findAllUnequipped(Character $character)
+    public function findAllUnequipped(Character $character): ?CharacterInventory
     {
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
             ->andWhere('ci.equipped = false')
             ->setParameter('character', $character)
             ->getQuery()
-            ->getResult()
+            ->getOneOrNullResult()
         ;
     }
 

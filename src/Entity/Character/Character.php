@@ -385,4 +385,9 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         }
         $this->diamonds -= $amount;
     }
+
+    public function addGold(int $amount): void
+    {
+        $this->gold += $amount;
+    }
 }
