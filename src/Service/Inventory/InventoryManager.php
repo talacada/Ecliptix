@@ -31,7 +31,31 @@ class InventoryManager
         $characterInventory = new CharacterInventory();
         $characterInventory->setCharacter($character);
         $characterInventory->setItem($item);
+        $characterInventory->setPosition($this->getFirstAvailablePosition($character));
 
         return $characterInventory;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getFirstAvailablePosition(Character $character): int
+    {
+        $capacity = $character->getBackpackCapacity();
+        $allTakenPositions = $this->characterInventoryRepository->getAllTakenPositions($character);
+        $firstAvailablePosition = 0;
+
+        for ($i = 1; $i <= $capacity; $i++) {
+            if (!in_array($i, $allTakenPositions)) {
+                $firstAvailablePosition = $i;
+                break;
+            }
+        }
+
+        if ($firstAvailablePosition === 0) {
+            throw new Exception("Not enough backpack space");
+        }
+
+        return $firstAvailablePosition;
     }
 }

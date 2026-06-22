@@ -5,10 +5,12 @@ namespace App\Entity\Character;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
+use App\State\Processor\Character\Inventory\CharacterInventoryChangeOrderProcessor;
 use App\State\Processor\Character\Inventory\CharacterInventoryEquipProcessor;
 use App\State\Processor\Character\Inventory\CharacterInventorySellProcessor;
 use App\State\Provider\Character\Inventory\CharacterInventoryProvider;
@@ -46,6 +48,12 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             deserialize: false,
             provider: CharacterInventoryProvider::class,
             processor: CharacterInventorySellProcessor::class
+        ),
+        new Patch(
+            //With specific name id=id property link is not needed, but its less readable sometimes
+            uriTemplate: 'character/inventory/{id}/reposition',
+            provider: CharacterInventoryProvider::class,
+            processor: CharacterInventoryChangeOrderProcessor::class
         )
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
@@ -76,6 +84,10 @@ class CharacterInventory
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
     private int $quantity = 1;
+
+    #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
+    private int $position = 0;
 
     #[Groups([self::READ_GROUP])]
     #[SerializedName('item')]
@@ -143,4 +155,16 @@ class CharacterInventory
 
         return $this;
     }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): void
+    {
+        $this->position = $position;
+    }
+
+
 }

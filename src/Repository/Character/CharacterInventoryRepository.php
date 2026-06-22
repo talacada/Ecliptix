@@ -42,14 +42,14 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findAllUnequipped(Character $character): ?CharacterInventory
+    public function findAllUnequipped(Character $character)
     {
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
             ->andWhere('ci.equipped = false')
             ->setParameter('character', $character)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
 
@@ -60,6 +60,18 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('inventoryId', $inventoryId)
             ->getQuery()
             ->getOneOrNullResult()
+            ;
+    }
+
+    public function getAllTakenPositions(Character $character): array
+    {
+        return $this->createQueryBuilder('ci')
+            ->select('ci.position')
+            ->andWhere('ci.character = :character')
+            ->andWhere('ci.equipped = false')
+            ->setParameter('character', $character)
+            ->getQuery()
+            ->getSingleColumnResult()
             ;
     }
 }

@@ -142,6 +142,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
      * @var Collection<int, CharacterInventory>
      */
     #[ORM\OneToMany(targetEntity: CharacterInventory::class, mappedBy: 'character', orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
     #[Groups([self::READ_GROUP])]
     private Collection $characterInventories;
 
