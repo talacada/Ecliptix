@@ -74,4 +74,17 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->getSingleColumnResult()
             ;
     }
+
+    public function getOneByPosition(Character $character, int $position): ?CharacterInventory
+    {
+        return $this->createQueryBuilder('ci')
+            ->andWhere('ci.character = :character')
+            ->andWhere('ci.equipped = false')
+            ->andWhere('ci.position = :position')
+            ->setParameter('character', $character)
+            ->setParameter('position', $position)
+            ->getQuery()
+            ->getSingleResult()
+            ;
+    }
 }

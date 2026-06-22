@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\Post;
 use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
-use App\State\Processor\Character\Inventory\CharacterInventoryChangeOrderProcessor;
+use App\State\Processor\Character\Inventory\CharacterInventoryEditProcessor;
 use App\State\Processor\Character\Inventory\CharacterInventoryEquipProcessor;
 use App\State\Processor\Character\Inventory\CharacterInventorySellProcessor;
 use App\State\Provider\Character\Inventory\CharacterInventoryProvider;
@@ -24,21 +24,9 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             uriTemplate: 'character/inventory',
             provider: CharacterInventoryProvider::class
         ),
-        new Post(
-            uriTemplate: 'character/inventory/{inventoryId}/equip',
-            //This is paring unknown uri variable to specific class and property
-            uriVariables: [
-                'inventoryId' => new Link(
-                    fromClass: CharacterInventory::class,
-                    identifiers: ['id']
-                ),
-            ],
-            deserialize: false,
-            provider: CharacterInventoryProvider::class,
-            processor: CharacterInventoryEquipProcessor::class
-        ),
         new Post (
             uriTemplate: 'character/inventory/{inventoryId}/sell',
+            //This is paring unknown uri variable to specific class and property
             uriVariables: [
                 'inventoryId' => new Link(
                     fromClass: CharacterInventory::class,
@@ -49,11 +37,17 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             provider: CharacterInventoryProvider::class,
             processor: CharacterInventorySellProcessor::class
         ),
-        new Patch(
-            //With specific name id=id property link is not needed, but its less readable sometimes
-            uriTemplate: 'character/inventory/{id}/reposition',
+        new Patch (
+            uriTemplate: 'character/inventory/{inventoryId}',
+            uriVariables: [
+                'inventoryId' => new Link(
+                    fromClass: CharacterInventory::class,
+                    identifiers: ['id']
+                )
+            ],
+            denormalizationContext: ['groups' => [self::WRITE_GROUP]],
             provider: CharacterInventoryProvider::class,
-            processor: CharacterInventoryChangeOrderProcessor::class
+            processor: CharacterInventoryEditProcessor::class
         )
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
@@ -63,6 +57,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 class CharacterInventory
 {
     public const READ_GROUP = 'character_inventory:read';
+    public const WRITE_GROUP = 'character_inventory:write';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -78,7 +73,7 @@ class CharacterInventory
     private Item $item;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
     private bool $equipped = false;
 
     #[ORM\Column]
@@ -86,7 +81,7 @@ class CharacterInventory
     private int $quantity = 1;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
     private int $position = 0;
 
     #[Groups([self::READ_GROUP])]
