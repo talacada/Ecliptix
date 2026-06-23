@@ -4,6 +4,7 @@ namespace App\ApiResource\Item;
 
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemDefinition;
+use App\Entity\Item\ItemSlotEnum;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 class ItemViewDTO
@@ -23,6 +24,8 @@ class ItemViewDTO
     private int $health;
     #[Groups([self::READ_GROUP])]
     private int $requiredLevel;
+    #[Groups([self::READ_GROUP])]
+    private ItemSlotEnum $slot;
     public function __construct(
     ) {
     }
@@ -35,6 +38,7 @@ class ItemViewDTO
         $this->setDamage($definition->getBaseDamage() + $bonusDamage);
         $this->setCrit($definition->getBaseCrit() + $bonusCrit);
         $this->setHealth($definition->getBaseHealth() + $bonusHealth);
+        $this->setSlot($definition->getDesiredSlot());
     }
     public function buildDtoFromItem(Item $item): void
     {
@@ -44,6 +48,7 @@ class ItemViewDTO
         $this->setDamage($item->getDefinition()->getBaseDamage() + $item->getBonusDamage());
         $this->setCrit($item->getDefinition()->getBaseCrit() + $item->getBonusCrit());
         $this->setHealth($item->getDefinition()->getBaseHealth() + $item->getBonusHealth());
+        $this->setSlot($item->getDefinition()->getDesiredSlot());
     }
 
     public function getId(): ?int
@@ -114,6 +119,16 @@ class ItemViewDTO
     public function setRequiredLevel(int $requiredLevel): void
     {
         $this->requiredLevel = $requiredLevel;
+    }
+
+    public function getSlot(): ItemSlotEnum
+    {
+        return $this->slot;
+    }
+
+    public function setSlot(ItemSlotEnum $slot): void
+    {
+        $this->slot = $slot;
     }
 
 

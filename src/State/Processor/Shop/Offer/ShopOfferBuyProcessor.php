@@ -51,7 +51,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new Exception("Not enough diamonds");
         }
 
-        if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->findAllUnequipped($character))) {
+        if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
             throw new Exception("Not enough backpack space");
         }
 

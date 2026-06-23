@@ -5,6 +5,7 @@ namespace App\Service\Inventory;
 use App\Entity\Character\Character;
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\Item;
+use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Character\CharacterInventoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -24,7 +25,7 @@ class InventoryManager
      */
     public function addToBackpack(Character $character, Item $item): CharacterInventory
     {
-        if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->findAllUnequipped($character))) {
+        if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
             throw new Exception("Not enough backpack space");
         }
 
@@ -39,7 +40,7 @@ class InventoryManager
     /**
      * @throws Exception
      */
-    private function getFirstAvailablePosition(Character $character): int
+    public function getFirstAvailablePosition(Character $character): int
     {
         $capacity = $character->getBackpackCapacity();
         $allTakenPositions = $this->characterInventoryRepository->getAllTakenPositions($character);
@@ -57,5 +58,13 @@ class InventoryManager
         }
 
         return $firstAvailablePosition;
+    }
+
+    public function getEquippedItemBySlot(Character $character, ItemSlotEnum $slot): ?CharacterInventory
+    {
+        $allEquippedItems = $this->characterInventoryRepository->getEquippedItems($character);
+
+        return array_find($allEquippedItems, fn($equippedItem) => $slot === $equippedItem->getItem()->getDefinition()->getDesiredSlot());
+
     }
 }

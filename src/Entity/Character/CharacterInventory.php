@@ -82,7 +82,7 @@ class CharacterInventory
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
-    private int $position = 0;
+    private int $position = -1;
 
     #[Groups([self::READ_GROUP])]
     #[SerializedName('item')]
