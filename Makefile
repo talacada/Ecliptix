@@ -47,3 +47,11 @@ migrate:
 .PHONY: fixtures
 fixtures:
 	php bin/console foundry:load-fixtures
+
+.PHONY: db-reset
+db-reset:
+	php bin/console doctrine:database:drop --force && \
+	php bin/console doctrine:database:create --if-not-exists && \
+	php bin/console foundry:load-fixtures --no-interaction && \
+	php bin/console doctrine:migrations:sync-metadata-storage --no-interaction && \
+	php bin/console doctrine:migrations:version --add --all --no-interaction

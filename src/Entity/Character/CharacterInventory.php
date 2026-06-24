@@ -8,10 +8,10 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\ApiResource\Item\ItemViewDTO;
+use App\Entity\Item\InventoryContainerEnum;
 use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\State\Processor\Character\Inventory\CharacterInventoryEditProcessor;
-use App\State\Processor\Character\Inventory\CharacterInventoryEquipProcessor;
 use App\State\Processor\Character\Inventory\CharacterInventorySellProcessor;
 use App\State\Provider\Character\Inventory\CharacterInventoryProvider;
 use Doctrine\ORM\Mapping as ORM;
@@ -56,8 +56,8 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ORM\Entity(repositoryClass: CharacterInventoryRepository::class)]
 class CharacterInventory
 {
-    public const READ_GROUP = 'character_inventory:read';
-    public const WRITE_GROUP = 'character_inventory:write';
+    public const READ_GROUP = 'inventory:read';
+    public const WRITE_GROUP = 'inventory:write';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -72,9 +72,9 @@ class CharacterInventory
     #[ORM\JoinColumn(nullable: false)]
     private Item $item;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: false)]
     #[Groups([self::READ_GROUP, self::WRITE_GROUP])]
-    private bool $equipped = false;
+    private InventoryContainerEnum $container;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
@@ -127,16 +127,14 @@ class CharacterInventory
         return $this;
     }
 
-    public function isEquipped(): bool
+    public function getContainer(): InventoryContainerEnum
     {
-        return $this->equipped;
+        return $this->container;
     }
 
-    public function setEquipped(bool $equipped): static
+    public function setContainer(InventoryContainerEnum $container): void
     {
-        $this->equipped = $equipped;
-
-        return $this;
+        $this->container = $container;
     }
 
     public function getQuantity(): int

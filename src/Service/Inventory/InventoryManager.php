@@ -4,6 +4,7 @@ namespace App\Service\Inventory;
 
 use App\Entity\Character\Character;
 use App\Entity\Character\CharacterInventory;
+use App\Entity\Item\InventoryContainerEnum;
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Character\CharacterInventoryRepository;
@@ -33,6 +34,7 @@ class InventoryManager
         $characterInventory->setCharacter($character);
         $characterInventory->setItem($item);
         $characterInventory->setPosition($this->getFirstAvailablePosition($character));
+        $characterInventory->setContainer(InventoryContainerEnum::Backpack);
 
         return $characterInventory;
     }

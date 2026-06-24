@@ -5,6 +5,7 @@ namespace App\State\Processor\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Character\CharacterInventory;
+use App\Entity\Item\InventoryContainerEnum;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Inventory\InventoryManager;
@@ -13,7 +14,7 @@ use Exception;
 
 class CharacterInventoryEditProcessor implements ProcessorInterface
 {
-    //TODO udělat CharacterInventoryContainer více v claude -c
+
 
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
@@ -35,17 +36,22 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
             throw new Exception("Position exceeds backpack capacity.");
         }
 
+        $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);
+        $wasContainer = $originalData['container'];
+        $wasPosition = $originalData['position'];
+
         //User must send [equipped = true, position = 0]
-        if ($data->isEquipped() && $data->getPosition() !== 0) {
+        if (InventoryContainerEnum::Equipped === $data->getContainer() && $data->getPosition() !== 0) {
+            // Client explicitly sent position != 0 with equip → error
+            if ($wasPosition !== $data->getPosition()) {
+                throw new Exception("Equipped items do not have position.");
+            }
+            // Client didn't send position, item was in backpack → auto-set to 0
             $data->setPosition(0);
         }
 
-        $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);
-        $wasEquipped = $originalData['equipped'];
-        $wasPosition = $originalData['position'];
-
         if ($wasPosition != $data->getPosition()) {
-            if ($data->getPosition() === 0) {
+            if (InventoryContainerEnum::Equipped === $data->getContainer()) {
                 $itemToMove = $this->inventoryManager->getEquippedItemBySlot($character, $data->getItem()->getDefinition()->getDesiredSlot());
             }else {
                 $itemToMove = $this->characterInventoryRepository->getOneByPosition(
@@ -54,7 +60,7 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
                 );
             }
             //Position changed AND equipped did not change
-            if ($wasEquipped === $data->isEquipped()) {
+            if ($wasContainer === $data->getContainer()) {
                 //Change position with item that was there
                 $itemToMove?->setPosition($wasPosition);
             }else {
@@ -62,7 +68,7 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
                     //Changing from equipped to unequipped with specific slot, meaning swaping equipped items
                     if ($itemToMove->getItem()->getDefinition()->getDesiredSlot() === $data->getItem()->getDefinition()->getDesiredSlot()) {
                         $itemToMove->setPosition($wasPosition);
-                        $itemToMove->setEquipped($wasEquipped);
+                        $itemToMove->setContainer($wasContainer);
                     }else{
                         throw new Exception(sprintf(
                             "Items does not match slots. Equipped item type %s cant swap with %s",
@@ -75,16 +81,16 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
         //User only send change equipped but not position
         }else {
             //From equipped to unequipped, first possible position
-            if ($wasEquipped && $data->isEquipped() === false) {
+            if (InventoryContainerEnum::Equipped === $wasContainer && InventoryContainerEnum::Backpack === $data->getContainer()) {
                 $firstAvailablePosition = $this->inventoryManager->getFirstAvailablePosition($character);
 
                 $data->setPosition($firstAvailablePosition);
             //From unequipped to equipped
-            }elseif (!$wasEquipped && $data->isEquipped() === true) {
+            }elseif (InventoryContainerEnum::Backpack === $wasContainer && InventoryContainerEnum::Equipped === $data->getContainer()) {
                 $equippedItem = $this->inventoryManager->getEquippedItemBySlot($character, $data->getItem()->getDefinition()->getDesiredSlot());
                 if ($equippedItem !== null) {
                     $equippedItem->setPosition($wasPosition);
-                    $equippedItem->setEquipped(false);
+                    $equippedItem->setContainer(InventoryContainerEnum::Backpack);
                 }
             }
         }

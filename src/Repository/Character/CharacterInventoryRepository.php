@@ -4,6 +4,7 @@ namespace App\Repository\Character;
 
 use App\Entity\Character\Character;
 use App\Entity\Character\CharacterInventory;
+use App\Entity\Item\InventoryContainerEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -46,7 +47,8 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
-            ->andWhere('ci.equipped = false')
+            ->andWhere('ci.container = :backpackContainer')
+            ->setParameter('backpackContainer', InventoryContainerEnum::Backpack)
             ->setParameter('character', $character)
             ->getQuery()
             ->getResult()
@@ -57,7 +59,8 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
-            ->andWhere('ci.equipped = true')
+            ->andWhere('ci.container = :equippedContainer')
+            ->setParameter('equippedContainer', InventoryContainerEnum::Equipped)
             ->setParameter('character', $character)
             ->getQuery()
             ->getResult()
@@ -79,7 +82,8 @@ class CharacterInventoryRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('ci')
             ->select('ci.position')
             ->andWhere('ci.character = :character')
-            ->andWhere('ci.equipped = false')
+            ->andWhere('ci.container = :backpackContainer')
+            ->setParameter('backpackContainer', InventoryContainerEnum::Backpack)
             ->setParameter('character', $character)
             ->getQuery()
             ->getSingleColumnResult()
@@ -90,7 +94,8 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('ci')
             ->andWhere('ci.character = :character')
-            ->andWhere('ci.equipped = false')
+            ->andWhere('ci.container = :backpackContainer')
+            ->setParameter('backpackContainer', InventoryContainerEnum::Backpack)
             ->andWhere('ci.position = :position')
             ->setParameter('character', $character)
             ->setParameter('position', $position)
