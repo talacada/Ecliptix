@@ -34,7 +34,7 @@ class RotationGenerator {
         $shopRotation->setValidFrom(new DateTimeImmutable('midnight'));
         $shopRotation->setValidUntil(new DateTimeImmutable('tomorrow'));
 
-        // In future will not just take 8 random items but will take base on quotes, meaning 1 sword, 1 helmet...
+        //TODO make quotes
         for ($i = 0; $i < 8; $i++) {
             $itemDefinition = $this->itemDefinitionRepository->findRandomByLevel($character->getLevel());
             $offer = new ShopOffer($shopRotation, $itemDefinition);

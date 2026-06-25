@@ -11,6 +11,7 @@ use App\State\Processor\Shop\Offer\ShopOfferBuyProcessor;
 use App\State\Provider\Shop\Offer\ShopOfferProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ApiResource(
     operations: [
@@ -64,6 +65,7 @@ class ShopOffer
     }
 
     #[Groups(ShopRotation::READ_GROUP)]
+    #[SerializedName('item')]
     public function getViewItem(): ItemViewDTO
     {
         $dto = new ItemViewDTO();
