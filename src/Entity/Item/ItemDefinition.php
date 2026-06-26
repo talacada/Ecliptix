@@ -11,6 +11,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ItemDefinitionRepository::class)]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'item_type', type: 'string')]
+#[ORM\DiscriminatorMap([
+    'equipment' => ItemDefinition::class,
+    'elixir' => ElixirDefinition::class,
+])]
 class ItemDefinition
 {
     #[ORM\Id]
@@ -49,6 +55,7 @@ class ItemDefinition
     private Collection $items;
 
     #[ORM\Column(enumType: ItemRarityEnum::class)]
+    //TODO je opravdu potřeba?
     #[Groups(ShopRotation::READ_GROUP)]
     private ItemRarityEnum $rarity;
 
@@ -63,6 +70,18 @@ class ItemDefinition
     #[ORM\Column]
     #[Groups(ShopRotation::READ_GROUP)]
     private int $baseDiamondPrice = 0;
+
+    #[ORM\Column(nullable: true, enumType: ElixirTypeEnum::class)]
+    #[Groups(ShopRotation::READ_GROUP)]
+    private ?ElixirTypeEnum $elixirType = null;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    #[Groups(ShopRotation::READ_GROUP)]
+    private ?int $percentageBonus = null;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    #[Groups(ShopRotation::READ_GROUP)]
+    private ?int $durationSeconds = null;
 
     public function __construct()
     {

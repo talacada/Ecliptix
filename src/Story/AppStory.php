@@ -30,18 +30,22 @@ final class AppStory extends Story
     private function generateItemDefinitions(): void
     {
         foreach (ItemSlotEnum::cases() as $slot) {
-            foreach (ItemRarityEnum::cases() as $rarity) {
-                for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
-                    for ($i = 0; $i < self::VARIANTS_PER_COMBO; $i++) {
-                        ItemDefinitionFactory::new()
-                            ->with([
-                                'desiredSlot' => $slot,
-                                'rarity' => $rarity,
-                                'requiredLevel' => $level,
-                            ])
-                            ->create();
+            if ($slot != "elixir") {
+                foreach (ItemRarityEnum::cases() as $rarity) {
+                    for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
+                        for ($i = 0; $i < self::VARIANTS_PER_COMBO; $i++) {
+                            ItemDefinitionFactory::new()
+                                ->with([
+                                    'desiredSlot' => $slot,
+                                    'rarity' => $rarity,
+                                    'requiredLevel' => $level,
+                                ])
+                                ->create();
+                        }
                     }
                 }
+            }else {
+
             }
         }
     }
