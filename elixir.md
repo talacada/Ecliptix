@@ -99,7 +99,7 @@ Do tabulky `item_definition` přibydou sloupce:
 
 ---
 
-## -----------------------Fáze 2: Factory a seedování
+## Fáze 2: Factory a seedování
 
 ### 2.1 Nová factory `src/Factory/ElixirDefinitionFactory.php`
 
@@ -192,7 +192,7 @@ public function findRandomElixir(): ?ItemDefinition
 
 ---
 
-## Fáze 4: Shop generování
+## ------------- Fáze 4: Shop generování
 
 ### 4.1 Upravit `src/Service/Shop/RotationGenerator.php`
 

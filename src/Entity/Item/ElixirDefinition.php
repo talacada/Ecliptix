@@ -14,5 +14,6 @@ class ElixirDefinition extends ItemDefinition
         $this->setBaseHealth(0);
         $this->setRequiredLevel(1);
         $this->setDesiredSlot(ItemSlotEnum::Elixir);
+        $this->setRarity(ItemRarityEnum::Common);
     }
 }
