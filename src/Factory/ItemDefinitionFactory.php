@@ -60,7 +60,11 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
 
     protected function defaults(): array
     {
-        $slot = self::faker()->randomElement(ItemSlotEnum::cases());
+        $equipmentSlots = array_filter(
+            ItemSlotEnum::cases(),
+            fn(ItemSlotEnum $singleSlotEnum) => $s !== ItemSlotEnum::Elixir,
+        );
+        $slot = self::faker()->randomElement($equipmentSlots);
         $rarity = self::faker()->randomElement(ItemRarityEnum::cases());
         $level = self::faker()->numberBetween(1, 20);
 

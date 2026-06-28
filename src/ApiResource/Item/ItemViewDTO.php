@@ -2,6 +2,7 @@
 
 namespace App\ApiResource\Item;
 
+use App\Entity\Item\ElixirDefinition;
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemDefinition;
 use App\Entity\Item\ItemSlotEnum;
@@ -17,15 +18,21 @@ class ItemViewDTO
     #[Groups([self::READ_GROUP])]
     private ?string $description = null;
     #[Groups([self::READ_GROUP])]
-    private int $damage;
+    private ?int $damage = null;
     #[Groups([self::READ_GROUP])]
-    private int $crit;
+    private ?int $crit = null;
     #[Groups([self::READ_GROUP])]
-    private int $health;
+    private ?int $health = null;
     #[Groups([self::READ_GROUP])]
     private int $requiredLevel;
     #[Groups([self::READ_GROUP])]
     private ItemSlotEnum $slot;
+    #[Groups([self::READ_GROUP])]
+    private ?string $elixirType = null;
+    #[Groups([self::READ_GROUP])]
+    private ?int $percentageBonus = null;
+    #[Groups([self::READ_GROUP])]
+    private ?int $durationSeconds = null;
     public function __construct(
     ) {
     }
@@ -34,21 +41,36 @@ class ItemViewDTO
     {
         $this->setName($definition->getName());
         $this->setDescription($definition->getDescription());
-        $this->setRequiredLevel($definition->getRequiredLevel());
-        $this->setDamage($definition->getBaseDamage() + $bonusDamage);
-        $this->setCrit($definition->getBaseCrit() + $bonusCrit);
-        $this->setHealth($definition->getBaseHealth() + $bonusHealth);
+
         $this->setSlot($definition->getDesiredSlot());
+        if ($definition instanceof ElixirDefinition) {
+            $this->setElixirType($definition->getElixirType()->value);
+            $this->setPercentageBonus($definition->getPercentageBonus());
+            $this->setDurationSeconds($definition->getDurationSeconds());
+        } else {
+            //We want to have these stats NULL not 0 soo it's not displayed in DTO
+            $this->setRequiredLevel($definition->getRequiredLevel());
+            $this->setDamage($definition->getBaseDamage() + $bonusDamage);
+            $this->setCrit($definition->getBaseCrit() + $bonusCrit);
+            $this->setHealth($definition->getBaseHealth() + $bonusHealth);
+        }
     }
     public function buildDtoFromItem(Item $item): void
     {
-        $this->setName($item->getDefinition()->getName());
-        $this->setDescription($item->getDefinition()->getDescription());
-        $this->setRequiredLevel($item->getDefinition()->getRequiredLevel());
-        $this->setDamage($item->getDefinition()->getBaseDamage() + $item->getBonusDamage());
-        $this->setCrit($item->getDefinition()->getBaseCrit() + $item->getBonusCrit());
-        $this->setHealth($item->getDefinition()->getBaseHealth() + $item->getBonusHealth());
-        $this->setSlot($item->getDefinition()->getDesiredSlot());
+        $definition = $item->getDefinition();
+        $this->setName($definition->getName());
+        $this->setDescription($definition->getDescription());
+        $this->setSlot($definition->getDesiredSlot());
+        if ($definition instanceof ElixirDefinition) {
+            $this->setElixirType($definition->getElixirType()->value);
+            $this->setPercentageBonus($definition->getPercentageBonus());
+            $this->setDurationSeconds($definition->getDurationSeconds());
+        } else {
+            $this->setRequiredLevel($definition->getRequiredLevel());
+            $this->setDamage($definition->getBaseDamage() + $item->getBonusDamage());
+            $this->setCrit($definition->getBaseCrit() + $item->getBonusCrit());
+            $this->setHealth($definition->getBaseHealth() + $item->getBonusHealth());
+        }
     }
 
     public function getId(): ?int
@@ -81,32 +103,32 @@ class ItemViewDTO
         $this->description = $description;
     }
 
-    public function getDamage(): int
+    public function getDamage(): ?int
     {
         return $this->damage;
     }
 
-    public function setDamage(int $damage): void
+    public function setDamage(?int $damage): void
     {
         $this->damage = $damage;
     }
 
-    public function getCrit(): int
+    public function getCrit(): ?int
     {
         return $this->crit;
     }
 
-    public function setCrit(int $crit): void
+    public function setCrit(?int $crit): void
     {
         $this->crit = $crit;
     }
 
-    public function getHealth(): int
+    public function getHealth(): ?int
     {
         return $this->health;
     }
 
-    public function setHealth(int $health): void
+    public function setHealth(?int $health): void
     {
         $this->health = $health;
     }
@@ -129,6 +151,36 @@ class ItemViewDTO
     public function setSlot(ItemSlotEnum $slot): void
     {
         $this->slot = $slot;
+    }
+
+    public function getElixirType(): ?string
+    {
+        return $this->elixirType;
+    }
+
+    public function setElixirType(?string $elixirType): void
+    {
+        $this->elixirType = $elixirType;
+    }
+
+    public function getPercentageBonus(): ?int
+    {
+        return $this->percentageBonus;
+    }
+
+    public function setPercentageBonus(?int $percentageBonus): void
+    {
+        $this->percentageBonus = $percentageBonus;
+    }
+
+    public function getDurationSeconds(): ?int
+    {
+        return $this->durationSeconds;
+    }
+
+    public function setDurationSeconds(?int $durationSeconds): void
+    {
+        $this->durationSeconds = $durationSeconds;
     }
 
 

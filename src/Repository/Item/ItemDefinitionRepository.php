@@ -56,8 +56,7 @@ class ItemDefinitionRepository extends ServiceEntityRepository
     public function findRandomElixir(): ?ItemDefinition
     {
         return $this->createQueryBuilder('i')
-            ->andWhere('i.item_type = :type')
-            ->setParameter('type', 'elixir')
+            ->andWhere('i INSTANCE OF App\Entity\Item\ElixirDefinition')
             ->orderBy('RAND()')
             ->setMaxResults(1)
             ->getQuery()

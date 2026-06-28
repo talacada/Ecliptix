@@ -5,6 +5,7 @@ namespace App\State\Processor\Shop\Offer;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Item\ItemViewDTO;
+use App\Entity\Item\ElixirDefinition;
 use App\Entity\Shop\ShopOffer;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
@@ -51,7 +52,10 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new Exception("Not enough diamonds");
         }
 
-        if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
+        $isElixir = $data->getItemDefinition() instanceof ElixirDefinition;
+
+
+        if (!$isElixir && $character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
             throw new Exception("Not enough backpack space");
         }
 
