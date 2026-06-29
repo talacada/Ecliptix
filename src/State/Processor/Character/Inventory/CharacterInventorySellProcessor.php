@@ -21,7 +21,6 @@ class CharacterInventorySellProcessor implements ProcessorInterface
     /**
      * @throws Exception
      */
-    //TODO in future will take care of quantity items
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         assert($data instanceof CharacterInventory);
@@ -37,11 +36,13 @@ class CharacterInventorySellProcessor implements ProcessorInterface
 
         $isElixir = $data->getItem()->getDefinition() instanceof ElixirDefinition;
 
+        if ($isElixir) {
+            $sellPrice = $sellPrice * $character->getLevel();
+        }
 
         if ($isElixir && $data->getQuantity() > 1) {
             $data->setQuantity($data->getQuantity() - 1);
-            $sellPrice = $sellPrice * $character->getLevel();
-        }else{
+        } else {
             $this->entityManager->remove($data->getItem());
             $this->entityManager->remove($data);
         }
