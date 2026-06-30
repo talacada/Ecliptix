@@ -12,6 +12,7 @@ use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
+use App\Entity\ActiveElixir;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
@@ -149,6 +150,12 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Column]
     private int $backpackCapacity = 4;
 
+    /**
+     * @var Collection<int, ActiveElixir>
+     */
+    #[ORM\OneToMany(targetEntity: ActiveElixir::class, mappedBy: 'character', orphanRemoval: true)]
+    private Collection $activeElixirs;
+
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
@@ -159,6 +166,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->damage = 1;
         $this->health = 100;
         $this->characterInventories = new ArrayCollection();
+        $this->activeElixirs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -390,5 +398,35 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function addGold(int $amount): void
     {
         $this->gold += $amount;
+    }
+
+    /**
+     * @return Collection<int, ActiveElixir>
+     */
+    public function getActiveElixirs(): Collection
+    {
+        return $this->activeElixirs;
+    }
+
+    public function addActiveElixir(ActiveElixir $activeElixir): static
+    {
+        if (!$this->activeElixirs->contains($activeElixir)) {
+            $this->activeElixirs->add($activeElixir);
+            $activeElixir->setCharacter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActiveElixir(ActiveElixir $activeElixir): static
+    {
+        if ($this->activeElixirs->removeElement($activeElixir)) {
+            // set the owning side to null (unless already changed)
+            if ($activeElixir->getCharacter() === $this) {
+                $activeElixir->setCharacter(null);
+            }
+        }
+
+        return $this;
     }
 }

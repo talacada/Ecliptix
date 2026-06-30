@@ -62,7 +62,7 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
     {
         $equipmentSlots = array_filter(
             ItemSlotEnum::cases(),
-            fn(ItemSlotEnum $singleSlotEnum) => $s !== ItemSlotEnum::Elixir,
+            fn(ItemSlotEnum $singleSlotEnum) => $singleSlotEnum !== ItemSlotEnum::Elixir,
         );
         $slot = self::faker()->randomElement($equipmentSlots);
         $rarity = self::faker()->randomElement(ItemRarityEnum::cases());

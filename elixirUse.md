@@ -14,16 +14,22 @@ Elixíry už fungují: definice (`ElixirDefinition`), shop, nákup, stackování
 
 **Endpointy:**
 
-| Metoda | Cesta | Co dělá |
-|--------|-------|---------|
-| `POST` | `/character/elixir/use` | Aktivuje elixír z baťůžku (input: `inventoryId`) |
-| `POST` | `/character/elixir/{id}/remove` | Zruší aktivní elixír |
+| Metoda | Cesta | Resource |
+|--------|-------|----------|
+| `POST` | `/character/inventory/{id}/use` | `CharacterInventory` (vedle `sell`) |
+| `POST` | `/character/elixir/{id}/remove` | `ActiveElixir` |
+
+Proč `use` na `CharacterInventory` a ne na samostatném resource?
+- Konzistentní s `POST /character/inventory/{inventoryId}/sell` — obojí je akce nad inventářovou položkou
+- Žádné body, jen URL parametr — `{id}` je identifikátor inventáře, ze kterého se elixír aktivuje
+- Provider `CharacterInventoryProvider` už umí načíst `CharacterInventory` podle ID — reuse
+- Odpadá `UseElixirInput` DTO — processor dostane rovnou entitu
 
 **GET Character** vrací pole aktivních elixírů i s definicí a `expiresAt`.
 
 ---
 
-## Architektonické rozhodnutí
+## Architektonická rozhodnutí
 
 **Proč samostatná entita `ActiveElixir` a ne jen další stav na `CharacterInventory`?**
 
@@ -43,10 +49,6 @@ Elixíry už fungují: definice (`ElixirDefinition`), shop, nákup, stackování
 - Expirované elixíry nemají herní efekt — vadí jen při zobrazení
 - Cleanup při interakci je zdarma (už tak načítáme charactera)
 - Cron s přesností na minuty je overkill pro tuhle feature
-
-**Pattern: `ActiveElixir` jako samostatné ApiResource**
-
-Stejný vzorec jako `CharacterInventory` — vlastní entita, vlastní prefix, vlastní provider. Není to sub-resource Characteru.
 
 ---
 
@@ -105,7 +107,6 @@ private Collection $activeElixirs;
 
 // Konstruktor: $this->activeElixirs = new ArrayCollection();
 // Getter: getActiveElixirs(): Collection
-// Setter/add/remove dle potřeby
 ```
 
 ### 1.3 Migrace
@@ -143,132 +144,96 @@ class ActiveElixirCleanupService
 
 **Kde se bude volat:**
 - `MineCharacterProvider` — před vrácením characteru
-- `ActiveElixirProvider` — před vrácením kolekce / jednoho elixíru
+- `ActiveElixirProvider` — před vrácením elixíru pro remove
 - `ElixirUseProcessor` — před kontrolou limitu (expirované mohly uvolnit místo)
 
 ---
 
-## Fáze 3: Provider
+## Fáze 3: Use endpoint (na CharacterInventory)
 
-### 3.1 `src/State/Provider/Character/Elixir/ActiveElixirProvider.php`
+### 3.1 Přidat operaci na `CharacterInventory`
+
+V `src/Entity/Character/CharacterInventory.php` přidat do `operations` pole:
 
 ```php
-// Pseudokód:
-
-class ActiveElixirProvider implements ProviderInterface
-{
-    // DI: LoggedInCharacter, ActiveElixirCleanupService
-
-    function provide(Operation $operation, array $uriVariables, array $context): object|array|null
-    {
-        $character = $this->loggedInCharacter->getCharacter();
-        $this->cleanupService->removeExpired($character);
-
-        // Pokud je 'id' v $uriVariables → vracíme JEDEN ActiveElixir:
-        if (isset($uriVariables['id'])) {
-            $elixir = najdi podle ID z $character->getActiveElixirs()
-            if ($elixir === null) throw 404
-            // Naplň DTO
-            $dto = new ItemViewDTO()
-            $dto->buildDtoFromItemDefinition($elixir->getItemDefinition())
-            $elixir->setDefinitionViewDTO($dto)
-            return $elixir
-        }
-
-        // Jinak vracíme KOLEKCI:
-        foreach ($character->getActiveElixirs() as $elixir) {
-            $dto = new ItemViewDTO()
-            $dto->buildDtoFromItemDefinition($elixir->getItemDefinition())
-            $elixir->setDefinitionViewDTO($dto)
-        }
-        return $character->getActiveElixirs()->toArray()
-    }
-}
+new Post(
+    uriTemplate: 'character/inventory/{inventoryId}/use',
+    uriVariables: [
+        'inventoryId' => new Link(
+            fromClass: CharacterInventory::class,
+            identifiers: ['id']
+        ),
+    ],
+    deserialize: false,  // žádné request body, ID je v URL
+    provider: CharacterInventoryProvider::class,
+    processor: ElixirUseProcessor::class,
+),
 ```
 
-Tenhle provider slouží pro:
-- `POST /character/elixir/{id}/remove` — načte jeden `ActiveElixir` podle ID
-- Případné budoucí `GET /character/elixir` — vrátí kolekci
+Stejný pattern jako `sell` — `CharacterInventoryProvider` načte entitu podle `{inventoryId}`, processor ji dostane a zpracuje.
 
----
-
-## Fáze 4: Use endpoint
-
-### 4.1 Input DTO `src/ApiResource/Character/Elixir/UseElixirInput.php`
+### 3.2 Processor `src/State/Processor/Character/Inventory/ElixirUseProcessor.php`
 
 ```php
-// Pseudokód:
-
-readonly class UseElixirInput
-{
-    // __construct s #[Assert\NotBlank] private int $inventoryId
-    // getter
-}
-```
-
-Je to `readonly` třída s property `inventoryId` — odkazuje na `CharacterInventory::$id`, ze kterého hráč chce elixír aktivovat.
-
-### 4.2 Processor `src/State/Processor/Character/Elixir/ElixirUseProcessor.php`
-
-```php
-// Pseudokód logiky (detaily nechávám na tobě):
+// Pseudokód logiky:
 
 class ElixirUseProcessor implements ProcessorInterface
 {
-    // DI: LoggedInCharacter, CharacterInventoryRepository
-    //      ActiveElixirCleanupService, EntityManagerInterface
+    // DI: LoggedInCharacter, ActiveElixirCleanupService, EntityManagerInterface
 
     function process(mixed $data, ...)
     {
-        assert($data instanceof UseElixirInput)
+        assert($data instanceof CharacterInventory)
         $character = loggedInCharacter()
+
+        // Ownership: provider načetl CharacterInventory, ale musí patřit přihlášenému
+        if ($data->getCharacter() !== $character) throw 404
 
         // ── Krok 1: Cleanup ──
         cleanupService->removeExpired($character)
-        // Teď máme přesný počet aktivních, expirované jsou pryč
 
-        // ── Krok 2: Najdi inventory slot ──
-        $inventory = inventoryRepo->getInventoryById($data->getInventoryId())
-        if (!$inventory || $inventory->getCharacter() !== $character) throw 404
-
-        // ── Krok 3: Ověř, že item v inventáři je elixír ──
-        $definition = $inventory->getItem()->getDefinition()
+        // ── Krok 2: Ověř, že item v inventáři je elixír ──
+        $definition = $data->getItem()->getDefinition()
         if (!$definition instanceof ElixirDefinition) throw "není elixír"
 
-        // ── Krok 4: Najdi existující aktivní elixír stejného typu ──
+        // ── Krok 3: Najdi existující aktivní elixír stejného typu ──
         $existing = najdi v $character->getActiveElixirs()
                     kde getItemDefinition()->getId() === $definition->getId()
 
-        // ── Krok 5: Pokud neexistuje, ověř kapacitu ──
+        // ── Krok 4: Pokud neexistuje, ověř kapacitu ──
         if ($existing === null && count($character->getActiveElixirs()) >= 3) {
             throw "max 3 aktivní elixíry"
         }
 
-        // ── Krok 6: Aktivace ──
+        // ── Krok 5: Aktivace ──
         if ($existing !== null) {
             // Prodloužení: expiresAt += duration
             $existing->setExpiresAt(
-                $existing->getExpiresAt()->modify('+' . $definition->getDurationSeconds() . ' seconds')
+                $existing->getExpiresAt()->modify(
+                    '+' . $definition->getDurationSeconds() . ' seconds'
+                )
             )
         } else {
-            // Nový aktivní elixír
+            // Nový ActiveElixir
             $activeElixir = new ActiveElixir()
             $activeElixir->setCharacter($character)
             $activeElixir->setItemDefinition($definition)
             $activeElixir->setCreatedAt(new DateTimeImmutable())
             $activeElixir->setExpiresAt(
-                (new DateTimeImmutable())->modify('+' . $definition->getDurationSeconds() . ' seconds')
+                (new DateTimeImmutable())->modify(
+                    '+' . $definition->getDurationSeconds() . ' seconds'
+                )
             )
             $entityManager->persist($activeElixir)
         }
 
-        // ── Krok 7: Odeber z baťůžku ──
+        // ── Krok 6: Odeber z baťůžku ──
         // Stejná logika jako v CharacterInventorySellProcessor:
-        if ($inventory->getQuantity() > 1) {
-            $inventory->setQuantity($inventory->getQuantity() - 1)
+        if ($data->getQuantity() > 1) {
+            $data->setQuantity($data->getQuantity() - 1)
         } else {
-            $entityManager->remove($inventory->getItem())
-            $entityManager->remove($inventory)
+            $entityManager->remove($data->getItem())
+            $entityManager->remove($data)
         }
 
         $entityManager->flush()
@@ -276,24 +241,26 @@ class ElixirUseProcessor implements ProcessorInterface
 }
 ```
 
-### 4.3 ApiResource — operace na `ActiveElixir`
+**Co odpadlo oproti původnímu návrhu:**
+- `UseElixirInput` DTO — není potřeba, `inventoryId` je v URL, provider načte entitu
+- Hledání inventáře v procesoru — provider už ho načetl a ověřil existenci
+- `CharacterInventoryRepository` v DI procesoru — netřeba
+
+---
+
+## Fáze 4: Remove endpoint (na ActiveElixir)
+
+### 4.1 ApiResource na `ActiveElixir`
 
 ```php
 #[ApiResource(
     operations: [
-        // POST /character/elixir/use — nemá {id}, vstup je DTO
-        new Post(
-            uriTemplate: 'use',
-            input: UseElixirInput::class,
-            processor: ElixirUseProcessor::class,
-        ),
-        // POST /character/elixir/{id}/remove — má {id}, načte entitu
         new Post(
             uriTemplate: '{id}/remove',
             uriVariables: [
                 'id' => new Link(fromClass: ActiveElixir::class, identifiers: ['id']),
             ],
-            deserialize: false,  // žádné request body
+            deserialize: false,
             provider: ActiveElixirProvider::class,
             processor: ElixirRemoveProcessor::class,
         ),
@@ -304,11 +271,36 @@ class ElixirUseProcessor implements ProcessorInterface
 )]
 ```
 
----
+### 4.2 Provider `src/State/Provider/Character/Elixir/ActiveElixirProvider.php`
 
-## Fáze 5: Remove endpoint
+```php
+// Pseudokód:
 
-### 5.1 Processor `src/State/Processor/Character/Elixir/ElixirRemoveProcessor.php`
+class ActiveElixirProvider implements ProviderInterface
+{
+    // DI: LoggedInCharacter, ActiveElixirCleanupService
+
+    function provide(Operation $operation, array $uriVariables, array $context): object|array|null
+    {
+        $character = loggedInCharacter()
+        cleanupService->removeExpired($character)
+
+        // Najdi ActiveElixir podle ID z $uriVariables['id']
+        // Musí patřit characterovi, jinak 404
+        $elixir = najdi v $character->getActiveElixirs() podle ID
+        if (!$elixir) throw 404
+
+        // Naplň DTO pro serializaci
+        $dto = new ItemViewDTO()
+        $dto->buildDtoFromItemDefinition($elixir->getItemDefinition())
+        $elixir->setDefinitionViewDTO($dto)
+
+        return $elixir
+    }
+}
+```
+
+### 4.3 Processor `src/State/Processor/Character/Elixir/ElixirRemoveProcessor.php`
 
 ```php
 // Pseudokód:
@@ -332,13 +324,11 @@ class ElixirRemoveProcessor implements ProcessorInterface
 }
 ```
 
-Žádné složitosti. Provider předtím načetl entitu a ověřil, že patří characterovi (v rámci provideru). Processor jen maže.
-
 ---
 
-## Fáze 6: GET Character — zobrazit aktivní elixíry
+## Fáze 5: GET Character — zobrazit aktivní elixíry
 
-### 6.1 Upravit `MineCharacterProvider`
+### 5.1 Upravit `MineCharacterProvider`
 
 ```php
 // Pseudokód úpravy:
@@ -365,9 +355,9 @@ Díky `#[Groups([self::READ_GROUP])]` na `Character::$activeElixirs` se kolekce 
 
 ---
 
-## Fáze 7: ItemViewDTO — nová metoda
+## Fáze 6: ItemViewDTO — nová metoda
 
-### 7.1 Přidat `buildDtoFromItemDefinition()` do `src/ApiResource/Item/ItemViewDTO.php`
+### 6.1 Přidat `buildDtoFromItemDefinition()` do `src/ApiResource/Item/ItemViewDTO.php`
 
 ```php
 // Pseudokód:
@@ -403,11 +393,11 @@ function buildDtoFromItemDefinition(ItemDefinition $definition): void
 | **NOVÝ** | `src/Entity/Character/ActiveElixir.php` |
 | **NOVÝ** | `src/Service/Elixir/ActiveElixirCleanupService.php` |
 | **NOVÝ** | `src/State/Provider/Character/Elixir/ActiveElixirProvider.php` |
-| **NOVÝ** | `src/ApiResource/Character/Elixir/UseElixirInput.php` |
-| **NOVÝ** | `src/State/Processor/Character/Elixir/ElixirUseProcessor.php` |
+| **NOVÝ** | `src/State/Processor/Character/Inventory/ElixirUseProcessor.php` |
 | **NOVÝ** | `src/State/Processor/Character/Elixir/ElixirRemoveProcessor.php` |
 | **NOVÁ** | Migrace (doctrine migration diff) |
 | UPRAVIT | `src/Entity/Character/Character.php` — přidat `$activeElixirs` kolekci |
+| UPRAVIT | `src/Entity/Character/CharacterInventory.php` — přidat `use` operaci |
 | UPRAVIT | `src/State/Provider/Character/MineCharacterProvider.php` — cleanup + DTO |
 | UPRAVIT | `src/ApiResource/Item/ItemViewDTO.php` — `buildDtoFromItemDefinition()` |
 
@@ -417,16 +407,18 @@ function buildDtoFromItemDefinition(ItemDefinition $definition): void
 
 1. **Build** — `make build` projde, aplikace nastartuje
 2. **Migrace** — `make migration && make migrate`, tabulka `active_elixir` existuje
-3. **Use** — `POST /character/elixir/use { inventoryId: X }`:
-   - Aktivuje elixír → vrátí 200, v DB přibyde `ActiveElixir`, quantity v inventory klesne
+3. **Use** — `POST /character/inventory/{id}/use`:
+   - Aktivuje elixír, v DB přibyde `ActiveElixir`, quantity v inventory klesne
 4. **Prodloužení** — stejný elixír znovu:
    - `expiresAt` se prodlouží, nový záznam NEVZNIKNE, quantity znovu klesne
 5. **Limit** — pokus aktivovat 4. různý typ:
    - Vrátí chybu (max 3)
-6. **Remove** — `POST /character/elixir/{id}/remove`:
+6. **Ochrana** — pokus aktivovat equipment:
+   - Vrátí chybu (není elixír)
+7. **Remove** — `POST /character/elixir/{id}/remove`:
    - Záznam zmizí z DB
-7. **GET Character** — `GET /character`:
+8. **GET Character** — `GET /character`:
    - Obsahuje pole `activeElixirs` s `definition` (ItemViewDTO), `expiresAt`, `createdAt`
-8. **Expirovaný cleanup** — nastavit `expiresAt` do minulosti, zavolat GET /character:
+9. **Expirovaný cleanup** — nastavit `expiresAt` do minulosti, zavolat GET /character:
    - Expirovaný elixír tam není
-9. **Testy** — `make test` bez regresí
+10. **Testy** — `make test` bez regresí

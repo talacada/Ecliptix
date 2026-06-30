@@ -48,6 +48,18 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             denormalizationContext: ['groups' => [self::WRITE_GROUP]],
             provider: CharacterInventoryProvider::class,
             processor: CharacterInventoryEditProcessor::class
+        ),
+        new Post (
+            uriTemplate: 'character/inventory/{inventoryId}/use',
+            uriVariables: [
+                'inventoryId' => new Link(
+                    fromClass: CharacterInventory::class,
+                    identifiers: ['id']
+                )
+            ],
+            deserialize: false,
+            provider: CharacterInventoryProvider::class,
+            processor: CharacterInventoryUseProcessor::class
         )
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
