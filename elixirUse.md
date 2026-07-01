@@ -248,7 +248,7 @@ class ElixirUseProcessor implements ProcessorInterface
 
 ---
 
-## Fáze 4: Remove endpoint (na ActiveElixir)
+## ----------------------------- Fáze 4: Remove endpoint (na ActiveElixir)
 
 ### 4.1 ApiResource na `ActiveElixir`
 

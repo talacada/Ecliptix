@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\ActiveElixir;
+use App\Entity\Character\Character;
+use App\Entity\Item\ItemDefinition;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +42,15 @@ class ActiveElixirRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+	public function findByName(string $name, Character $character): ?ActiveElixir
+	{
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.itemDefinition', 'd')
+            ->andWhere('a.character = :character')
+            ->andWhere('d.name = :name')
+            ->setParameter('character', $character)
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult();
+	}
 }

@@ -13,6 +13,7 @@ use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\State\Processor\Character\Inventory\CharacterInventoryEditProcessor;
 use App\State\Processor\Character\Inventory\CharacterInventorySellProcessor;
+use App\State\Processor\Character\Inventory\CharacterInventoryUseProcessor;
 use App\State\Provider\Character\Inventory\CharacterInventoryProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;

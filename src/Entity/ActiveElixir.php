@@ -3,11 +3,15 @@
 namespace App\Entity;
 
 use App\Entity\Character\Character;
+use App\Entity\Item\ElixirTypeEnum;
 use App\Entity\Item\ItemDefinition;
 use App\Repository\ActiveElixirRepository;
+use DateInterval;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: ActiveElixirRepository::class)]
 class ActiveElixir
@@ -15,6 +19,7 @@ class ActiveElixir
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([Character::READ_GROUP])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'activeElixirs')]
@@ -26,7 +31,35 @@ class ActiveElixir
     private ?ItemDefinition $itemDefinition = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?DateTimeImmutable $expiresAt = null;
+    private DateTimeImmutable $expiresAt;
+
+    #[Groups([Character::READ_GROUP])]
+    #[serializedName("name")]
+    public function getElixirName(): string
+    {
+        return $this->itemDefinition->getName();
+    }
+
+    #[Groups([Character::READ_GROUP])]
+    #[serializedName("description")]
+    public function getElixirDescription(): string
+    {
+        return $this->itemDefinition->getDescription();
+    }
+
+    #[Groups([Character::READ_GROUP])]
+    #[serializedName("percentageBonus")]
+    public function getElixirPercentageBonus(): int
+    {
+        return $this->itemDefinition->getPercentageBonus();
+    }
+
+    #[Groups([Character::READ_GROUP])]
+    #[serializedName("remainingSeconds")]
+    public function getRemainingSeconds(): int
+    {
+        return $this->expiresAt->getTimestamp() - new DateTimeImmutable()->getTimestamp();
+    }
 
     public function getId(): ?int
     {

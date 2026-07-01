@@ -22,6 +22,10 @@ class MineCharacterProvider implements ProviderInterface
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Character
     {
-        return $this->loggedInCharacter->getCharacter();
+        $character =  $this->loggedInCharacter->getCharacter();
+
+        //$this->elixirCleaUp->removeExpired($character);
+
+        return $character;
     }
 }

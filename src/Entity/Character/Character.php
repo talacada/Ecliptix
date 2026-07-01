@@ -403,6 +403,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     /**
      * @return Collection<int, ActiveElixir>
      */
+    #[Groups([self::READ_GROUP])]
     public function getActiveElixirs(): Collection
     {
         return $this->activeElixirs;
