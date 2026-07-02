@@ -38,6 +38,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
 
         if ($data->getCharacter() !== $character) throw new NotFoundHttpException("Not found");
 
+        //TODO make
         //$this->elixirCleaUp->removeExpired($character);
 
         $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);

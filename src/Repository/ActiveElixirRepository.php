@@ -53,4 +53,13 @@ class ActiveElixirRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
 	}
+
+    public function findOneById(int $id): ?ActiveElixir
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

@@ -24,6 +24,7 @@ class MineCharacterProvider implements ProviderInterface
     {
         $character =  $this->loggedInCharacter->getCharacter();
 
+        //TODO make
         //$this->elixirCleaUp->removeExpired($character);
 
         return $character;

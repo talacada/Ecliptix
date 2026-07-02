@@ -2,24 +2,47 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Character\Character;
-use App\Entity\Item\ElixirTypeEnum;
 use App\Entity\Item\ItemDefinition;
 use App\Repository\ActiveElixirRepository;
-use DateInterval;
+use App\State\Processor\Character\Elixir\ActiveElixirRemoveProcessor;
+use App\State\Provider\Character\Elixir\ActiveElixirProvider;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
+#[ApiResource(
+    operations: [
+        new Get (
+            uriTemplate: '{id}',
+            provider: ActiveElixirProvider::class,
+
+        ),
+        new Delete(
+            uriTemplate: '{id}',
+            provider: ActiveElixirProvider::class,
+            processor: ActiveElixirRemoveProcessor::class,
+        ),
+    ],
+    routePrefix: 'character/elixir/',
+    normalizationContext: ['groups' => [self::READ_GROUP]],
+    security: 'is_granted("ROLE_USER")',
+)]
 #[ORM\Entity(repositoryClass: ActiveElixirRepository::class)]
 class ActiveElixir
 {
+    public const READ_GROUP = 'elixir:read';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([Character::READ_GROUP])]
+    #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'activeElixirs')]
@@ -33,28 +56,28 @@ class ActiveElixir
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $expiresAt;
 
-    #[Groups([Character::READ_GROUP])]
+    #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[serializedName("name")]
     public function getElixirName(): string
     {
         return $this->itemDefinition->getName();
     }
 
-    #[Groups([Character::READ_GROUP])]
+    #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[serializedName("description")]
     public function getElixirDescription(): string
     {
         return $this->itemDefinition->getDescription();
     }
 
-    #[Groups([Character::READ_GROUP])]
+    #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[serializedName("percentageBonus")]
     public function getElixirPercentageBonus(): int
     {
         return $this->itemDefinition->getPercentageBonus();
     }
 
-    #[Groups([Character::READ_GROUP])]
+    #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[serializedName("remainingSeconds")]
     public function getRemainingSeconds(): int
     {
