@@ -2,8 +2,10 @@
 
 namespace App\Story;
 
+use App\Entity\Item\ElixirTypeEnum;
 use App\Entity\Item\ItemRarityEnum;
 use App\Entity\Item\ItemSlotEnum;
+use App\Factory\ElixirDefinitionFactory;
 use App\Factory\ItemDefinitionFactory;
 use Zenstruck\Foundry\Attribute\AsFixture;
 use Zenstruck\Foundry\Story;
@@ -30,14 +32,29 @@ final class AppStory extends Story
     private function generateItemDefinitions(): void
     {
         foreach (ItemSlotEnum::cases() as $slot) {
-            foreach (ItemRarityEnum::cases() as $rarity) {
-                for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
-                    for ($i = 0; $i < self::VARIANTS_PER_COMBO; $i++) {
-                        ItemDefinitionFactory::new()
+            if ($slot !== ItemSlotEnum::Elixir) {
+                foreach (ItemRarityEnum::cases() as $rarity) {
+                    for ($level = self::MIN_LEVEL; $level <= self::MAX_LEVEL; $level++) {
+                        for ($i = 0; $i < self::VARIANTS_PER_COMBO; $i++) {
+                            ItemDefinitionFactory::new()
+                                ->with([
+                                    'desiredSlot' => $slot,
+                                    'rarity' => $rarity,
+                                    'requiredLevel' => $level,
+                                ])
+                                ->create();
+                        }
+                    }
+                }
+            } else {
+                foreach (ElixirTypeEnum::cases() as $elixirType) {
+                    foreach (ElixirDefinitionFactory::VARIANTS as $variant) {
+                        ElixirDefinitionFactory::new()
+                            //With is rewriting default values in factory...
                             ->with([
-                                'desiredSlot' => $slot,
-                                'rarity' => $rarity,
-                                'requiredLevel' => $level,
+                                'elixirType' => $elixirType,
+                                'percentageBonus' => $variant['bonus'],
+                                'durationSeconds' => $variant['days'] * 86400,
                             ])
                             ->create();
                     }

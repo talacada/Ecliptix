@@ -13,6 +13,7 @@ use App\Entity\Item\Item;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\State\Processor\Character\Inventory\CharacterInventoryEditProcessor;
 use App\State\Processor\Character\Inventory\CharacterInventorySellProcessor;
+use App\State\Processor\Character\Inventory\CharacterInventoryUseProcessor;
 use App\State\Provider\Character\Inventory\CharacterInventoryProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -48,6 +49,18 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             denormalizationContext: ['groups' => [self::WRITE_GROUP]],
             provider: CharacterInventoryProvider::class,
             processor: CharacterInventoryEditProcessor::class
+        ),
+        new Post (
+            uriTemplate: 'character/inventory/{inventoryId}/use',
+            uriVariables: [
+                'inventoryId' => new Link(
+                    fromClass: CharacterInventory::class,
+                    identifiers: ['id']
+                )
+            ],
+            deserialize: false,
+            provider: CharacterInventoryProvider::class,
+            processor: CharacterInventoryUseProcessor::class
         )
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],

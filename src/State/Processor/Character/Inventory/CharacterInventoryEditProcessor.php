@@ -5,6 +5,7 @@ namespace App\State\Processor\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Character\CharacterInventory;
+use App\Entity\Item\ElixirDefinition;
 use App\Entity\Item\InventoryContainerEnum;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
@@ -34,6 +35,10 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
 
         if ($data->getPosition() > $character->getBackpackCapacity()) {
             throw new Exception("Position exceeds backpack capacity.");
+        }
+
+        if ($data->getItem()->getDefinition() instanceof ElixirDefinition && $data->getContainer() === InventoryContainerEnum::Equipped) {
+            throw new Exception("Elixir cant be equipped.");
         }
 
         $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);

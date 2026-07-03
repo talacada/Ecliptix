@@ -52,4 +52,14 @@ class ItemDefinitionRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
 	}
+
+    public function findRandomElixir(): ?ItemDefinition
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i INSTANCE OF App\Entity\Item\ElixirDefinition')
+            ->orderBy('RAND()')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

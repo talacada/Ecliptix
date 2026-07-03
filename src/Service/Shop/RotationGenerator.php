@@ -14,12 +14,18 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class RotationGenerator {
 
+    private const array OFFER_QUOTA = [
+        'elixir' => 2,
+        'equipment' => 8,
+    ];
+
     function __construct(
         private ItemDefinitionRepository $itemDefinitionRepository,
         private EntityManagerInterface $entityManager,
         private ShopRotationRepository $shopRotationRepository,
         private ItemFactory $itemFactory,
     ){ }
+
     public function generate(Character $character):ShopRotation
     {
         $oldRotations = $this->shopRotationRepository->findAllExpired($character);
@@ -27,15 +33,27 @@ class RotationGenerator {
             $this->entityManager->remove($rotation);
         }
         $this->entityManager->flush();
-
         $shopRotation = new ShopRotation();
         $shopRotation->setCharacter($character);
         $shopRotation->setRotationType(ShopRotationEnum::Daily);
         $shopRotation->setValidFrom(new DateTimeImmutable('midnight'));
         $shopRotation->setValidUntil(new DateTimeImmutable('tomorrow'));
 
-        // In future will not just take 8 random items but will take base on quotes, meaning 1 sword, 1 helmet...
-        for ($i = 0; $i < 8; $i++) {
+        for ($i = 0; $i < self::OFFER_QUOTA['elixir']; $i++) {
+            $elixirDef = $this->itemDefinitionRepository->findRandomElixir();
+            if ($elixirDef === null) {
+                continue;
+            }
+            $offer = new ShopOffer($shopRotation, $elixirDef);
+            $offer->setGoldPrice((int)($elixirDef->getBaseGoldPrice() * $character->getLevel() * (mt_rand(80, 120) / 100)));
+            $offer->setDiamondPrice($elixirDef->getBaseDiamondPrice());
+            $offer->setBonusDamage(0);
+            $offer->setBonusCrit(0);
+            $offer->setBonusHealth(0);
+            $shopRotation->addShopOffer($offer);
+        }
+
+        for ($i = 0; $i < self::OFFER_QUOTA['equipment']; $i++) {
             $itemDefinition = $this->itemDefinitionRepository->findRandomByLevel($character->getLevel());
             $offer = new ShopOffer($shopRotation, $itemDefinition);
             $offer->setGoldPrice($itemDefinition->getBaseGoldPrice() * (mt_rand(80, 120) / 100)); // Random price between 80% and 120% of base price

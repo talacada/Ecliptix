@@ -103,4 +103,18 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
             ;
     }
+
+    public function getByDefinition(Character $character, int $definitionId): ?CharacterInventory
+    {
+        return $this->createQueryBuilder('ci')
+            ->join('ci.item', 'i')
+            ->andWhere('ci.character = :character')
+            ->andWhere('i.definition = :definitionId')
+            ->andWhere('ci.container = :container')
+            ->setParameter('character', $character)
+            ->setParameter('definitionId', $definitionId)
+            ->setParameter('container', InventoryContainerEnum::Backpack)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

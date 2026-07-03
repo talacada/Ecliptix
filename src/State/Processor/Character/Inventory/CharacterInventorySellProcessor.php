@@ -5,6 +5,7 @@ namespace App\State\Processor\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Character\CharacterInventory;
+use App\Entity\Item\ElixirDefinition;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -20,7 +21,6 @@ class CharacterInventorySellProcessor implements ProcessorInterface
     /**
      * @throws Exception
      */
-    //TODO in future will take care of quantity items
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         assert($data instanceof CharacterInventory);
@@ -34,8 +34,18 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();
         $sellPrice = (int)($defaultGoldBuyPrice * 0.75);
 
-        $this->entityManager->remove($data->getItem());
-        $this->entityManager->remove($data);
+        $isElixir = $data->getItem()->getDefinition() instanceof ElixirDefinition;
+
+        if ($isElixir) {
+            $sellPrice = $sellPrice * $character->getLevel();
+        }
+
+        if ($isElixir && $data->getQuantity() > 1) {
+            $data->setQuantity($data->getQuantity() - 1);
+        } else {
+            $this->entityManager->remove($data->getItem());
+            $this->entityManager->remove($data);
+        }
 
         $character->addGold($sellPrice);
 

@@ -37,7 +37,6 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
         'helmet'     => ['damage' => 0, 'crit' => 1, 'health' => 4],
         'armour'     => ['damage' => 0, 'crit' => 0, 'health' => 6],
         'boots'      => ['damage' => 0, 'crit' => 2, 'health' => 2],
-        'elixir'     => ['damage' => 1, 'crit' => 1, 'health' => 3],
         'ring_left'  => ['damage' => 1, 'crit' => 2, 'health' => 1],
         'ring_right' => ['damage' => 1, 'crit' => 2, 'health' => 1],
         'necklace'   => ['damage' => 0, 'crit' => 3, 'health' => 2],
@@ -51,7 +50,6 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
         'helmet'     => ['damage' => 0, 'crit' => 0, 'health' => 5],
         'armour'     => ['damage' => 0, 'crit' => 0, 'health' => 8],
         'boots'      => ['damage' => 0, 'crit' => 1, 'health' => 3],
-        'elixir'     => ['damage' => 0, 'crit' => 0, 'health' => 5],
         'ring_left'  => ['damage' => 1, 'crit' => 1, 'health' => 0],
         'ring_right' => ['damage' => 1, 'crit' => 1, 'health' => 0],
         'necklace'   => ['damage' => 0, 'crit' => 2, 'health' => 0],
@@ -62,7 +60,11 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
 
     protected function defaults(): array
     {
-        $slot = self::faker()->randomElement(ItemSlotEnum::cases());
+        $equipmentSlots = array_filter(
+            ItemSlotEnum::cases(),
+            fn(ItemSlotEnum $singleSlotEnum) => $singleSlotEnum !== ItemSlotEnum::Elixir,
+        );
+        $slot = self::faker()->randomElement($equipmentSlots);
         $rarity = self::faker()->randomElement(ItemRarityEnum::cases());
         $level = self::faker()->numberBetween(1, 20);
 

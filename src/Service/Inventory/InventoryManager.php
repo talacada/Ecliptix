@@ -4,28 +4,36 @@ namespace App\Service\Inventory;
 
 use App\Entity\Character\Character;
 use App\Entity\Character\CharacterInventory;
+use App\Entity\Item\ElixirDefinition;
 use App\Entity\Item\InventoryContainerEnum;
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Character\CharacterInventoryRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
 class InventoryManager
 {
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
         private CharacterInventoryRepository $characterInventoryRepository,
     ){ }
-
-    //WITHOUT elixir logic NOW
 
     /**
      * @throws Exception
      */
     public function addToBackpack(Character $character, Item $item): CharacterInventory
     {
+        $definition = $item->getDefinition();
+
+        if ($definition instanceof ElixirDefinition) {
+            $existingElixirStack = $this->characterInventoryRepository->getByDefinition($character, $definition->getId());
+
+            if ($existingElixirStack !== null) {
+                $existingElixirStack->setQuantity($existingElixirStack->getQuantity() + 1);
+                return $existingElixirStack;
+            }
+        }
+
         if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
             throw new Exception("Not enough backpack space");
         }
