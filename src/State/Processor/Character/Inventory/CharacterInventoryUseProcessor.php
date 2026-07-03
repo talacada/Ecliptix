@@ -9,11 +9,11 @@ use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
 use App\Repository\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
+use App\Service\Elixir\ElixirCleanUp;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Exception;
-use Psr\Log\LoggerInterface;
+use Exception;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CharacterInventoryUseProcessor implements ProcessorInterface
@@ -23,10 +23,12 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         private LoggedInCharacter $loggedInCharacter,
         private ActiveElixirRepository $activeElixirRepository,
         private EntityManagerInterface $entityManager,
+        private ElixirCleanUp $elixirCleanUp,
     ) {}
 
     /**
      * @throws DateMalformedStringException
+     * @throws Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
@@ -38,8 +40,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
 
         if ($data->getCharacter() !== $character) throw new NotFoundHttpException("Not found");
 
-        //TODO make
-        //$this->elixirCleaUp->removeExpired($character);
+        $this->elixirCleanUp->removeExpired($character);
 
         $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);
 
