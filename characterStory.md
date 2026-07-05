@@ -68,7 +68,7 @@ final class ItemDefinitionStory
 
 ---
 
-## 3. CharacterStory (nová)
+## ---------------- 3. CharacterStory (nová)
 
 Plain služba, žádné `extends Story`, žádné `#[AsFixture]`.
 
