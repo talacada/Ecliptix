@@ -3,6 +3,7 @@
 namespace App\Repository\Item;
 
 use App\Entity\Item\ItemDefinition;
+use App\Entity\Item\ItemSlotEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -52,6 +53,18 @@ class ItemDefinitionRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
 	}
+
+    public function findRandomBySlot(ItemSlotEnum $slot): ?ItemDefinition
+    {
+        return $this->createQueryBuilder('d')
+            ->where('d.desiredSlot = :slot')
+            ->andWhere('d INSTANCE OF App\Entity\Item\ItemDefinition')
+            ->setParameter('slot', $slot)
+            ->orderBy('RAND()')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
     public function findRandomElixir(): ?ItemDefinition
     {
