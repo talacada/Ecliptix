@@ -3,6 +3,7 @@
 namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
@@ -23,6 +24,16 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
     operations: [
         new GetCollection(
             uriTemplate: 'character/inventory',
+            provider: CharacterInventoryProvider::class
+        ),
+        new Get(
+            uriTemplate: 'character/inventory/{inventoryId}',
+            uriVariables: [
+                'inventoryId' => new Link(
+                    fromClass: CharacterInventory::class,
+                    identifiers: ['id']
+                )
+            ],
             provider: CharacterInventoryProvider::class
         ),
         new Post (
