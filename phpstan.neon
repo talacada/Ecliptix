@@ -1,0 +1,7 @@
+parameters:
+    level: 5
+    phpVersion: 80400
+    paths:
+        - src/
+        - tests/
+    tmpDir: .phpstan-cache

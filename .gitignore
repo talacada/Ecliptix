@@ -35,3 +35,8 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+###> friendsofphp/php-cs-fixer & phpstan ###
+/.php-cs-fixer.cache
+/.phpstan-cache/
+###< friendsofphp/php-cs-fixer & phpstan ###

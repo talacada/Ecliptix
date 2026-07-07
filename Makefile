@@ -24,6 +24,18 @@ bash:
 cc:
 	php bin/console cache:clear
 
+.PHONY: cs
+cs:
+	php vendor/bin/php-cs-fixer fix --dry-run --diff --ansi
+
+.PHONY: cs-fix
+cs-fix:
+	php vendor/bin/php-cs-fixer fix --ansi
+
+.PHONY: stan
+stan:
+	php vendor/bin/phpstan analyse --ansi --memory-limit=512M
+
 .PHONY: test
 test:
 	php bin/phpunit
