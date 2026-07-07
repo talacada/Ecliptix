@@ -6,11 +6,15 @@ namespace App\State\Provider\Character\Elixir;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Entity\ActiveElixir;
 use App\Repository\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @implements ProviderInterface<ActiveElixir>
+ */
 class ActiveElixirProvider implements ProviderInterface
 {
     public function __construct(
@@ -20,7 +24,7 @@ class ActiveElixirProvider implements ProviderInterface
     ) {
     }
 
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ActiveElixir
     {
         $character = $this->loggedInCharacter->getCharacter();
 

@@ -13,6 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * @implements ProcessorInterface<RegisterInput, Character>
+ */
 readonly class RegisterProcessor implements ProcessorInterface
 {
     public function __construct(
@@ -28,8 +31,6 @@ readonly class RegisterProcessor implements ProcessorInterface
         array $uriVariables = [],
         array $context = [],
     ): Character {
-        assert($data instanceof RegisterInput);
-
         if (null !== $this->characterRepository->findOneBy(['email' => $data->getEmail()])) {
             throw new UnprocessableEntityHttpException('Email already registered');
         }

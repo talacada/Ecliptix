@@ -11,6 +11,9 @@ use App\Entity\Item\ElixirDefinition;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * @implements ProcessorInterface<CharacterInventory, null>
+ */
 class CharacterInventorySellProcessor implements ProcessorInterface
 {
     public function __construct(
@@ -22,10 +25,8 @@ class CharacterInventorySellProcessor implements ProcessorInterface
     /**
      * @throws \Exception
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): null
     {
-        assert($data instanceof CharacterInventory);
-
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getCharacter() !== $character) {
@@ -51,5 +52,7 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         $character->addGold($sellPrice);
 
         $this->entityManager->flush();
+
+        return null;
     }
 }

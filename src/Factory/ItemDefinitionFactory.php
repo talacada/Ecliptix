@@ -42,6 +42,7 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
         'ring_left' => ['damage' => 1, 'crit' => 2, 'health' => 1],
         'ring_right' => ['damage' => 1, 'crit' => 2, 'health' => 1],
         'necklace' => ['damage' => 0, 'crit' => 3, 'health' => 2],
+        'elixir' => ['damage' => 0, 'crit' => 0, 'health' => 0],
     ];
 
     /**
@@ -55,6 +56,7 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
         'ring_left' => ['damage' => 1, 'crit' => 1, 'health' => 0],
         'ring_right' => ['damage' => 1, 'crit' => 1, 'health' => 0],
         'necklace' => ['damage' => 0, 'crit' => 2, 'health' => 0],
+        'elixir' => ['damage' => 0, 'crit' => 0, 'health' => 0],
     ];
 
     /** Gold price = totalStats × this multiplier. Diamond price ≈ 1% of gold price. */

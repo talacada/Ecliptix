@@ -10,6 +10,9 @@ use App\Entity\Character\Character;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
 
+/**
+ * @implements ProviderInterface<Character>
+ */
 class MineCharacterProvider implements ProviderInterface
 {
     public function __construct(

@@ -58,8 +58,8 @@ class RotationGenerator
         for ($i = 0; $i < self::OFFER_QUOTA['equipment']; ++$i) {
             $itemDefinition = $this->itemDefinitionRepository->findRandomByLevel($character->getLevel());
             $offer = new ShopOffer($shopRotation, $itemDefinition);
-            $offer->setGoldPrice($itemDefinition->getBaseGoldPrice() * (mt_rand(80, 120) / 100)); // Random price between 80% and 120% of base price
-            $offer->setDiamondPrice($itemDefinition->getBaseDiamondPrice() * (mt_rand(80, 120) / 100));
+            $offer->setGoldPrice($itemDefinition->getBaseGoldPrice() * (int) (mt_rand(80, 120) / 100)); // Random price between 80% and 120% of base price
+            $offer->setDiamondPrice($itemDefinition->getBaseDiamondPrice() * (int) (mt_rand(80, 120) / 100));
             [$bonusDamage, $bonusCrit, $bonusHealth] = $this->itemFactory->rollBonusStats($itemDefinition);
             $offer->setBonusDamage($bonusDamage);
             $offer->setBonusCrit($bonusCrit);

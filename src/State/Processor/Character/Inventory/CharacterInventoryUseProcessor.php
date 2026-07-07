@@ -15,6 +15,9 @@ use App\Service\Elixir\ElixirCleanUp;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @implements ProcessorInterface<CharacterInventory, ActiveElixir>
+ */
 class CharacterInventoryUseProcessor implements ProcessorInterface
 {
     public function __construct(
@@ -29,9 +32,8 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
      * @throws \DateMalformedStringException
      * @throws \Exception
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ActiveElixir
     {
-        assert($data instanceof CharacterInventory);
         $character = $this->loggedInCharacter->getCharacter();
         $definition = $data->getItem()->getDefinition();
 
@@ -55,13 +57,13 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
             $existingSameElixir->setExpiresAt(
                 $existingSameElixir->getExpiresAt()->modify('+'.$definition->getDurationSeconds().' seconds'),
             );
+            $activeElixir = $existingSameElixir;
         } else {
             $activeElixir = new ActiveElixir();
             $activeElixir->setCharacter($character);
             $activeElixir->setItemDefinition($definition);
             $activeElixir->setExpiresAt(new \DateTimeImmutable()->modify(
-                '+'.$definition->getDurationSeconds().' seconds',
-            ),
+                '+'.$definition->getDurationSeconds().' seconds', ),
             );
             $this->entityManager->persist($activeElixir);
         }
@@ -74,5 +76,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         }
 
         $this->entityManager->flush();
+
+        return $activeElixir;
     }
 }

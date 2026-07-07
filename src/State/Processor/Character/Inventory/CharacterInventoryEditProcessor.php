@@ -14,6 +14,9 @@ use App\Security\LoggedInCharacter;
 use App\Service\Inventory\InventoryManager;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * @implements ProcessorInterface<CharacterInventory, CharacterInventory>
+ */
 class CharacterInventoryEditProcessor implements ProcessorInterface
 {
     public function __construct(
@@ -29,8 +32,6 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): CharacterInventory
     {
-        assert($data instanceof CharacterInventory);
-
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getPosition() > $character->getBackpackCapacity()) {

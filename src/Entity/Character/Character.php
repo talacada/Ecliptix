@@ -328,8 +328,15 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         // Not needed since we use hashed passwords
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getUserIdentifier(): string
     {
+        if ('' === $this->email) {
+            throw new \LogicException('User email cant be empty.');
+        }
+
         return $this->email;
     }
 

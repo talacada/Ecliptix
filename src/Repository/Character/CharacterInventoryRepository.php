@@ -45,7 +45,10 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function getUnequippedItems(Character $character)
+    /**
+     * @return array<int, CharacterInventory>
+     */
+    public function getUnequippedItems(Character $character): array
     {
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
@@ -57,6 +60,9 @@ class CharacterInventoryRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return array<int, CharacterInventory>
+     */
     public function getEquippedItems(Character $character): array
     {
         return $this->createQueryBuilder('ci')
@@ -79,6 +85,9 @@ class CharacterInventoryRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return array<int, int>
+     */
     public function getAllTakenPositions(Character $character): array
     {
         return $this->createQueryBuilder('ci')

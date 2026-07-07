@@ -22,6 +22,9 @@ class ItemFactory
         return $item;
     }
 
+    /**
+     * @return array{0: int, 1: int, 2: int}
+     */
     public function rollBonusStats(ItemDefinition $definition): array
     {
         $bonusDamage = 0;

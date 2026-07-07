@@ -10,6 +10,9 @@ use App\Entity\Shop\ShopOffer;
 use App\Repository\Shop\ShopOfferRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @implements ProviderInterface<ShopOffer>
+ */
 class ShopOfferProvider implements ProviderInterface
 {
     private ShopOfferRepository $shopOfferRepository;

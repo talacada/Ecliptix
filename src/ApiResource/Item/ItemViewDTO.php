@@ -40,7 +40,7 @@ class ItemViewDTO
     ) {
     }
 
-    public function buildDtoOnlyWithBonusStats(ItemDefinition $definition, $bonusDamage, $bonusCrit, $bonusHealth): void
+    public function buildDtoOnlyWithBonusStats(ItemDefinition $definition, int $bonusDamage, int $bonusCrit, int $bonusHealth): void
     {
         $this->setName($definition->getName());
         $this->setDescription($definition->getDescription());

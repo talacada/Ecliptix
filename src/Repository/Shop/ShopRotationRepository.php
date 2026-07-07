@@ -43,6 +43,9 @@ class ShopRotationRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    /**
+     * @return ShopRotation[]
+     */
     public function findAllExpired(Character $character)
     {
         return $this->createQueryBuilder('shopRotation')
@@ -55,6 +58,9 @@ class ShopRotationRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return ShopRotation[]
+     */
     public function findAllByCharacter(Character $character)
     {
         return $this->createQueryBuilder('shopRotation')

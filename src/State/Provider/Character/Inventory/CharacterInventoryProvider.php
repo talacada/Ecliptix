@@ -7,10 +7,14 @@ namespace App\State\Provider\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\Item\ItemViewDTO;
+use App\Entity\Character\CharacterInventory;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @implements ProviderInterface<CharacterInventory>
+ */
 class CharacterInventoryProvider implements ProviderInterface
 {
     public function __construct(
@@ -20,9 +24,11 @@ class CharacterInventoryProvider implements ProviderInterface
     }
 
     /**
+     * @return CharacterInventory[]|CharacterInventory
+     *
      * @throws \Exception
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CharacterInventory|array
     {
         $character = $this->loggedInCharacter->getCharacter();
 

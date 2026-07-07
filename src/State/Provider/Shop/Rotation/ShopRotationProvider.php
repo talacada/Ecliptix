@@ -6,9 +6,13 @@ namespace App\State\Provider\Shop\Rotation;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Entity\Shop\ShopRotation;
 use App\Repository\Shop\ShopRotationRepository;
 use App\Security\LoggedInCharacter;
 
+/**
+ * @implements ProviderInterface<ShopRotation>
+ */
 class ShopRotationProvider implements ProviderInterface
 {
     public function __construct(
@@ -17,6 +21,9 @@ class ShopRotationProvider implements ProviderInterface
     ) {
     }
 
+    /**
+     * @return ShopRotation[]
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
         $character = $this->loggedInCharacter->getCharacter();

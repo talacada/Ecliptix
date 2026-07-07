@@ -42,7 +42,7 @@ class ShopOfferRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function getById(mixed $id)
+    public function getById(mixed $id): ?ShopOffer
     {
         return $this->createQueryBuilder('sf')
             ->andWhere('sf.id = :id')

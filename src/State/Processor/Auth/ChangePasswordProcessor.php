@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\State\Processor\Auth;
 
+use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\ChangePasswordInput;
 use App\Entity\Character\Character;
@@ -12,6 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * @implements ProcessorInterface<ChangePasswordInput, Character>
+ */
 class ChangePasswordProcessor implements ProcessorInterface
 {
     public function __construct(
@@ -21,10 +25,8 @@ class ChangePasswordProcessor implements ProcessorInterface
     ) {
     }
 
-    public function process(mixed $data, $operation, $uriVariables = [], $context = []): Character
+    public function process(mixed $data, Operation $operation, $uriVariables = [], $context = []): Character
     {
-        assert($data instanceof ChangePasswordInput);
-
         $character = $this->loggedInCharacter->getCharacter();
 
         if (!$this->passwordHasher->isPasswordValid($character, $data->getOldPassword())) {

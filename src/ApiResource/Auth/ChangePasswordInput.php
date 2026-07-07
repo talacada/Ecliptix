@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ChangePasswordInput
 {
-    public function __construct($oldPassword, $newPassword)
+    public function __construct(string $oldPassword, string $newPassword)
     {
         $this->oldPassword = $oldPassword;
         $this->newPassword = $newPassword;

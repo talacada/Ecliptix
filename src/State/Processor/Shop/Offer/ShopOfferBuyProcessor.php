@@ -16,6 +16,9 @@ use App\Service\Item\ItemFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @implements ProcessorInterface<ShopOffer, ItemViewDTO>
+ */
 class ShopOfferBuyProcessor implements ProcessorInterface
 {
     public function __construct(
@@ -32,7 +35,6 @@ class ShopOfferBuyProcessor implements ProcessorInterface
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ItemViewDTO
     {
-        assert($data instanceof ShopOffer);
         $character = $this->loggedInCharacter->getCharacter();
 
         $rotation = $data->getRotation();
