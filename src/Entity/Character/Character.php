@@ -301,12 +301,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function removeShopRotation(ShopRotation $shopRotation): static
     {
-        if ($this->shopRotations->removeElement($shopRotation)) {
-            // set the owning side to null (unless already changed)
-            if ($shopRotation->getCharacter() === $this) {
-                $shopRotation->setCharacter(null);
-            }
-        }
+        $this->shopRotations->removeElement($shopRotation);
 
         return $this;
     }

@@ -40,6 +40,12 @@ stan:
 test:
 	php bin/phpunit
 
+.PHONY: ready
+ready:
+	@make -s cs
+	@make -s stan
+	@make -s test
+
 .PHONY: db-create
 db-create:
 	php bin/console doctrine:database:create --if-not-exists

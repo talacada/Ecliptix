@@ -126,12 +126,7 @@ class ShopRotation
 
     public function removeShopOffer(ShopOffer $shopOffer): static
     {
-        if ($this->shopOffers->removeElement($shopOffer)) {
-            // set the owning side to null (unless already changed)
-            if ($shopOffer->getRotation() === $this) {
-                $shopOffer->setRotation(null);
-            }
-        }
+        $this->shopOffers->removeElement($shopOffer);
 
         return $this;
     }

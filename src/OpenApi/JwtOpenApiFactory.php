@@ -25,7 +25,7 @@ readonly class JwtOpenApiFactory implements OpenApiFactoryInterface
     {
         $openApi = ($this->decorated)($context);
 
-        $components = $openApi->getComponents() ?? new \ArrayObject();
+        $components = $openApi->getComponents();
         $securitySchemes = $components->getSecuritySchemes() ?? new \ArrayObject();
 
         // Add JWT Bearer security scheme
