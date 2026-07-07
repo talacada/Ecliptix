@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Item;
 
 use App\Entity\Item\ElixirDefinition;
@@ -33,6 +35,7 @@ class ItemViewDTO
     private ?int $percentageBonus = null;
     #[Groups([self::READ_GROUP])]
     private ?int $durationSeconds = null;
+
     public function __construct(
     ) {
     }
@@ -48,13 +51,14 @@ class ItemViewDTO
             $this->setPercentageBonus($definition->getPercentageBonus());
             $this->setDurationSeconds($definition->getDurationSeconds());
         } else {
-            //We want to have these stats NULL not 0 soo it's not displayed in DTO
+            // We want to have these stats NULL not 0 soo it's not displayed in DTO
             $this->setRequiredLevel($definition->getRequiredLevel());
             $this->setDamage($definition->getBaseDamage() + $bonusDamage);
             $this->setCrit($definition->getBaseCrit() + $bonusCrit);
             $this->setHealth($definition->getBaseHealth() + $bonusHealth);
         }
     }
+
     public function buildDtoFromItem(Item $item): void
     {
         $definition = $item->getDefinition();
@@ -182,6 +186,4 @@ class ItemViewDTO
     {
         $this->durationSeconds = $durationSeconds;
     }
-
-
 }

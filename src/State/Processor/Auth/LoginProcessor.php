@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Processor\Auth;
 
 use ApiPlatform\Metadata\Operation;
@@ -24,7 +26,7 @@ readonly class LoginProcessor implements ProcessorInterface
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
-        array $context = []
+        array $context = [],
     ): LoginOutput {
         assert($data instanceof LoginInput);
 

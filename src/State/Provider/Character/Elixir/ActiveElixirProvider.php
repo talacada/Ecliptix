@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Provider\Character\Elixir;
 
 use ApiPlatform\Metadata\Operation;
@@ -14,8 +16,10 @@ class ActiveElixirProvider implements ProviderInterface
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private ActiveElixirRepository $activeElixirRepository,
-        private ElixirCleanUp $elixirCleanUp
-    ){}
+        private ElixirCleanUp $elixirCleanUp,
+    ) {
+    }
+
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         $character = $this->loggedInCharacter->getCharacter();
@@ -24,8 +28,12 @@ class ActiveElixirProvider implements ProviderInterface
 
         $elixir = $this->activeElixirRepository->findOneById($uriVariables['id']);
 
-        if (!$elixir) throw new NotFoundHttpException('Not Found');
-        if ($elixir->getCharacter() !== $character) throw new NotFoundHttpException('Not Found');
+        if (!$elixir) {
+            throw new NotFoundHttpException('Not Found');
+        }
+        if ($elixir->getCharacter() !== $character) {
+            throw new NotFoundHttpException('Not Found');
+        }
 
         return $elixir;
     }

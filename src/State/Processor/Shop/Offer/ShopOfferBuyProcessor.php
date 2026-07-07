@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Processor\Shop\Offer;
 
 use ApiPlatform\Metadata\Operation;
@@ -11,9 +13,7 @@ use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Inventory\InventoryManager;
 use App\Service\Item\ItemFactory;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ShopOfferBuyProcessor implements ProcessorInterface
@@ -23,11 +23,12 @@ class ShopOfferBuyProcessor implements ProcessorInterface
         private CharacterInventoryRepository $characterInventoryRepository,
         private ItemFactory $itemFactory,
         private InventoryManager $inventoryManager,
-        private EntityManagerInterface $entityManager
-    ){ }
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ItemViewDTO
     {
@@ -40,23 +41,22 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new NotFoundHttpException('Rotation not found');
         }
 
-        if ($rotation->getValidUntil() < new DateTime() || $rotation->getValidFrom() > new DateTime()) {
-            throw new Exception("Rotation not available");
+        if ($rotation->getValidUntil() < new \DateTime() || $rotation->getValidFrom() > new \DateTime()) {
+            throw new \Exception('Rotation not available');
         }
 
         if ($data->getGoldPrice() > $character->getGold()) {
-            throw new Exception("Not enough gold");
+            throw new \Exception('Not enough gold');
         }
 
         if ($data->getDiamondPrice() > $character->getDiamonds()) {
-            throw new Exception("Not enough diamonds");
+            throw new \Exception('Not enough diamonds');
         }
 
         $isElixir = $data->getItemDefinition() instanceof ElixirDefinition;
 
-
         if (!$isElixir && $character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
-            throw new Exception("Not enough backpack space");
+            throw new \Exception('Not enough backpack space');
         }
 
         $item = $this->itemFactory->createFromDefinitionAndOffer($data->getItemDefinition(), $data);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Item;
 
 use App\Entity\Shop\ShopRotation;
@@ -26,7 +28,7 @@ class ItemDefinition
 
     #[ORM\Column(length: 255)]
     #[Groups(ShopRotation::READ_GROUP)]
-    private string $name = "";
+    private string $name = '';
 
     #[ORM\Column]
     #[Groups(ShopRotation::READ_GROUP)]
@@ -55,7 +57,7 @@ class ItemDefinition
     private Collection $items;
 
     #[ORM\Column(enumType: ItemRarityEnum::class)]
-    //TODO je opravdu potřeba?
+    // TODO je opravdu potřeba?
     #[Groups(ShopRotation::READ_GROUP)]
     private ItemRarityEnum $rarity;
 

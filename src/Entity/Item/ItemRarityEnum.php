@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Item;
 
-enum ItemRarityEnum: string {
+enum ItemRarityEnum: string
+{
     case Common = 'common';
     case Rare = 'rare';
     case Epic = 'epic';

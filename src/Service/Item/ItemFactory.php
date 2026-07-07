@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Item;
 
 use App\Entity\Item\Item;
@@ -8,7 +10,6 @@ use App\Entity\Shop\ShopOffer;
 
 class ItemFactory
 {
-
     public function createFromDefinitionAndOffer(ItemDefinition $definition, ShopOffer $offer): Item
     {
         $item = new Item();
@@ -17,6 +18,7 @@ class ItemFactory
         $item->setBonusDamage($offer->getBonusDamage());
         $item->setBonusCrit($offer->getBonusCrit());
         $item->setBonusHealth($offer->getBonusHealth());
+
         return $item;
     }
 
@@ -28,20 +30,19 @@ class ItemFactory
 
         if ($definition->getBaseDamage() > 0) {
             $randPercent = (mt_rand(-20, 20) / 100);
-            $bonusDamage = (int)round($definition->getBaseDamage() * $randPercent);
+            $bonusDamage = (int) round($definition->getBaseDamage() * $randPercent);
         }
 
         if ($definition->getBaseCrit() > 0) {
             $randPercent = (mt_rand(-20, 20) / 100);
-            $bonusCrit = (int)round($definition->getBaseCrit() * $randPercent);
+            $bonusCrit = (int) round($definition->getBaseCrit() * $randPercent);
         }
 
         if ($definition->getBaseHealth() > 0) {
             $randPercent = (mt_rand(-20, 20) / 100);
-            $bonusHealth = (int)round($definition->getBaseHealth() * $randPercent);
+            $bonusHealth = (int) round($definition->getBaseHealth() * $randPercent);
         }
 
         return [$bonusDamage, $bonusCrit, $bonusHealth];
     }
-
 }

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Item;
 
 use Doctrine\ORM\Mapping as ORM;
+
 #[ORM\Entity]
 class ElixirDefinition extends ItemDefinition
 {

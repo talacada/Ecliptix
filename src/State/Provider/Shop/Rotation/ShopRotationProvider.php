@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Provider\Shop\Rotation;
 
 use ApiPlatform\Metadata\Operation;
@@ -12,7 +14,8 @@ class ShopRotationProvider implements ProviderInterface
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private ShopRotationRepository $shopRotationRepository,
-    ) { }
+    ) {
+    }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {

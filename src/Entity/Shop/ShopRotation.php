@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Shop;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Character\Character;
 use App\Repository\Shop\ShopRotationRepository;
 use App\State\Provider\Shop\Rotation\ShopRotationProvider;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             uriTemplate: 'rotation',
-            provider: ShopRotationProvider::class
+            provider: ShopRotationProvider::class,
         ),
     ],
     routePrefix: 'shop/',
@@ -39,11 +39,11 @@ class ShopRotation
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     #[Groups(self::READ_GROUP)]
-    private DateTimeImmutable $validFrom;
+    private \DateTimeImmutable $validFrom;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     #[Groups(self::READ_GROUP)]
-    private DateTimeImmutable $validUntil;
+    private \DateTimeImmutable $validUntil;
 
     #[ORM\ManyToOne(inversedBy: 'shopRotations')]
     #[ORM\JoinColumn(nullable: false)]
@@ -60,7 +60,6 @@ class ShopRotation
     #[Groups(self::READ_GROUP)]
     private Collection $shopOffers;
 
-
     public function __construct()
     {
         $this->shopOffers = new ArrayCollection();
@@ -71,24 +70,24 @@ class ShopRotation
         return $this->id;
     }
 
-    public function getValidFrom(): DateTimeImmutable
+    public function getValidFrom(): \DateTimeImmutable
     {
         return $this->validFrom;
     }
 
-    public function setValidFrom(DateTimeImmutable $validFrom): static
+    public function setValidFrom(\DateTimeImmutable $validFrom): static
     {
         $this->validFrom = $validFrom;
 
         return $this;
     }
 
-    public function getValidUntil(): DateTimeImmutable
+    public function getValidUntil(): \DateTimeImmutable
     {
         return $this->validUntil;
     }
 
-    public function setValidUntil(DateTimeImmutable $validUntil): static
+    public function setValidUntil(\DateTimeImmutable $validUntil): static
     {
         $this->validUntil = $validUntil;
 

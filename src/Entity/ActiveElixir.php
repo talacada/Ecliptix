@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
-use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Character\Character;
 use App\Entity\Item\ItemDefinition;
 use App\Repository\ActiveElixirRepository;
 use App\State\Processor\Character\Elixir\ActiveElixirRemoveProcessor;
 use App\State\Provider\Character\Elixir\ActiveElixirProvider;
-use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -19,10 +19,9 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ApiResource(
     operations: [
-        new Get (
+        new Get(
             uriTemplate: '{id}',
             provider: ActiveElixirProvider::class,
-
         ),
         new Delete(
             uriTemplate: '{id}',
@@ -54,34 +53,34 @@ class ActiveElixir
     private ?ItemDefinition $itemDefinition = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private DateTimeImmutable $expiresAt;
+    private \DateTimeImmutable $expiresAt;
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
-    #[serializedName("name")]
+    #[SerializedName('name')]
     public function getElixirName(): string
     {
         return $this->itemDefinition->getName();
     }
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
-    #[serializedName("description")]
+    #[SerializedName('description')]
     public function getElixirDescription(): string
     {
         return $this->itemDefinition->getDescription();
     }
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
-    #[serializedName("percentageBonus")]
+    #[SerializedName('percentageBonus')]
     public function getElixirPercentageBonus(): int
     {
         return $this->itemDefinition->getPercentageBonus();
     }
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
-    #[serializedName("remainingSeconds")]
+    #[SerializedName('remainingSeconds')]
     public function getRemainingSeconds(): int
     {
-        return $this->expiresAt->getTimestamp() - new DateTimeImmutable()->getTimestamp();
+        return $this->expiresAt->getTimestamp() - new \DateTimeImmutable()->getTimestamp();
     }
 
     public function getId(): ?int
@@ -113,12 +112,12 @@ class ActiveElixir
         return $this;
     }
 
-    public function getExpiresAt(): ?DateTimeImmutable
+    public function getExpiresAt(): ?\DateTimeImmutable
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(DateTimeImmutable $expiresAt): static
+    public function setExpiresAt(\DateTimeImmutable $expiresAt): static
     {
         $this->expiresAt = $expiresAt;
 

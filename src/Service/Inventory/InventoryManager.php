@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Inventory;
 
 use App\Entity\Character\Character;
@@ -9,17 +11,16 @@ use App\Entity\Item\InventoryContainerEnum;
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Character\CharacterInventoryRepository;
-use Exception;
 
 class InventoryManager
 {
-
     public function __construct(
         private CharacterInventoryRepository $characterInventoryRepository,
-    ){ }
+    ) {
+    }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function addToBackpack(Character $character, Item $item): CharacterInventory
     {
@@ -28,14 +29,15 @@ class InventoryManager
         if ($definition instanceof ElixirDefinition) {
             $existingElixirStack = $this->characterInventoryRepository->getByDefinition($character, $definition->getId());
 
-            if ($existingElixirStack !== null) {
+            if (null !== $existingElixirStack) {
                 $existingElixirStack->setQuantity($existingElixirStack->getQuantity() + 1);
+
                 return $existingElixirStack;
             }
         }
 
         if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
-            throw new Exception("Not enough backpack space");
+            throw new \Exception('Not enough backpack space');
         }
 
         $characterInventory = new CharacterInventory();
@@ -48,7 +50,7 @@ class InventoryManager
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function getFirstAvailablePosition(Character $character): int
     {
@@ -56,15 +58,15 @@ class InventoryManager
         $allTakenPositions = $this->characterInventoryRepository->getAllTakenPositions($character);
         $firstAvailablePosition = 0;
 
-        for ($i = 1; $i <= $capacity; $i++) {
+        for ($i = 1; $i <= $capacity; ++$i) {
             if (!in_array($i, $allTakenPositions)) {
                 $firstAvailablePosition = $i;
                 break;
             }
         }
 
-        if ($firstAvailablePosition === 0) {
-            throw new Exception("Not enough backpack space");
+        if (0 === $firstAvailablePosition) {
+            throw new \Exception('Not enough backpack space');
         }
 
         return $firstAvailablePosition;
@@ -74,7 +76,6 @@ class InventoryManager
     {
         $allEquippedItems = $this->characterInventoryRepository->getEquippedItems($character);
 
-        return array_find($allEquippedItems, fn($equippedItem) => $slot === $equippedItem->getItem()->getDefinition()->getDesiredSlot());
-
+        return array_find($allEquippedItems, fn ($equippedItem) => $slot === $equippedItem->getItem()->getDefinition()->getDesiredSlot());
     }
 }

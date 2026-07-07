@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Processor\Auth;
 
 use ApiPlatform\Metadata\Operation;
@@ -14,7 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 readonly class RegisterProcessor implements ProcessorInterface
 {
     public function __construct(
-        private EntityManagerInterface      $entityManager,
+        private EntityManagerInterface $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
         private CharacterRepository $characterRepository,
     ) {
@@ -24,17 +26,16 @@ readonly class RegisterProcessor implements ProcessorInterface
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
-        array $context = []
+        array $context = [],
     ): Character {
-
         assert($data instanceof RegisterInput);
 
-        if ($this->characterRepository->findOneBy(['email' => $data->getEmail()]) !== null) {
-            throw new UnprocessableEntityHttpException("Email already registered");
+        if (null !== $this->characterRepository->findOneBy(['email' => $data->getEmail()])) {
+            throw new UnprocessableEntityHttpException('Email already registered');
         }
 
-        if ($this->characterRepository->findOneBy(['username' => $data->getUsername()]) !== null) {
-            throw new UnprocessableEntityHttpException("Username already registered");
+        if (null !== $this->characterRepository->findOneBy(['username' => $data->getUsername()])) {
+            throw new UnprocessableEntityHttpException('Username already registered');
         }
 
         $character = new Character();
@@ -42,12 +43,13 @@ readonly class RegisterProcessor implements ProcessorInterface
         $character->setEmail($data->getEmail());
         $character->setUsername($data->getUsername());
         $character->setPasswordHash(
-            $this->passwordHasher->hashPassword($character, $data->getPassword())
+            $this->passwordHasher->hashPassword($character, $data->getPassword()),
         );
 
         $entityManager = $this->entityManager;
         $entityManager->persist($character);
         $entityManager->flush();
+
         return $character;
     }
 }

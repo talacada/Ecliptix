@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Shop;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -19,7 +21,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             uriTemplate: '{id}',
             provider: ShopOfferProvider::class,
             processor: ShopOfferBuyProcessor::class,
-        )
+        ),
     ],
     routePrefix: 'shop/offer/',
     security: 'is_granted("ROLE_USER")',
@@ -73,6 +75,7 @@ class ShopOffer
 
         return $dto;
     }
+
     public function getId(): ?int
     {
         return $this->id;

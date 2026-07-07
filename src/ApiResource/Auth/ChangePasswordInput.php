@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Auth;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ChangePasswordInput
 {
-    public function __construct($oldPassword, $newPassword) {
+    public function __construct($oldPassword, $newPassword)
+    {
         $this->oldPassword = $oldPassword;
         $this->newPassword = $newPassword;
     }
@@ -27,6 +30,4 @@ class ChangePasswordInput
     {
         return $this->newPassword;
     }
-
-
 }

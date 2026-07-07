@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Provider\Character;
 
 use ApiPlatform\Metadata\Operation;
@@ -12,19 +14,13 @@ class MineCharacterProvider implements ProviderInterface
 {
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
-        private ElixirCleanUp $elixirCleanUp
+        private ElixirCleanUp $elixirCleanUp,
     ) {
     }
 
-    /**
-     * @param Operation $operation
-     * @param array $uriVariables
-     * @param array $context
-     * @return Character
-     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Character
     {
-        $character =  $this->loggedInCharacter->getCharacter();
+        $character = $this->loggedInCharacter->getCharacter();
 
         $this->elixirCleanUp->removeExpired($character);
 

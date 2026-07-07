@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Character;
 
 use App\Entity\Character\Character;
@@ -64,7 +66,7 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('character', $character)
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 
     public function getInventoryById(int $inventoryId): ?CharacterInventory
@@ -74,7 +76,7 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('inventoryId', $inventoryId)
             ->getQuery()
             ->getOneOrNullResult()
-            ;
+        ;
     }
 
     public function getAllTakenPositions(Character $character): array
@@ -87,7 +89,7 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('character', $character)
             ->getQuery()
             ->getSingleColumnResult()
-            ;
+        ;
     }
 
     public function getOneByPosition(Character $character, int $position): ?CharacterInventory
@@ -101,7 +103,7 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('position', $position)
             ->getQuery()
             ->getOneOrNullResult()
-            ;
+        ;
     }
 
     public function getByDefinition(Character $character, int $definitionId): ?CharacterInventory
