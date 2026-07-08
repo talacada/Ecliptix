@@ -71,7 +71,7 @@ class ShopOffer
     public function getViewItem(): ItemViewDTO
     {
         $dto = new ItemViewDTO();
-        $dto->buildDtoOnlyWithBonusStats($this->ItemDefinition, $this->bonusDamage, $this->bonusCrit, $this->bonusHealth);
+        $dto->buildDtoOnlyWithBonusStats($this->ItemDefinition, $this->bonusDamage ?? 0, $this->bonusCrit ?? 0, $this->bonusHealth ?? 0);
 
         return $dto;
     }

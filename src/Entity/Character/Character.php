@@ -360,12 +360,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function removeCharacterInventory(CharacterInventory $characterInventory): static
     {
-        if ($this->characterInventories->removeElement($characterInventory)) {
-            // set the owning side to null (unless already changed)
-            if ($characterInventory->getCharacter() === $this) {
-                $characterInventory->setCharacter(null);
-            }
-        }
+        $this->characterInventories->removeElement($characterInventory);
 
         return $this;
     }

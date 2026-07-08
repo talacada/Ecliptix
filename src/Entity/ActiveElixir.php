@@ -50,7 +50,7 @@ class ActiveElixir
 
     #[ORM\ManyToOne(targetEntity: ItemDefinition::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?ItemDefinition $itemDefinition = null;
+    private ItemDefinition $itemDefinition;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $expiresAt;
@@ -64,14 +64,14 @@ class ActiveElixir
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[SerializedName('description')]
-    public function getElixirDescription(): string
+    public function getElixirDescription(): ?string
     {
         return $this->itemDefinition->getDescription();
     }
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[SerializedName('percentageBonus')]
-    public function getElixirPercentageBonus(): int
+    public function getElixirPercentageBonus(): ?int
     {
         return $this->itemDefinition->getPercentageBonus();
     }
@@ -100,19 +100,19 @@ class ActiveElixir
         return $this;
     }
 
-    public function getItemDefinition(): ?ItemDefinition
+    public function getItemDefinition(): ItemDefinition
     {
         return $this->itemDefinition;
     }
 
-    public function setItemDefinition(?ItemDefinition $itemDefinition): static
+    public function setItemDefinition(ItemDefinition $itemDefinition): static
     {
         $this->itemDefinition = $itemDefinition;
 
         return $this;
     }
 
-    public function getExpiresAt(): ?\DateTimeImmutable
+    public function getExpiresAt(): \DateTimeImmutable
     {
         return $this->expiresAt;
     }

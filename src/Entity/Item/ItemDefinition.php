@@ -204,7 +204,7 @@ class ItemDefinition
         return $this;
     }
 
-    public function getDesiredSlot(): ?ItemSlotEnum
+    public function getDesiredSlot(): ItemSlotEnum
     {
         return $this->desiredSlot;
     }
@@ -216,7 +216,7 @@ class ItemDefinition
         return $this;
     }
 
-    public function getBaseGoldPrice(): ?int
+    public function getBaseGoldPrice(): int
     {
         return $this->baseGoldPrice;
     }
@@ -228,7 +228,7 @@ class ItemDefinition
         return $this;
     }
 
-    public function getBaseDiamondPrice(): ?int
+    public function getBaseDiamondPrice(): int
     {
         return $this->baseDiamondPrice;
     }

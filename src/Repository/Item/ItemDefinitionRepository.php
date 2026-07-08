@@ -43,7 +43,7 @@ class ItemDefinitionRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function findRandomByLevel(int $level): ?ItemDefinition
+    public function findRandomByLevel(int $level): ItemDefinition
     {
         return $this->createQueryBuilder('i')
             ->andWhere('i.requiredLevel >= :level - 2')
@@ -52,7 +52,7 @@ class ItemDefinitionRepository extends ServiceEntityRepository
             ->orderBy('RAND()')
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
 

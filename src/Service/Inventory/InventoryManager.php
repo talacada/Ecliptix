@@ -27,7 +27,7 @@ class InventoryManager
         $definition = $item->getDefinition();
 
         if ($definition instanceof ElixirDefinition) {
-            $existingElixirStack = $this->characterInventoryRepository->getByDefinition($character, $definition->getId());
+            $existingElixirStack = $this->characterInventoryRepository->getByDefinition($character, $definition->getId() ?? 0);
 
             if (null !== $existingElixirStack) {
                 $existingElixirStack->setQuantity($existingElixirStack->getQuantity() + 1);

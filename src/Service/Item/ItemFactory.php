@@ -15,9 +15,9 @@ class ItemFactory
         $item = new Item();
 
         $item->setDefinition($definition);
-        $item->setBonusDamage($offer->getBonusDamage());
-        $item->setBonusCrit($offer->getBonusCrit());
-        $item->setBonusHealth($offer->getBonusHealth());
+        $item->setBonusDamage($offer->getBonusDamage() ?? 0);
+        $item->setBonusCrit($offer->getBonusCrit() ?? 0);
+        $item->setBonusHealth($offer->getBonusHealth() ?? 0);
 
         return $item;
     }

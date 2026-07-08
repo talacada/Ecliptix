@@ -134,7 +134,7 @@ class CharacterInventory
         $this->itemViewDTO = $itemViewDTO;
     }
 
-    public function setCharacter(?Character $character): static
+    public function setCharacter(Character $character): static
     {
         $this->character = $character;
 
