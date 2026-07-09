@@ -30,7 +30,13 @@ class ActiveElixirProvider implements ProviderInterface
 
         $this->elixirCleanUp->removeExpired($character);
 
-        $elixir = $this->activeElixirRepository->findOneById($uriVariables['id']);
+        $rawId = $uriVariables['id'];
+
+        if (!is_numeric($rawId)) {
+            throw new NotFoundHttpException('Invalid inventory ID.');
+        }
+
+        $elixir = $this->activeElixirRepository->findOneById((int) $rawId);
 
         if (!$elixir) {
             throw new NotFoundHttpException('Not Found');

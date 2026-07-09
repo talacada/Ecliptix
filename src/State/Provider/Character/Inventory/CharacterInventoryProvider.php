@@ -33,8 +33,11 @@ class CharacterInventoryProvider implements ProviderInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         if (isset($uriVariables['inventoryId'])) {
-            $inventoryId = $uriVariables['inventoryId'];
-            $inventorySlot = $this->characterInventoryRepository->getInventoryById($inventoryId);
+            $rawId = $uriVariables['inventoryId'];
+            if (!is_numeric($rawId)) {
+                throw new NotFoundHttpException('Invalid inventory ID.');
+            }
+            $inventorySlot = $this->characterInventoryRepository->getInventoryById((int)$rawId);
 
             if (null === $inventorySlot) {
                 throw new NotFoundHttpException('Inventory slot not found.');
