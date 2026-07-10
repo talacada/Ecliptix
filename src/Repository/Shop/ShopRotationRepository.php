@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Shop;
 
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -42,28 +43,36 @@ class ShopRotationRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-	public function findAllExpired(Character $character)
-	{
+    /**
+     * @return ShopRotation[]
+     */
+    public function findAllExpired(Character $character): array
+    {
+        /** @var ShopRotation[] */
         return $this->createQueryBuilder('shopRotation')
             ->andWhere('shopRotation.validUntil <= :now')
             ->andWhere('shopRotation.character = :character')
-            ->setParameter('now', new DateTimeImmutable('today'))
+            ->setParameter('now', new \DateTimeImmutable('today'))
             ->setParameter('character', $character)
             ->getQuery()
-            ->execute()
+            ->getResult()
         ;
-	}
+    }
 
-    public function findAllByCharacter(Character $character)
+    /**
+     * @return ShopRotation[]
+     */
+    public function findAllByCharacter(Character $character): array
     {
+        /** @var ShopRotation[] */
         return $this->createQueryBuilder('shopRotation')
             ->andWhere('shopRotation.character = :character')
             ->andWhere('shopRotation.validUntil > :now')
-            ->andWhere('shopRotation.validFrom <= :now') //TODO this is inconsistent
+            ->andWhere('shopRotation.validFrom <= :now') // TODO this is inconsistent
             ->setParameter('character', $character)
-            ->setParameter('now', new DateTimeImmutable('today'))
+            ->setParameter('now', new \DateTimeImmutable('today'))
             ->getQuery()
-            ->execute()
+            ->getResult()
         ;
     }
 }

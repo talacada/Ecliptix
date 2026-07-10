@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
 use App\Entity\Character\Character;
@@ -10,7 +12,8 @@ class LoggedInCharacter
 {
     public function __construct(
         private Security $security,
-    ) {}
+    ) {
+    }
 
     public function getCharacter(): Character
     {

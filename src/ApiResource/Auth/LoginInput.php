@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Auth;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,7 +12,7 @@ readonly class LoginInput
         #[Assert\NotBlank]
         #[Assert\Email]
         private string $email,
-        
+
         #[Assert\NotBlank]
         private string $password,
     ) {

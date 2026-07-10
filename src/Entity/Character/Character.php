@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -19,11 +21,9 @@ use App\State\Processor\Auth\ChangePasswordProcessor;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -34,16 +34,16 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Post(
             uriTemplate: '/auth/register',
-            openapi: new Operation (
-                tags: ["Auth"]
+            openapi: new Operation(
+                tags: ['Auth'],
             ),
             input: RegisterInput::class,
-            processor: RegisterProcessor::class
+            processor: RegisterProcessor::class,
         ),
         new Post(
             uriTemplate: '/auth/login',
-            openapi: new Operation (
-                tags: ["Auth"]
+            openapi: new Operation(
+                tags: ['Auth'],
             ),
             normalizationContext: ['groups' => ['login:read']],
             input: LoginInput::class,
@@ -59,12 +59,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(
             uriTemplate: '/character/{id}',
             requirements: ['id' => '\d+'],
-            security: 'is_granted("ROLE_USER")'
+            security: 'is_granted("ROLE_USER")',
         ),
         new Get(
             uriTemplate: '/character',
             security: 'is_granted("ROLE_USER")',
-            provider: MineCharacterProvider::class
+            provider: MineCharacterProvider::class,
         ),
         new Patch(
             uriTemplate: '/character',
@@ -72,7 +72,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'is_granted("ROLE_USER")',
             validationContext: ['groups' => ['Default', self::UPDATE_GROUP]],
             read: true,
-            provider: MineCharacterProvider::class
+            provider: MineCharacterProvider::class,
         ),
         new Delete(
             uriTemplate: '/character',
@@ -111,7 +111,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $diamonds ;
+    private int $diamonds;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
@@ -119,7 +119,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
-    private int $experience ;
+    private int $experience;
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
@@ -276,7 +276,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function getShopRotations(): Collection
     {
         $allRotations = $this->shopRotations;
-        $now = new DateTimeImmutable();
+        $now = new \DateTimeImmutable();
 
         $showRotation = new ArrayCollection();
 
@@ -301,15 +301,11 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function removeShopRotation(ShopRotation $shopRotation): static
     {
-        if ($this->shopRotations->removeElement($shopRotation)) {
-            // set the owning side to null (unless already changed)
-            if ($shopRotation->getCharacter() === $this) {
-                $shopRotation->setCharacter(null);
-            }
-        }
+        $this->shopRotations->removeElement($shopRotation);
 
         return $this;
     }
+
     public function getPassword(): ?string
     {
         return $this->passwordHash;
@@ -332,8 +328,15 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         // Not needed since we use hashed passwords
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getUserIdentifier(): string
     {
+        if ('' === $this->email) {
+            throw new \LogicException('User email cant be empty.');
+        }
+
         return $this->email;
     }
 
@@ -357,12 +360,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function removeCharacterInventory(CharacterInventory $characterInventory): static
     {
-        if ($this->characterInventories->removeElement($characterInventory)) {
-            // set the owning side to null (unless already changed)
-            if ($characterInventory->getCharacter() === $this) {
-                $characterInventory->setCharacter(null);
-            }
-        }
+        $this->characterInventories->removeElement($characterInventory);
 
         return $this;
     }
@@ -382,7 +380,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractGold(int $amount): void
     {
         if ($amount > $this->gold) {
-            throw new InvalidArgumentException('Not enough gold');
+            throw new \InvalidArgumentException('Not enough gold');
         }
         $this->gold -= $amount;
     }
@@ -390,7 +388,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractDiamonds(int $amount): void
     {
         if ($amount > $this->diamonds) {
-            throw new InvalidArgumentException('Not enough diamonds');
+            throw new \InvalidArgumentException('Not enough diamonds');
         }
         $this->diamonds -= $amount;
     }

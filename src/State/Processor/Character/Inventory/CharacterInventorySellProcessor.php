@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Processor\Character\Inventory;
 
 use ApiPlatform\Metadata\Operation;
@@ -8,31 +10,31 @@ use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
+/**
+ * @implements ProcessorInterface<CharacterInventory, null>
+ */
 class CharacterInventorySellProcessor implements ProcessorInterface
 {
-
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): null
     {
-        assert($data instanceof CharacterInventory);
-
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getCharacter() !== $character) {
-            throw new Exception("Inventory slot does not belong to the logged-in character.");
+            throw new \Exception('Inventory slot does not belong to the logged-in character.');
         }
 
         $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();
-        $sellPrice = (int)($defaultGoldBuyPrice * 0.75);
+        $sellPrice = (int) ($defaultGoldBuyPrice * 0.75);
 
         $isElixir = $data->getItem()->getDefinition() instanceof ElixirDefinition;
 
@@ -50,5 +52,7 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         $character->addGold($sellPrice);
 
         $this->entityManager->flush();
+
+        return null;
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\ActiveElixir;
 use App\Entity\Character\Character;
-use App\Entity\Item\ItemDefinition;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -42,8 +43,9 @@ class ActiveElixirRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-	public function findByName(string $name, Character $character): ?ActiveElixir
-	{
+    public function findByName(string $name, Character $character): ?ActiveElixir
+    {
+        /** @var ActiveElixir|null */
         return $this->createQueryBuilder('a')
             ->innerJoin('a.itemDefinition', 'd')
             ->andWhere('a.character = :character')
@@ -52,10 +54,11 @@ class ActiveElixirRepository extends ServiceEntityRepository
             ->setParameter('name', $name)
             ->getQuery()
             ->getOneOrNullResult();
-	}
+    }
 
     public function findOneById(int $id): ?ActiveElixir
     {
+        /** @var ActiveElixir|null */
         return $this->createQueryBuilder('a')
             ->andWhere('a.id = :id')
             ->setParameter('id', $id)

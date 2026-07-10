@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Shop;
 
 use App\Entity\Shop\ShopOffer;
@@ -40,8 +42,10 @@ class ShopOfferRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function getById(mixed $id)
+
+    public function getById(mixed $id): ?ShopOffer
     {
+        /** @var ShopOffer */
         return $this->createQueryBuilder('sf')
             ->andWhere('sf.id = :id')
             ->setParameter('id', $id)

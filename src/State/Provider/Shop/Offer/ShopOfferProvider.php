@@ -1,7 +1,8 @@
 <?php
 
-namespace App\State\Provider\Shop\Offer;
+declare(strict_types=1);
 
+namespace App\State\Provider\Shop\Offer;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
@@ -9,12 +10,15 @@ use App\Entity\Shop\ShopOffer;
 use App\Repository\Shop\ShopOfferRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @implements ProviderInterface<ShopOffer>
+ */
 class ShopOfferProvider implements ProviderInterface
 {
     private ShopOfferRepository $shopOfferRepository;
 
     public function __construct(
-        ShopOfferRepository $shopOfferRepository
+        ShopOfferRepository $shopOfferRepository,
     ) {
         $this->shopOfferRepository = $shopOfferRepository;
     }
@@ -23,8 +27,8 @@ class ShopOfferProvider implements ProviderInterface
     {
         $offer = $this->shopOfferRepository->getById($uriVariables['id']);
 
-        if ($offer === null) {
-            throw new NotFoundHttpException("Shop offer not found");
+        if (null === $offer) {
+            throw new NotFoundHttpException('Shop offer not found');
         }
 
         return $offer;

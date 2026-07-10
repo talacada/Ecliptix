@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Shop;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -19,7 +21,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
             uriTemplate: '{id}',
             provider: ShopOfferProvider::class,
             processor: ShopOfferBuyProcessor::class,
-        )
+        ),
     ],
     routePrefix: 'shop/offer/',
     security: 'is_granted("ROLE_USER")',
@@ -69,10 +71,11 @@ class ShopOffer
     public function getViewItem(): ItemViewDTO
     {
         $dto = new ItemViewDTO();
-        $dto->buildDtoOnlyWithBonusStats($this->ItemDefinition, $this->bonusDamage, $this->bonusCrit, $this->bonusHealth);
+        $dto->buildDtoOnlyWithBonusStats($this->ItemDefinition, $this->bonusDamage ?? 0, $this->bonusCrit ?? 0, $this->bonusHealth ?? 0);
 
         return $dto;
     }
+
     public function getId(): ?int
     {
         return $this->id;

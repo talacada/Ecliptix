@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory;
 
 use App\Entity\Item\ItemDefinition;
@@ -19,12 +21,12 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
 
     /**
      * Rarity multiplier applied to all stats and prices.
-     * Common=1.0, Rare=2.5, Epic=5.0, Legendary=10.0
+     * Common=1.0, Rare=2.5, Epic=5.0, Legendary=10.0.
      */
     private const array RARITY_MULTIPLIER = [
-        'common'    => 1.0,
-        'rare'      => 2.5,
-        'epic'      => 5.0,
+        'common' => 1.0,
+        'rare' => 2.5,
+        'epic' => 5.0,
         'legendary' => 10.0,
     ];
 
@@ -33,26 +35,28 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
      * Think of this as "stat budget" per level — tune these to your game design.
      */
     private const array STAT_SCALING = [
-        'weapon'     => ['damage' => 3, 'crit' => 1, 'health' => 0],
-        'helmet'     => ['damage' => 0, 'crit' => 1, 'health' => 4],
-        'armour'     => ['damage' => 0, 'crit' => 0, 'health' => 6],
-        'boots'      => ['damage' => 0, 'crit' => 2, 'health' => 2],
-        'ring_left'  => ['damage' => 1, 'crit' => 2, 'health' => 1],
+        'weapon' => ['damage' => 3, 'crit' => 1, 'health' => 0],
+        'helmet' => ['damage' => 0, 'crit' => 1, 'health' => 4],
+        'armour' => ['damage' => 0, 'crit' => 0, 'health' => 6],
+        'boots' => ['damage' => 0, 'crit' => 2, 'health' => 2],
+        'ring_left' => ['damage' => 1, 'crit' => 2, 'health' => 1],
         'ring_right' => ['damage' => 1, 'crit' => 2, 'health' => 1],
-        'necklace'   => ['damage' => 0, 'crit' => 3, 'health' => 2],
+        'necklace' => ['damage' => 0, 'crit' => 3, 'health' => 2],
+        'elixir' => ['damage' => 0, 'crit' => 0, 'health' => 0],
     ];
 
     /**
      * Base value added before scaling — ensures even level 1 items have nonzero stats.
      */
     private const array STAT_BASE = [
-        'weapon'     => ['damage' => 5, 'crit' => 0, 'health' => 0],
-        'helmet'     => ['damage' => 0, 'crit' => 0, 'health' => 5],
-        'armour'     => ['damage' => 0, 'crit' => 0, 'health' => 8],
-        'boots'      => ['damage' => 0, 'crit' => 1, 'health' => 3],
-        'ring_left'  => ['damage' => 1, 'crit' => 1, 'health' => 0],
+        'weapon' => ['damage' => 5, 'crit' => 0, 'health' => 0],
+        'helmet' => ['damage' => 0, 'crit' => 0, 'health' => 5],
+        'armour' => ['damage' => 0, 'crit' => 0, 'health' => 8],
+        'boots' => ['damage' => 0, 'crit' => 1, 'health' => 3],
+        'ring_left' => ['damage' => 1, 'crit' => 1, 'health' => 0],
         'ring_right' => ['damage' => 1, 'crit' => 1, 'health' => 0],
-        'necklace'   => ['damage' => 0, 'crit' => 2, 'health' => 0],
+        'necklace' => ['damage' => 0, 'crit' => 2, 'health' => 0],
+        'elixir' => ['damage' => 0, 'crit' => 0, 'health' => 0],
     ];
 
     /** Gold price = totalStats × this multiplier. Diamond price ≈ 1% of gold price. */
@@ -62,11 +66,14 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
     {
         $equipmentSlots = array_filter(
             ItemSlotEnum::cases(),
-            fn(ItemSlotEnum $singleSlotEnum) => $singleSlotEnum !== ItemSlotEnum::Elixir,
+            fn (ItemSlotEnum $singleSlotEnum) => ItemSlotEnum::Elixir !== $singleSlotEnum,
         );
         $slot = self::faker()->randomElement($equipmentSlots);
         $rarity = self::faker()->randomElement(ItemRarityEnum::cases());
         $level = self::faker()->numberBetween(1, 20);
+
+        assert($slot instanceof ItemSlotEnum);
+        assert($rarity instanceof ItemRarityEnum);
 
         [$damage, $crit, $health] = self::calculateStats($slot, $rarity, $level);
         [$goldPrice, $diamondPrice] = self::calculatePrice($damage, $crit, $health, $rarity);
@@ -121,9 +128,9 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
         $goldPrice = (int) round($totalStats * self::GOLD_PER_STAT_POINT);
 
         $diamondPrice = match ($rarity) {
-            ItemRarityEnum::Epic     => (int) round($goldPrice * 0.01),
+            ItemRarityEnum::Epic => (int) round($goldPrice * 0.01),
             ItemRarityEnum::Legendary => (int) round($goldPrice * 0.02),
-            default                   => 0,
+            default => 0,
         };
 
         return [$goldPrice, $diamondPrice];

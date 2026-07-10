@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Character;
 
 use App\Entity\Character\Character;
@@ -43,8 +45,12 @@ class CharacterInventoryRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function getUnequippedItems(Character $character)
+    /**
+     * @return array<int, CharacterInventory>
+     */
+    public function getUnequippedItems(Character $character): array
     {
+        /** @var array<int, CharacterInventory> */
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
             ->andWhere('ci.container = :backpackContainer')
@@ -55,8 +61,12 @@ class CharacterInventoryRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return array<int, CharacterInventory>
+     */
     public function getEquippedItems(Character $character): array
     {
+        /** @var array<int, CharacterInventory> */
         return $this->createQueryBuilder('ci')
             ->andwhere('ci.character = :character')
             ->andWhere('ci.container = :equippedContainer')
@@ -64,21 +74,26 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('character', $character)
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 
     public function getInventoryById(int $inventoryId): ?CharacterInventory
     {
+        /** @var CharacterInventory|null */
         return $this->createQueryBuilder('ci')
             ->andWhere('ci.id = :inventoryId')
             ->setParameter('inventoryId', $inventoryId)
             ->getQuery()
             ->getOneOrNullResult()
-            ;
+        ;
     }
 
+    /**
+     * @return array<int, int>
+     */
     public function getAllTakenPositions(Character $character): array
     {
+        /** @var array<int, int> */
         return $this->createQueryBuilder('ci')
             ->select('ci.position')
             ->andWhere('ci.character = :character')
@@ -87,11 +102,12 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('character', $character)
             ->getQuery()
             ->getSingleColumnResult()
-            ;
+        ;
     }
 
     public function getOneByPosition(Character $character, int $position): ?CharacterInventory
     {
+        /** @var CharacterInventory|null */
         return $this->createQueryBuilder('ci')
             ->andWhere('ci.character = :character')
             ->andWhere('ci.container = :backpackContainer')
@@ -101,11 +117,12 @@ class CharacterInventoryRepository extends ServiceEntityRepository
             ->setParameter('position', $position)
             ->getQuery()
             ->getOneOrNullResult()
-            ;
+        ;
     }
 
     public function getByDefinition(Character $character, int $definitionId): ?CharacterInventory
     {
+        /** @var CharacterInventory|null */
         return $this->createQueryBuilder('ci')
             ->join('ci.item', 'i')
             ->andWhere('ci.character = :character')

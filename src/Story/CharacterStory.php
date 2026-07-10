@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Story;
 
 use App\Entity\ActiveElixir;
@@ -12,7 +14,6 @@ use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Item\ItemDefinitionRepository;
 use App\Service\Item\ItemFactory;
 use App\Service\Shop\RotationGenerator;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -26,7 +27,8 @@ final class CharacterStory
         private RotationGenerator $rotationGenerator,
         private ItemDefinitionRepository $itemDefinitionRepository,
         private ItemFactory $itemFactory,
-    ) {}
+    ) {
+    }
 
     public function generate(): void
     {
@@ -35,16 +37,16 @@ final class CharacterStory
         $defaultChar = $this->createCharacter(
             email: 'default@gmail.com',
             password: 'Hesloheslo1',
-            username: 'default'
+            username: 'default',
         );
         $this->equipCharacter($defaultChar);
         $characters[] = $defaultChar;
 
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 2; ++$i) {
             $opponent = $this->createCharacter(
                 email: faker()->email(),
                 password: faker()->password(),
-                username: faker()->userName()
+                username: faker()->userName(),
             );
             $this->equipCharacter($opponent);
             $characters[] = $opponent;
@@ -61,9 +63,10 @@ final class CharacterStory
         $character->setEmail($email);
         $character->setUsername($username);
         $character->setPasswordHash(
-            $this->passwordHasher->hashPassword($character, $password)
+            $this->passwordHasher->hashPassword($character, $password),
         );
         $this->entityManager->persist($character);
+
         return $character;
     }
 
@@ -76,7 +79,7 @@ final class CharacterStory
         ];
         foreach ($equippedSlots as $slot) {
             $def = $this->itemDefinitionRepository->findRandomBySlot($slot);
-            if ($def === null) {
+            if (null === $def) {
                 continue;
             }
             $item = $this->createItemFromDefinition($def);
@@ -94,7 +97,7 @@ final class CharacterStory
         ];
         foreach ($backpackItems as [$slot, $position]) {
             $def = $this->itemDefinitionRepository->findRandomBySlot($slot);
-            if ($def === null) {
+            if (null === $def) {
                 continue;
             }
             $item = $this->createItemFromDefinition($def);
@@ -107,7 +110,7 @@ final class CharacterStory
         }
 
         $elixirDef = $this->itemDefinitionRepository->findRandomElixir();
-        if ($elixirDef !== null) {
+        if (null !== $elixirDef) {
             $elixirItem = new Item();
             $elixirItem->setDefinition($elixirDef);
             $elixirItem->setBonusDamage(0);
@@ -126,7 +129,7 @@ final class CharacterStory
             $active->setCharacter($character);
             $active->setItemDefinition($elixirDef);
             $active->setExpiresAt(
-                (new DateTimeImmutable())->modify('+' . $elixirDef->getDurationSeconds() . ' seconds')
+                (new \DateTimeImmutable())->modify('+'.$elixirDef->getDurationSeconds().' seconds'),
             );
             $this->entityManager->persist($active);
         }
@@ -143,6 +146,7 @@ final class CharacterStory
         $item->setBonusCrit($bc);
         $item->setBonusHealth($bh);
         $this->entityManager->persist($item);
+
         return $item;
     }
 }

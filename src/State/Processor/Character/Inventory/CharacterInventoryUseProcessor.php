@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Processor\Character\Inventory;
 
 use ApiPlatform\Metadata\Operation;
@@ -10,55 +12,58 @@ use App\Entity\Item\ElixirDefinition;
 use App\Repository\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
-use DateMalformedStringException;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @implements ProcessorInterface<CharacterInventory, ActiveElixir>
+ */
 class CharacterInventoryUseProcessor implements ProcessorInterface
 {
-
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private ActiveElixirRepository $activeElixirRepository,
         private EntityManagerInterface $entityManager,
         private ElixirCleanUp $elixirCleanUp,
-    ) {}
+    ) {
+    }
 
     /**
-     * @throws DateMalformedStringException
-     * @throws Exception
+     * @throws \DateMalformedStringException
+     * @throws \Exception
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ActiveElixir
     {
-        assert($data instanceof CharacterInventory);
         $character = $this->loggedInCharacter->getCharacter();
         $definition = $data->getItem()->getDefinition();
 
-        if (!$definition instanceof ElixirDefinition) throw new Exception("Can use activate only elixirs");
+        if (!$definition instanceof ElixirDefinition) {
+            throw new \Exception('Can use activate only elixirs');
+        }
 
-        if ($data->getCharacter() !== $character) throw new NotFoundHttpException("Not found");
+        if ($data->getCharacter() !== $character) {
+            throw new NotFoundHttpException('Not found');
+        }
 
         $this->elixirCleanUp->removeExpired($character);
 
         $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);
 
-        if ($existingSameElixir === null && count($character->getActiveElixirs()) >= 3) {
-            throw new Exception("Cant have more than 3 elixirs activated");
+        if (null === $existingSameElixir && count($character->getActiveElixirs()) >= 3) {
+            throw new \Exception('Cant have more than 3 elixirs activated');
         }
 
-        if ($existingSameElixir !== null) {
+        if (null !== $existingSameElixir) {
             $existingSameElixir->setExpiresAt(
-                $existingSameElixir->getExpiresAt()->modify('+' . $definition->getDurationSeconds() . ' seconds')
+                $existingSameElixir->getExpiresAt()->modify('+'.$definition->getDurationSeconds().' seconds'),
             );
+            $activeElixir = $existingSameElixir;
         } else {
             $activeElixir = new ActiveElixir();
             $activeElixir->setCharacter($character);
             $activeElixir->setItemDefinition($definition);
-            $activeElixir->setExpiresAt(new DateTimeImmutable()->modify(
-                    '+' . $definition->getDurationSeconds() . ' seconds'
-                )
+            $activeElixir->setExpiresAt(new \DateTimeImmutable()->modify(
+                '+'.$definition->getDurationSeconds().' seconds', ),
             );
             $this->entityManager->persist($activeElixir);
         }
@@ -71,5 +76,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         }
 
         $this->entityManager->flush();
+
+        return $activeElixir;
     }
 }

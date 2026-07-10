@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -24,55 +26,55 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
     operations: [
         new GetCollection(
             uriTemplate: 'character/inventory',
-            provider: CharacterInventoryProvider::class
+            provider: CharacterInventoryProvider::class,
         ),
         new Get(
             uriTemplate: 'character/inventory/{inventoryId}',
             uriVariables: [
                 'inventoryId' => new Link(
                     fromClass: CharacterInventory::class,
-                    identifiers: ['id']
-                )
+                    identifiers: ['id'],
+                ),
             ],
-            provider: CharacterInventoryProvider::class
+            provider: CharacterInventoryProvider::class,
         ),
-        new Post (
+        new Post(
             uriTemplate: 'character/inventory/{inventoryId}/sell',
-            //This is paring unknown uri variable to specific class and property
+            // This is paring unknown uri variable to specific class and property
             uriVariables: [
                 'inventoryId' => new Link(
                     fromClass: CharacterInventory::class,
-                    identifiers: ['id']
-                )
+                    identifiers: ['id'],
+                ),
             ],
             deserialize: false,
             provider: CharacterInventoryProvider::class,
-            processor: CharacterInventorySellProcessor::class
+            processor: CharacterInventorySellProcessor::class,
         ),
-        new Patch (
+        new Patch(
             uriTemplate: 'character/inventory/{inventoryId}',
             uriVariables: [
                 'inventoryId' => new Link(
                     fromClass: CharacterInventory::class,
-                    identifiers: ['id']
-                )
+                    identifiers: ['id'],
+                ),
             ],
             denormalizationContext: ['groups' => [self::WRITE_GROUP]],
             provider: CharacterInventoryProvider::class,
-            processor: CharacterInventoryEditProcessor::class
+            processor: CharacterInventoryEditProcessor::class,
         ),
-        new Post (
+        new Post(
             uriTemplate: 'character/inventory/{inventoryId}/use',
             uriVariables: [
                 'inventoryId' => new Link(
                     fromClass: CharacterInventory::class,
-                    identifiers: ['id']
-                )
+                    identifiers: ['id'],
+                ),
             ],
             deserialize: false,
             provider: CharacterInventoryProvider::class,
-            processor: CharacterInventoryUseProcessor::class
-        )
+            processor: CharacterInventoryUseProcessor::class,
+        ),
     ],
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
     security: 'is_granted("ROLE_USER")',
@@ -132,7 +134,7 @@ class CharacterInventory
         $this->itemViewDTO = $itemViewDTO;
     }
 
-    public function setCharacter(?Character $character): static
+    public function setCharacter(Character $character): static
     {
         $this->character = $character;
 
@@ -182,6 +184,4 @@ class CharacterInventory
     {
         $this->position = $position;
     }
-
-
 }
