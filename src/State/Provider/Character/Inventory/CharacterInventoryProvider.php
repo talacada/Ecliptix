@@ -37,7 +37,7 @@ class CharacterInventoryProvider implements ProviderInterface
             if (!is_numeric($rawId)) {
                 throw new NotFoundHttpException('Invalid inventory ID.');
             }
-            $inventorySlot = $this->characterInventoryRepository->getInventoryById((int)$rawId);
+            $inventorySlot = $this->characterInventoryRepository->getInventoryById((int) $rawId);
 
             if (null === $inventorySlot) {
                 throw new NotFoundHttpException('Inventory slot not found.');

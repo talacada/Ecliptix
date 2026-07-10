@@ -30,7 +30,11 @@ final class ElixirDefinitionFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         $type = self::faker()->randomElement(ElixirTypeEnum::cases());
+        /** @var array{days: int, bonus: int} $variant */
         $variant = self::faker()->randomElement(self::VARIANTS);
+
+        assert($type instanceof ElixirTypeEnum);
+
         $durationSeconds = $variant['days'] * 86400;
         $price = self::calculatePrice($variant['bonus'], $durationSeconds);
 

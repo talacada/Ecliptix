@@ -45,6 +45,7 @@ class ActiveElixirRepository extends ServiceEntityRepository
     //    }
     public function findByName(string $name, Character $character): ?ActiveElixir
     {
+        /** @var ActiveElixir|null */
         return $this->createQueryBuilder('a')
             ->innerJoin('a.itemDefinition', 'd')
             ->andWhere('a.character = :character')
@@ -57,6 +58,7 @@ class ActiveElixirRepository extends ServiceEntityRepository
 
     public function findOneById(int $id): ?ActiveElixir
     {
+        /** @var ActiveElixir|null */
         return $this->createQueryBuilder('a')
             ->andWhere('a.id = :id')
             ->setParameter('id', $id)

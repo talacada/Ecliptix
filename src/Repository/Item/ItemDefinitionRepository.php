@@ -45,6 +45,7 @@ class ItemDefinitionRepository extends ServiceEntityRepository
     //    }
     public function findRandomByLevel(int $level): ItemDefinition
     {
+        /** @var ItemDefinition */
         return $this->createQueryBuilder('i')
             ->andWhere('i.requiredLevel >= :level - 2')
             ->andWhere('i.requiredLevel <= :level + 2')
@@ -58,6 +59,7 @@ class ItemDefinitionRepository extends ServiceEntityRepository
 
     public function findRandomBySlot(ItemSlotEnum $slot): ?ItemDefinition
     {
+        /** @var ItemDefinition|null */
         return $this->createQueryBuilder('d')
             ->where('d.desiredSlot = :slot')
             ->andWhere('d INSTANCE OF App\Entity\Item\ItemDefinition')
@@ -70,6 +72,7 @@ class ItemDefinitionRepository extends ServiceEntityRepository
 
     public function findRandomElixir(): ?ItemDefinition
     {
+        /** @var ItemDefinition|null */
         return $this->createQueryBuilder('i')
             ->andWhere('i INSTANCE OF App\Entity\Item\ElixirDefinition')
             ->orderBy('RAND()')

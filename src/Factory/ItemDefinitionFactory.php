@@ -72,6 +72,9 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
         $rarity = self::faker()->randomElement(ItemRarityEnum::cases());
         $level = self::faker()->numberBetween(1, 20);
 
+        assert($slot instanceof ItemSlotEnum);
+        assert($rarity instanceof ItemRarityEnum);
+
         [$damage, $crit, $health] = self::calculateStats($slot, $rarity, $level);
         [$goldPrice, $diamondPrice] = self::calculatePrice($damage, $crit, $health, $rarity);
 
