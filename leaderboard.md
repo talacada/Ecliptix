@@ -62,7 +62,7 @@ Když frontend pošle `?rank=50`, vrátí se stránka, na které se nachází ra
 | Soubor | Typ | Popis |
 |---|---|---|
 | migrace | nová | `prestige_points INT DEFAULT 0 NOT NULL` |
-| `src/Entity/Character/Character.php` | změna | + pole `$prestigePoints` |
+| `src/Entity/Character/Character.php` | změna | + pole `$prestigePoints` (jen field, žádná nová operace) |
 | `src/ApiResource/Leaderboard/LeaderboardEntry.php` | nový | DTO položky: `rank` + `character` |
 | `src/ApiResource/Leaderboard/LeaderboardResponse.php` | nový | DTO odpovědi: `items[]` + paginace metadata |
 | `src/Repository/Character/CharacterRepository.php` | změna | + `findForLeaderboard()`, `countForLeaderboard()` |
@@ -153,13 +153,30 @@ class LeaderboardEntry
 DTO používá `public` property místo getterů/setterů — Symfony Serializer s nimi pracuje přímo (property access). Pro readonly DTO je to idiomatičtější a míň kódu. V projektu už tenhle pattern je u `LoginOutput`.
 `─────────────────────────────────────────────────────────────`
 
-### Krok 4: LeaderboardResponse DTO (obal odpovědi)
+### Krok 4: LeaderboardResponse DTO (API Resource)
+
+Tohle je samostatný API resource, ne operace na Characteru. Má vlastní `#[ApiResource]` a vystavuje `/leaderboard` endpoint.
 
 ```php
 namespace App\ApiResource\Leaderboard;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\Entity\Character\Character;
+use App\State\Provider\Leaderboard\LeaderboardProvider;
 use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/leaderboard',
+            security: 'is_granted("ROLE_USER")',
+            provider: LeaderboardProvider::class,
+            normalizationContext: ['groups' => [self::LEADERBOARD_READ, Character::READ_GROUP]],
+            paginationEnabled: false,
+        ),
+    ],
+)]
 class LeaderboardResponse
 {
     public const string LEADERBOARD_READ = 'leaderboard:read';
@@ -193,7 +210,7 @@ class LeaderboardResponse
 ```
 
 `★ Insight ─────────────────────────────────────────────────`
-Dva DTO místo jednoho — `LeaderboardEntry` je jedna položka (rank + character), `LeaderboardResponse` je celá odpověď včetně paginace. Proč? Protože `output` na GetCollection operaci musí odpovídat tomu, co provider reálně vrací. Když provider vrací strukturu `{page, totalPages, totalItems, items[]}`, musí to sedět s `output` třídou — jinak Serializer neví, jak to serializovat.
+Proč samostatný `#[ApiResource]` a ne operace na Characteru? Protože LeaderboardResponse je plnohodnotný API endpoint — má vlastní URI, vlastní provider, vlastní serializační skupiny. Character entita o něm nemusí vědět. API Platform resource ≠ entita — resource je "co vystavuju ven" a může to být klidně DTO bez vlastní databázové tabulky.
 `─────────────────────────────────────────────────────────────`
 
 ### Krok 5: Provider
@@ -231,7 +248,7 @@ class LeaderboardProvider implements ProviderInterface
     ) {
     }
 
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): LeaderboardResponse
     {
         $request = $this->requestStack->getMainRequest();
         $page = max(1, (int) ($request?->query->get('page', 1)));
@@ -279,25 +296,6 @@ class LeaderboardProvider implements ProviderInterface
 
 `★ Insight ─────────────────────────────────────────────────`
 Provider vrací `LeaderboardResponse` DTO, ne `PaginatorInterface`. API Platform nepřidá svoje hydra pagination metadata (`hydra:totalItems` atd.), ale frontend dostane `totalPages`/`totalItems`/`page` jako standardní JSON pole uvnitř odpovědi. Pro infinite scroll je to perfektně použitelné a vyhneme se implementaci `PaginatorInterface` pro "nepřímou" query (kde data a count běží separátně).
-`─────────────────────────────────────────────────────────────`
-
-### Krok 6: API Platform operace
-
-Do `Character.php` přidat novou operaci:
-
-```php
-new GetCollection(
-    uriTemplate: '/leaderboard',
-    security: 'is_granted("ROLE_USER")',
-    output: LeaderboardResponse::class,
-    provider: LeaderboardProvider::class,
-    normalizationContext: ['groups' => [LeaderboardResponse::LEADERBOARD_READ, Character::READ_GROUP]],
-    paginationEnabled: false, // paginaci řešíme v provideru sami
-),
-```
-
-`★ Insight ─────────────────────────────────────────────────`
-`paginationEnabled: false` je důležité — říkáme API Platform, ať se nepokouší aplikovat vlastní Doctrine paginaci. Kdyby zůstalo `true`, platforma by se snažila modifikovat náš query builder, který ale používáme manuálně v provideru. Výsledek: konflikt dvou paginací.
 `─────────────────────────────────────────────────────────────`
 
 ## Shrnutí
