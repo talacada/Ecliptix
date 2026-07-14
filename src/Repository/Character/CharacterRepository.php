@@ -20,32 +20,12 @@ class CharacterRepository extends ServiceEntityRepository
 
     public function findForLeaderboard(?string $nameFilter, int $limit, int $offset): array
     {
-        $qb = $this->createQueryBuilder('c')
-            ->orderBy('c.prestigePoints', 'DESC')
-            ->addOrderBy('c.id', 'ASC');
-
-        if ($nameFilter !== null && $nameFilter !== '') {
-            $qb->andWhere('c.username LIKE :name')
-                ->setParameter('name', '%' . $nameFilter . '%');
-        }
-
-        return $qb->setMaxResults($limit)
-            ->setFirstResult($offset)
-            ->getQuery()
-            ->getResult();
+        //todo
     }
 
     public function countForLeaderboard(?string $nameFilter): int
     {
-        $qb = $this->createQueryBuilder('c')
-            ->select('COUNT(c.id)');
-
-        if ($nameFilter !== null && $nameFilter !== '') {
-            $qb->andWhere('c.username LIKE :name')
-                ->setParameter('name', '%' . $nameFilter . '%');
-        }
-
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        //todo
     }
 
 }

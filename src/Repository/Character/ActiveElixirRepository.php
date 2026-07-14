@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Repository;
+namespace App\Repository\Character;
 
 use App\Entity\ActiveElixir;
 use App\Entity\Character\Character;
