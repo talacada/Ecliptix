@@ -21,7 +21,27 @@ class LeaderboardProvider implements ProviderInterface
 
         $searchedName = null;
         $searchedRank = null;
-        $onPage = 1;
+        $onPage = null;
+
+        if (isset($uriVariables['page'])) {
+            $onPage = (int)$uriVariables['page'];
+        }
+        if (isset($uriVariables['name'])) {
+            $searchedName = (string)$uriVariables['name'];
+        }
+        if (isset($uriVariables['rank'])) {
+            $searchedRank = (int)$uriVariables['rank'];
+        }
+
+        if ($searchedName !== null) {
+            //todo search by name
+        }elseif ($searchedRank !== null) {
+            //todo search by rank
+        }elseif ($onPage !== null) {
+            //todo get page
+        }else {
+            //todo get own character rank and surrounding characters
+        }
 
 
     }
