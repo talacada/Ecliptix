@@ -5,7 +5,10 @@ namespace App\State\Provider\Leaderboard;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\Leaderboard\LeaderboardResponse;
+use App\Repository\Character\CharacterRepository;
+use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Security\LoggedInCharacter;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class LeaderboardProvider implements ProviderInterface
 {
@@ -14,6 +17,8 @@ class LeaderboardProvider implements ProviderInterface
 
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
+        private CharacterRepository $characterRepository,
+        private LeaderboardRepository $leaderboardRepository,
     ) { }
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): LeaderboardResponse
     {
@@ -34,7 +39,13 @@ class LeaderboardProvider implements ProviderInterface
         }
 
         if ($searchedName !== null) {
-            //todo search by name
+            $searchedCharacter = $this->characterRepository->getCharacterByName($searchedName);
+
+            if ($searchedCharacter !== null) {
+                $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
+            }else {
+                throw new ResourceNotFoundException("Character with name {$searchedName} not found");
+            }
         }elseif ($searchedRank !== null) {
             //todo search by rank
         }elseif ($onPage !== null) {

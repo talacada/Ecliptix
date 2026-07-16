@@ -18,9 +18,13 @@ class CharacterRepository extends ServiceEntityRepository
         parent::__construct($registry, Character::class);
     }
 
-    public function findForLeaderboard(?string $nameFilter, int $limit, int $offset): array
+    public function getCharacterByName(string $searchedName): ?Character
     {
-        //todo
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name = :searchedName')
+            ->setParameter('searchedName', $searchedName)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function countForLeaderboard(?string $nameFilter): int
