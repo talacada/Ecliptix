@@ -27,7 +27,7 @@ class CharacterRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function countForLeaderboard(?string $nameFilter): int
+    public function countForLeaderboard(): int
     {
         //todo
     }

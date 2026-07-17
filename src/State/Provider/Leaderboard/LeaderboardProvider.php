@@ -8,6 +8,7 @@ use App\ApiResource\Leaderboard\LeaderboardResponse;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Security\LoggedInCharacter;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class LeaderboardProvider implements ProviderInterface
@@ -19,33 +20,27 @@ class LeaderboardProvider implements ProviderInterface
         private LoggedInCharacter $loggedInCharacter,
         private CharacterRepository $characterRepository,
         private LeaderboardRepository $leaderboardRepository,
+        private RequestStack $requestStack,
     ) { }
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): LeaderboardResponse
     {
         $character = $this->loggedInCharacter->getCharacter();
 
-        $searchedName = null;
-        $searchedRank = null;
-        $onPage = null;
+        $request = $this->requestStack->getCurrentRequest();
 
-        if (isset($uriVariables['page'])) {
-            $onPage = (int)$uriVariables['page'];
-        }
-        if (isset($uriVariables['name'])) {
-            $searchedName = (string)$uriVariables['name'];
-        }
-        if (isset($uriVariables['rank'])) {
-            $searchedRank = (int)$uriVariables['rank'];
-        }
+        $searchedName = $request->query->get('name');
+        $searchedRank = $request->query->getInt('rank');
+        $onPage = $request->query->getInt('page');
 
         if ($searchedName !== null) {
             $searchedCharacter = $this->characterRepository->getCharacterByName($searchedName);
 
-            if ($searchedCharacter !== null) {
-                $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
-            }else {
+            if ($searchedCharacter === null) {
                 throw new ResourceNotFoundException("Character with name {$searchedName} not found");
             }
+
+            dd($this->leaderboardRepository->findRankOfCharacter($searchedCharacter));
+
         }elseif ($searchedRank !== null) {
             //todo search by rank
         }elseif ($onPage !== null) {
