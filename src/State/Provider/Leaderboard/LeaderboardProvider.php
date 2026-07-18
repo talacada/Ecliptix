@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 class LeaderboardProvider implements ProviderInterface
 {
 
-    const int PAGE_LIMIT = 50;
+    const int PAGE_LIMIT = 51;
 
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
@@ -33,14 +33,14 @@ class LeaderboardProvider implements ProviderInterface
         $onPage = $request->query->getInt('page');
 
         if ($searchedName !== null) {
-            $searchedCharacter = $this->characterRepository->getCharacterByName($searchedName);
+            $searchedCharacter = $this->characterRepository->getCharacterByUserName($searchedName);
 
             if ($searchedCharacter === null) {
                 throw new ResourceNotFoundException("Character with name {$searchedName} not found");
             }
-
-            dd($this->leaderboardRepository->findRankOfCharacter($searchedCharacter));
-
+            $characterRank = $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
+            $leaderboard = $this->leaderboardRepository->getLeaderboardAroundRank($characterRank, self::PAGE_LIMIT);
+            dd($characterRank, $leaderboard);
         }elseif ($searchedRank !== null) {
             //todo search by rank
         }elseif ($onPage !== null) {
