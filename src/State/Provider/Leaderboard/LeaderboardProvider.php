@@ -39,8 +39,12 @@ class LeaderboardProvider implements ProviderInterface
                 throw new ResourceNotFoundException("Character with name {$searchedName} not found");
             }
             $characterRank = $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
-            $leaderboard = $this->leaderboardRepository->getLeaderboardAroundRank($characterRank, self::PAGE_LIMIT);
-            dd($characterRank, $leaderboard);
+            $selectedCharacters = $this->leaderboardRepository->getLeaderboardAroundRank($characterRank, self::PAGE_LIMIT);
+            $entris = [];
+
+            foreach ($selectedCharacters as $selectedCharacter) {
+                $entris[] = $selectedCharacter;
+            }
         }elseif ($searchedRank !== null) {
             //todo search by rank
         }elseif ($onPage !== null) {

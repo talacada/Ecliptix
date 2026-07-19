@@ -33,7 +33,6 @@ class LeaderboardRepository extends ServiceEntityRepository
         $offset = max(0, ($rank - $half - 1));
 
         return $this->createQueryBuilder('c')
-            ->select('c.id, c.prestigePoints')
             ->orderBy('c.prestigePoints', 'DESC')
             ->addOrderBy('c.id', 'ASC')
             ->setFirstResult($offset)
