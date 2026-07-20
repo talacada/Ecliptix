@@ -20,16 +20,13 @@ class CharacterRepository extends ServiceEntityRepository
 
     public function getCharacterByUserName(string $searchedName): ?Character
     {
-        return $this->createQueryBuilder('c')
+        /** @var Character|null $result */
+        $result = $this->createQueryBuilder('c')
             ->andWhere('c.username = :searchedName')
             ->setParameter('searchedName', $searchedName)
             ->getQuery()
             ->getOneOrNullResult();
-    }
 
-    public function countForLeaderboard(): int
-    {
-        //todo
+        return $result;
     }
-
 }

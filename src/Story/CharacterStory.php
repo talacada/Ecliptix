@@ -12,6 +12,7 @@ use App\Entity\Item\Item;
 use App\Entity\Item\ItemDefinition;
 use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Item\ItemDefinitionRepository;
+use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Service\Item\ItemFactory;
 use App\Service\Shop\RotationGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,34 +28,52 @@ final class CharacterStory
         private RotationGenerator $rotationGenerator,
         private ItemDefinitionRepository $itemDefinitionRepository,
         private ItemFactory $itemFactory,
+        private LeaderboardRepository $leaderboardRepository,
     ) {
     }
 
+    private const int BATCH_SIZE = 50;
+    private const int TOTAL_CHARACTERS = 200;
+
     public function generate(): void
     {
-        $characters = [];
+        // Generate bare characters with random PP (leaderboard padding, no equipment needed)
+        for ($i = 0; $i < self::TOTAL_CHARACTERS; ++$i) {
+            $character = new Character();
+            $character->setEmail(faker()->email());
+            $character->setUsername(faker()->userName().$i);
+            $character->setPasswordHash(
+                $this->passwordHasher->hashPassword($character, faker()->password()),
+            );
+            $character->setPrestigePoints(random_int(0, 10000));
+            $this->entityManager->persist($character);
 
+            if (($i + 1) % self::BATCH_SIZE === 0) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+                gc_collect_cycles();
+            }
+        }
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+        gc_collect_cycles();
+
+        // Get PP that puts you around rank 100 (middle of the pack)
+        $midRankPp = $this->leaderboardRepository->getPrestigePointsAtRank(100);
+
+        // Default character — fully equipped, at middle rank
         $defaultChar = $this->createCharacter(
             email: 'default@gmail.com',
             password: 'Hesloheslo1',
             username: 'default',
         );
+        $defaultChar->setPrestigePoints($midRankPp);
         $this->equipCharacter($defaultChar);
-        $characters[] = $defaultChar;
+        $this->entityManager->clear();
 
-        for ($i = 0; $i < 2; ++$i) {
-            $opponent = $this->createCharacter(
-                email: faker()->email(),
-                password: faker()->password(),
-                username: faker()->userName(),
-            );
-            $this->equipCharacter($opponent);
-            $characters[] = $opponent;
-        }
-
-        foreach ($characters as $character) {
-            $this->rotationGenerator->generate($character);
-        }
+        $defaultChar = $this->entityManager->find(Character::class, $defaultChar->getId());
+        \assert($defaultChar instanceof Character);
+        $this->rotationGenerator->generate($defaultChar);
     }
 
     private function createCharacter(string $email, string $password, string $username): Character

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Leaderboard;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -21,7 +23,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
     ],
 )]
 // Other way is to put this info into ApiPlatform attribute tag OpenApi
-#[QueryParameter(key: 'page', schema: ['type' => 'integer'], description: 'Page number')]
 #[QueryParameter(key: 'name', schema: ['type' => 'string'], description: 'Character name')]
 #[QueryParameter(key: 'rank', schema: ['type' => 'integer'], description: 'Rank search')]
 class LeaderboardResponse
@@ -29,10 +30,10 @@ class LeaderboardResponse
     public const string LEADERBOARD_READ = 'leaderboard:read';
 
     #[Groups([self::LEADERBOARD_READ])]
-    public int $page;
+    public int $startRank;
 
     #[Groups([self::LEADERBOARD_READ])]
-    public int $totalPages;
+    public int $endRank;
 
     #[Groups([self::LEADERBOARD_READ])]
     public int $totalItems;
@@ -46,10 +47,10 @@ class LeaderboardResponse
     /**
      * @param LeaderboardEntry[] $items
      */
-    public function __construct(int $page, int $totalPages, int $totalItems, array $items)
+    public function __construct(int $startRank, int $endRank, int $totalItems, array $items)
     {
-        $this->page = $page;
-        $this->totalPages = $totalPages;
+        $this->startRank = $startRank;
+        $this->endRank = $endRank;
         $this->totalItems = $totalItems;
         $this->items = $items;
     }
