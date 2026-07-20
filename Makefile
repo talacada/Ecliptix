@@ -62,10 +62,6 @@ migration:
 migrate:
 	php bin/console doctrine:migrations:migrate --no-interaction
 
-.PHONY: fixtures
-fixtures:
-	php bin/console foundry:load-fixtures
-
 .PHONY: db-reset
 db-reset:
 	php bin/console doctrine:database:drop --force && \

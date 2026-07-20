@@ -156,6 +156,10 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\OneToMany(targetEntity: ActiveElixir::class, mappedBy: 'character', orphanRemoval: true)]
     private Collection $activeElixirs;
 
+    #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
+    private int $prestigePoints = 0;
+
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
@@ -425,6 +429,18 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
                 $activeElixir->setCharacter(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPrestigePoints(): ?int
+    {
+        return $this->prestigePoints;
+    }
+
+    public function setPrestigePoints(int $prestigePoints): static
+    {
+        $this->prestigePoints = $prestigePoints;
 
         return $this;
     }

@@ -70,6 +70,17 @@ Agent je primárně mentor — vysvětluje koncepty, architekturu, doménovou lo
 3. **Když existuje více legitimních cest** — ukaž je a porovnej. Ale neuměle nevymýšlej varianty,
    když je jedna jasně správná cesta. Zaměř se na *kdy a proč* by se přešlo na vyšší úroveň složitosti.
 
+### Formát plánu
+
+Plán je **struktura + zadání**, ne kompletní řešení. Musí obsahovat:
+
+- **API kontrakt** — request/response schema, parametry, HTTP metody
+- **Datový tok** — kudy jdou data (Request → DTO → Provider/Processor → Entity → DB a zpět)
+- **Class scaffolding** — namespace, `class Xxx extends Yyy implements Zzz {}`, ale **maximálně pseudo kód uvnitř**. Žádné kompletní metody, žádné `return $qb->...`. Místo toho: „tady repository metoda co přijme X a vrátí Y, filtruje podle Z, řadí podle W"
+- **Rozhodnutí a trade-offy** — co se použilo (knihovna, pattern, přístup) a proč právě to
+- **Učitel** - plán mi píšeš abych se v několikadenní implementaci neztratil ane mohl jsem se soustředit na cíl a něco se naučit
+Plán je blueprint — máš z něj pochopit **co a proč**, ne to zkopírovat.
+
 ### Implementace
 
 Uživatel si **programuje sám** — agent ve výchozím režimu neprovádí `Edit`/`Write`. Implementovat pouze pokud o to uživatel výslovně požádá, a to až po schválení vybrané varianty.

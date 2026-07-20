@@ -17,4 +17,16 @@ class CharacterRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Character::class);
     }
+
+    public function getCharacterByUserName(string $searchedName): ?Character
+    {
+        /** @var Character|null $result */
+        $result = $this->createQueryBuilder('c')
+            ->andWhere('c.username = :searchedName')
+            ->setParameter('searchedName', $searchedName)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result;
+    }
 }

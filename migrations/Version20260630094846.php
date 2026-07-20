@@ -25,8 +25,6 @@ final class Version20260630094846 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_3CF83D8E3DB201CA ON active_elixir (item_definition_id)');
         $this->addSql('ALTER TABLE active_elixir ADD CONSTRAINT FK_3CF83D8E1136BE75 FOREIGN KEY (character_id) REFERENCES character (id) NOT DEFERRABLE');
         $this->addSql('ALTER TABLE active_elixir ADD CONSTRAINT FK_3CF83D8E3DB201CA FOREIGN KEY (item_definition_id) REFERENCES item_definition (id) NOT DEFERRABLE');
-        $this->addSql('ALTER TABLE shop_offer ADD CONSTRAINT FK_EEC0DD6C326CE1FB FOREIGN KEY (rotation_id) REFERENCES shop_rotation (id) NOT DEFERRABLE');
-        $this->addSql('ALTER TABLE shop_offer ADD CONSTRAINT FK_EEC0DD6C3DB201CA FOREIGN KEY (item_definition_id) REFERENCES item_definition (id) NOT DEFERRABLE');
     }
 
     public function down(Schema $schema): void
@@ -35,7 +33,5 @@ final class Version20260630094846 extends AbstractMigration
         $this->addSql('ALTER TABLE active_elixir DROP CONSTRAINT FK_3CF83D8E1136BE75');
         $this->addSql('ALTER TABLE active_elixir DROP CONSTRAINT FK_3CF83D8E3DB201CA');
         $this->addSql('DROP TABLE active_elixir');
-        $this->addSql('ALTER TABLE shop_offer DROP CONSTRAINT FK_EEC0DD6C326CE1FB');
-        $this->addSql('ALTER TABLE shop_offer DROP CONSTRAINT FK_EEC0DD6C3DB201CA');
     }
 }

@@ -9,7 +9,7 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\ActiveElixir;
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
-use App\Repository\ActiveElixirRepository;
+use App\Repository\Character\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
 use Doctrine\ORM\EntityManagerInterface;

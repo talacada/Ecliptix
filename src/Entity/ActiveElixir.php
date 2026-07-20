@@ -9,7 +9,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use App\Entity\Character\Character;
 use App\Entity\Item\ItemDefinition;
-use App\Repository\ActiveElixirRepository;
+use App\Repository\Character\ActiveElixirRepository;
 use App\State\Processor\Character\Elixir\ActiveElixirRemoveProcessor;
 use App\State\Provider\Character\Elixir\ActiveElixirProvider;
 use Doctrine\DBAL\Types\Types;
