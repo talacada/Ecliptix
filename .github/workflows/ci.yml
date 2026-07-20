@@ -43,7 +43,7 @@ jobs:
       - run: make cs
 
   stan:
-    name: PHPStan (Level 10)
+    name: PHPStan (Level 8)
     runs-on: ubuntu-latest
 
     steps:

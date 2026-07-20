@@ -24,8 +24,6 @@ use App\State\Provider\Character\MineCharacterProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
-use LogicException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -340,7 +338,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function getUserIdentifier(): string
     {
         if ('' === $this->email) {
-            throw new LogicException('User email cant be empty.');
+            throw new \LogicException('User email cant be empty.');
         }
 
         return $this->email;
@@ -386,7 +384,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractGold(int $amount): void
     {
         if ($amount > $this->gold) {
-            throw new InvalidArgumentException('Not enough gold');
+            throw new \InvalidArgumentException('Not enough gold');
         }
         $this->gold -= $amount;
     }
@@ -394,7 +392,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractDiamonds(int $amount): void
     {
         if ($amount > $this->diamonds) {
-            throw new InvalidArgumentException('Not enough diamonds');
+            throw new \InvalidArgumentException('Not enough diamonds');
         }
         $this->diamonds -= $amount;
     }

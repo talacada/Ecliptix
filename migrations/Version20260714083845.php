@@ -20,7 +20,7 @@ final class Version20260714083845 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE "character" ADD prestige_points INT NOT NULL');
+        $this->addSql('ALTER TABLE "character" ADD prestige_points INT DEFAULT 0 NOT NULL');
     }
 
     public function down(Schema $schema): void
