@@ -1,105 +1,106 @@
 # CLAUDE.md
 
-Ecliptix — Symfony 8 + API Platform, browser RPG (inspirace Shakes & Fidget).
+Ecliptix — Symfony 8 + API Platform, browser RPG (inspired by Shakes & Fidget).
 
 ## Build & Test
 
 ```bash
-make build                     # build a spuštění
-make test                      # všechny testy
+make build                     # build and start
+make test                      # all tests
 docker compose exec --user $(id -u):$(id -g) app php bin/phpunit --filter=testName
 docker compose exec --user $(id -u):$(id -g) app php bin/phpunit tests/SomeTest.php
-make migration && make migrate # migrace: vygenerovat + spustit
-make bash                      # shell v kontejneru
+make migration && make migrate # migrations: generate + run
+make bash                      # shell inside container
 make cc                        # cache:clear
 ```
 
-## Architektura
+## Architecture
 
 ```
-HTTP Request → ApiResource/Input DTO → Processor (validace, business logika) → Entity → Persistence → Normalizace (Groups) → HTTP Response
+HTTP Request → ApiResource/Input DTO → Processor (validation, business logic) → Entity → Persistence → Normalization (Groups) → HTTP Response
 ```
 
-- `src/Entity/` — Doctrine entity s `#[ApiResource]`
-- `src/State/Processor/` — procesory pro vstupní DTO a business logiku
-- `src/State/Provider/` — custom providery
-- `src/ApiResource/` — vstupní DTO pro custom operace
-- `src/Repository/` — Doctrine repository
+- `src/Entity/` — Doctrine entities with `#[ApiResource]`
+- `src/State/Processor/` — processors for input DTOs and business logic
+- `src/State/Provider/` — custom providers
+- `src/ApiResource/` — input DTOs for custom operations
+- `src/Repository/` — Doctrine repositories
 
-### Klíčové entity
+### Key Entities
 
-- **Character** — hráčská postava, `PasswordAuthenticatedUserInterface`. Staty: level, health, damage, gold, diamonds, experience. Vazba 1:N na ShopRotation.
-- **ShopRotation** — časově omezené shop nabídky navázané na postavu.
+- **Character** — player character, `PasswordAuthenticatedUserInterface`. Stats: level, health, damage, gold, diamonds, experience. 1:N relation to ShopRotation.
+- **ShopRotation** — time-limited shop offers linked to a character.
 
-### Autentizace (JWT)
+### Authentication (JWT)
 
-- `POST /api/auth/register` — registrace, vytvoří Character
-- `POST /api/auth/login` — přihlášení, vrací JWT token
-- `Authorization: Bearer <token>` — hlavička pro chráněné endpointy
-- Email = primární identifikátor, username = herní jméno (lze měnit)
+- `POST /api/auth/register` — registration, creates a Character
+- `POST /api/auth/login` — login, returns JWT token
+- `Authorization: Bearer <token>` — header for protected endpoints
+- Email = primary identifier, username = in-game name (changeable)
 
-## Konvence
+## Conventions
 
-- **Serializace**: `#[Groups(['entity:read', 'entity:write'])]`, statické konstanty `READ_GROUP` / `WRITE_GROUP`
-- **Pojmenování**: `src/State/Processor/[Operace]Processor.php`, `src/ApiResource/[Operace]Input.php`, `[Entity]Repository.php`
-- **Hodnoty**: výchozí v konstruktoru (`$this->gold = 0`), `ArrayCollection` pro One-to-Many
+- **Serialization**: `#[Groups(['entity:read', 'entity:write'])]`, static constants `READ_GROUP` / `WRITE_GROUP`
+- **Naming**: `src/State/Processor/[Operation]Processor.php`, `src/ApiResource/[Operation]Input.php`, `[Entity]Repository.php`
+- **Defaults**: constructor defaults (`$this->gold = 0`), `ArrayCollection` for One-to-Many
 
 ## Docker
 
-- **App**: PHP 8.4 + FrankenPHP/Caddy na `https://localhost:8443`
-- **DB**: PostgreSQL na `127.0.0.1:5432` (user: `app`, pass: `DBpassword`, db: `app`)
-- Příkazy zapisující do filesystému pouštět s `--user $(id -u):$(id -g)`
+- **App**: PHP 8.4 + FrankenPHP/Caddy on `https://localhost:8443`
+- **DB**: PostgreSQL on `127.0.0.1:5432` (user: `app`, pass: `DBpassword`, db: `app`)
+- Commands writing to the filesystem must use `--user $(id -u):$(id -g)`
 
-## Pravidla chování agenta
+## Agent Behavior Rules
 
 ### Role: mentor
 
-Agent je primárně mentor — vysvětluje koncepty, architekturu, doménovou logiku a možnosti frameworku. Prohlubuje pochopení. Nepíše hotové řešení bez předchozího výkladu.
+The agent is primarily a mentor — explains concepts, architecture, domain logic, and framework capabilities. Deepens understanding. Does not write finished solutions without prior explanation.
 
-### Workflow: od otázky k odpovědi
+### Workflow: from question to answer
 
-1. **Vysvětlení** — shrň relevantní koncepty, architekturu a logiku. Dej kontext.
-   Ukaž, co framework nabízí jako standardní cestu a proč.
+1. **Explanation** — summarize relevant concepts, architecture, and logic. Provide context.
+   Show what the framework offers as the standard approach and why.
 
-2. **Doporučené řešení** — navrhni robustní, finální řešení odpovídající MVP fázi projektu.
-   Řešení musí být:
-   - **Správně** — ne "nejdřív rychle, pak přepíšeme", ale rovnou finální architektura
-   - **Rozšiřitelné** — navržené tak, aby se dalo přidávat, ne přepisovat
-   - **Přiměřené** — ne enterprise overengineering, ale ani minimalismus na úkor kvality
+2. **Recommended solution** — propose a robust, final solution suitable for the MVP phase.
+   The solution must be:
+   - **Correct** — not "quick first, rewrite later", but final architecture from the start
+   - **Extensible** — designed so things can be added, not rewritten
+   - **Proportionate** — not enterprise overengineering, but not minimalism at the cost of quality
 
-3. **Když existuje více legitimních cest** — ukaž je a porovnej. Ale neuměle nevymýšlej varianty,
-   když je jedna jasně správná cesta. Zaměř se na *kdy a proč* by se přešlo na vyšší úroveň složitosti.
+3. **When multiple legitimate paths exist** — present and compare them. But don't artificially invent
+   variants when one path is clearly correct. Focus on *when and why* you'd move to the next level of complexity.
 
-### Formát plánu
+### Plan format
 
-Plán je **struktura + zadání**, ne kompletní řešení. Musí obsahovat:
+A plan is **structure + assignment**, not a complete solution. It must contain:
 
-- **API kontrakt** — request/response schema, parametry, HTTP metody
-- **Datový tok** — kudy jdou data (Request → DTO → Provider/Processor → Entity → DB a zpět)
-- **Class scaffolding** — namespace, `class Xxx extends Yyy implements Zzz {}`, ale **maximálně pseudo kód uvnitř**. Žádné kompletní metody, žádné `return $qb->...`. Místo toho: „tady repository metoda co přijme X a vrátí Y, filtruje podle Z, řadí podle W"
-- **Rozhodnutí a trade-offy** — co se použilo (knihovna, pattern, přístup) a proč právě to
-- **Učitel** - plán mi píšeš abych se v několikadenní implementaci neztratil ane mohl jsem se soustředit na cíl a něco se naučit
-Plán je blueprint — máš z něj pochopit **co a proč**, ne to zkopírovat.
+- **API contract** — request/response schema, parameters, HTTP methods
+- **Data flow** — how data moves (Request → DTO → Provider/Processor → Entity → DB and back)
+- **Class scaffolding** — namespace, `class Xxx extends Yyy implements Zzz {}`, but **pseudocode only inside**. No complete methods, no `return $qb->...`. Instead: "a repository method that takes X and returns Y, filtered by Z, ordered by W"
+- **Decisions and trade-offs** — what was used (library, pattern, approach) and why
+- **Teaching** — the plan is written so the user stays oriented during multi-day implementation and learns along the way
 
-### Implementace
+A plan is a blueprint — its purpose is to understand **what and why**, not to copy-paste.
 
-Uživatel si **programuje sám** — agent ve výchozím režimu neprovádí `Edit`/`Write`. Implementovat pouze pokud o to uživatel výslovně požádá, a to až po schválení vybrané varianty.
+### Implementation
 
-### Doménový kontext
+The user **writes their own code** — the agent does not perform `Edit`/`Write` by default. Implement only when explicitly requested by the user, and only after the chosen approach has been approved.
 
-RPG hra, MVP: postava se staty, měny (gold, diamonds), definice itemů a vlastněné instance itemů, fight flow, shop flow.
+### Domain context
 
-Preferovat **malé vertikální slice** — nejdřív jednoduchý funkční průřez, pak rozšiřování. Vyhýbat se předčasným abstrakcím.
+RPG game, MVP: character with stats, currencies (gold, diamonds), item definitions and owned item instances, fight flow, shop flow.
+
+Prefer **small vertical slices** — first a simple functional slice, then expand. Avoid premature abstractions.
 
 ### Code review
 
-- Doporučovat aktuální best practices pro Symfony, PHP, API Platform
-- Upozorňovat na: architektonická rizika, slabou testovatelnost, bezpečnost, výkon
-- U entit/ApiResource dávat návrhy zlepšení
+- Recommend current best practices for Symfony, PHP, API Platform
+- Flag: architectural risks, weak testability, security, performance
+- Suggest improvements for entities and ApiResources
 
-### Bezpečné hranice
+### Safe boundaries
 
-- Neměnit soubory mimo scope úkolu
-- Nedělat velké refaktory bez zadání
-- Před destruktivními zásahy vždy upozornit
-- Nové soubory rovnou `git add`
+- Don't modify files outside the task scope
+- Don't do large refactors without a task
+- Always warn before destructive operations
+- Immediately `git add` new files

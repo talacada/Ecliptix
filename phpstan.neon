@@ -8,4 +8,4 @@ parameters:
     paths:
         - src/
         - tests/
-    tmpDir: .phpstan-cache
+    tmpDir: var/cache/phpstan
