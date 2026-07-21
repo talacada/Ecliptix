@@ -11,7 +11,6 @@
 
 ###> phpunit/phpunit ###
 /phpunit.xml
-/.phpunit.cache/
 ###< phpunit/phpunit ###
 
 ###> symfony/asset-mapper ###
@@ -20,8 +19,6 @@
 ###< symfony/asset-mapper ###
 
 # PhpStorm / IntelliJ project settings:
-# for this project, share most project config across machines
-# and keep only user-local workspace/plugin state ignored.
 /.idea/*
 !/.idea/.gitignore
 !/.idea/ecliptix.iml
@@ -31,16 +28,14 @@
 !/.idea/phpunit.xml
 !/.idea/vcs.xml
 .idea/
+/.claude/
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-###> friendsofphp/php-cs-fixer & phpstan ###
-/.php-cs-fixer.cache
-/.phpstan-cache/
-###< friendsofphp/php-cs-fixer & phpstan ###
-
 ###> symfony/config ###
+/config/reference.php
+###< symfony/config ###
 /config/reference.php
 ###< symfony/config ###
