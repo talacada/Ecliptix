@@ -1,7 +1,7 @@
-# Volba FrankenPHP a PHP s verzí 8.4 (podmínky Composer.json)
+# FrankenPHP with PHP 8.4
 FROM dunglas/frankenphp:1.4-php8.4
 
-# Instalace základních utilit a systémových závislostí
+# Install system utilities and dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
@@ -18,32 +18,32 @@ RUN apt-get update \
         symfony-cli \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalace potřebných PHP rozšíření (pro PostgreSQL je nutné pdo_pgsql)
+# Install required PHP extensions (pdo_pgsql for PostgreSQL)
 RUN install-php-extensions \
     pdo_pgsql \
     intl \
     zip \
     opcache
 
-# Nastavení výjimky pro bezpečný adresář, aby Composer git clone prošel bez ohledu na vlastníka
+# Allow Composer git clone regardless of directory owner
 RUN git config --global --add safe.directory /app
 
-# Instalace Composeru
+# Install Composer
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
 WORKDIR /app
 
-# Zkopírování projektu
+# Copy project files
 COPY . /app/
 RUN chown -R root:root /app
 
-# Přidání spouštěcího entrypointu a nastavení spustitelnosti
+# Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Proměnná pro DEV mód
+# Development environment
 ENV APP_ENV=dev
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-# Spuštění standardního skriptu/serveru FrankenPHP
+# Start FrankenPHP server
 CMD ["frankenphp", "php-server", "--domain", "localhost", "-r", "public/"]

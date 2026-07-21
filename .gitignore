@@ -40,3 +40,7 @@
 /.php-cs-fixer.cache
 /.phpstan-cache/
 ###< friendsofphp/php-cs-fixer & phpstan ###
+
+###> symfony/config ###
+/config/reference.php
+###< symfony/config ###

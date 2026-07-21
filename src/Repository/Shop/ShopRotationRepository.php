@@ -68,7 +68,7 @@ class ShopRotationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('shopRotation')
             ->andWhere('shopRotation.character = :character')
             ->andWhere('shopRotation.validUntil > :now')
-            ->andWhere('shopRotation.validFrom <= :now') // TODO this is inconsistent
+            ->andWhere('shopRotation.validFrom <= :now')
             ->setParameter('character', $character)
             ->setParameter('now', new \DateTimeImmutable('today'))
             ->getQuery()

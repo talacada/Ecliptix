@@ -57,7 +57,6 @@ class ItemDefinition
     private Collection $items;
 
     #[ORM\Column(enumType: ItemRarityEnum::class)]
-    // TODO je opravdu potřeba?
     #[Groups(ShopRotation::READ_GROUP)]
     private ItemRarityEnum $rarity;
 
