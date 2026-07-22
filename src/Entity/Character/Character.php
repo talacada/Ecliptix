@@ -20,6 +20,7 @@ use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
+use App\State\Provider\Character\PublicCharacterProvider;
 use App\State\Provider\Character\MineCharacterProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -59,7 +60,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(
             uriTemplate: '/character/{id}',
             requirements: ['id' => '\d+'],
+            normalizationContext: ['groups' => self::READ_PUBLIC_GROUP],
             security: 'is_granted("ROLE_USER")',
+            provider: PublicCharacterProvider::class,
         ),
         new Get(
             uriTemplate: '/character',
@@ -90,14 +93,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Character implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const string READ_GROUP = 'character:read';
+    public const string READ_PUBLIC_GROUP = 'character:public:read';
     public const string UPDATE_GROUP = 'update:read';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $id;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups([self::READ_GROUP, self::UPDATE_GROUP])]
+    #[Groups([self::READ_GROUP, self::UPDATE_GROUP, self::READ_PUBLIC_GROUP])]
     #[Assert\NotBlank(groups: [self::UPDATE_GROUP])]
     #[Assert\Length(min: 4, max: 20, groups: [self::UPDATE_GROUP])]
     private string $username;
@@ -114,19 +119,19 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     private int $diamonds;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $level;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $experience;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $damage;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $health;
 
     /**
@@ -153,11 +158,12 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     /**
      * @var Collection<int, ActiveElixir>
      */
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     #[ORM\OneToMany(targetEntity: ActiveElixir::class, mappedBy: 'character', orphanRemoval: true)]
     private Collection $activeElixirs;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $prestigePoints = 0;
 
     public function __construct()
@@ -405,7 +411,6 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     /**
      * @return Collection<int, ActiveElixir>
      */
-    #[Groups([self::READ_GROUP])]
     public function getActiveElixirs(): Collection
     {
         return $this->activeElixirs;

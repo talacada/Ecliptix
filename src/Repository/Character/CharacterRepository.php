@@ -29,4 +29,13 @@ class CharacterRepository extends ServiceEntityRepository
 
         return $result;
     }
+
+    public function getCharacterById(int $id): ?Character
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
