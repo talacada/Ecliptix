@@ -15,6 +15,7 @@ use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
 use App\Entity\ActiveElixir;
+use App\Entity\FriendRelation;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
@@ -166,6 +167,13 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $prestigePoints = 0;
 
+    #[Groups([self::READ_GROUP])]
+    #[ORM\OneToMany(targetEntity: FriendRelation::class, mappedBy: 'follower', orphanRemoval: true)]
+    private Collection $following;
+    //TODO not working
+
+    #[Groups([self::READ_PUBLIC_GROUP])]
+    private bool $isFollowed = false;
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
@@ -449,4 +457,16 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
         return $this;
     }
+
+
+    public function getFollowing(): Collection
+    {
+        return $this->following;
+    }
+
+    public function setFollowing(Collection $following): void
+    {
+        $this->following = $following;
+    }
+
 }
