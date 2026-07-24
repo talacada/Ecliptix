@@ -14,15 +14,14 @@ use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
-use App\Entity\ActiveElixir;
 use App\Entity\FriendRelation;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
-use App\State\Provider\Character\PublicCharacterProvider;
 use App\State\Provider\Character\MineCharacterProvider;
+use App\State\Provider\Character\PublicCharacterProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -170,7 +169,6 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_GROUP])]
     #[ORM\OneToMany(targetEntity: FriendRelation::class, mappedBy: 'follower', orphanRemoval: true)]
     private Collection $following;
-    //TODO not working
 
     #[Groups([self::READ_PUBLIC_GROUP])]
     private bool $isFollowed = false;

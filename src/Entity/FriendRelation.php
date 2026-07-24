@@ -2,16 +2,32 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Character\Character;
 use App\Repository\FriendRelationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/friends',
+            security: 'is_granted("ROLE_USER")',
+            //TODO
+        )
+    ]
+)]
 #[ORM\Entity(repositoryClass: FriendRelationRepository::class)]
 class FriendRelation
 {
+
+    public const string READ_GROUP = 'friend_relation:read';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
@@ -20,6 +36,7 @@ class FriendRelation
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP])]
     private ?Character $followed = null;
 
     public function getId(): ?int
