@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Character\Character;
@@ -15,7 +16,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(
             uriTemplate: '/friends',
             security: 'is_granted("ROLE_USER")',
-            //TODO
+        ),
+        new Get(
+            uriTemplate: '/friends/{friend_relation_id}',
+            security: 'is_granted("ROLE_USER") and object.getFollower() == user',
+
+        ),
+        new Delete(
+            uriTemplate: '/friends/{id}',
+            security: 'is_granted("ROLE_USER") and object.getFollower() == user',
         )
     ]
 )]

@@ -13,6 +13,7 @@ use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Security\LoggedInCharacter;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use function assert;
 
 /**
  * @implements ProviderInterface<LeaderboardResponse>
@@ -34,7 +35,7 @@ class LeaderboardProvider implements ProviderInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         $request = $this->requestStack->getCurrentRequest();
-        \assert(null !== $request);
+        assert(null !== $request);
 
         $searchedName = $request->query->get('name');
         $searchedRank = $request->query->getInt('rank');
