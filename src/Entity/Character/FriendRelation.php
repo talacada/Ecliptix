@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use App\Entity\Character\Character;
+use ApiPlatform\Metadata\Post;
+use App\Attribute\CurrentUserScope;
 use App\Repository\FriendRelationRepository;
+use App\State\Processor\Character\Friends\FriendsAddProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -18,16 +20,21 @@ use Symfony\Component\Serializer\Attribute\Groups;
             security: 'is_granted("ROLE_USER")',
         ),
         new Get(
-            uriTemplate: '/friends/{friend_relation_id}',
-            security: 'is_granted("ROLE_USER") and object.getFollower() == user',
-
+            uriTemplate: '/friends/{id}',
+            security: 'is_granted("ROLE_USER")',
         ),
         new Delete(
             uriTemplate: '/friends/{id}',
-            security: 'is_granted("ROLE_USER") and object.getFollower() == user',
+            security: 'is_granted("ROLE_USER")',
+        ),
+        new Post(
+            uriTemplate: '/friends/{id}',
+            security: 'is_granted("ROLE_USER")',
+            processor: FriendsAddProcessor::class,
         )
     ]
 )]
+#[CurrentUserScope('follower')]
 #[ORM\Entity(repositoryClass: FriendRelationRepository::class)]
 class FriendRelation
 {

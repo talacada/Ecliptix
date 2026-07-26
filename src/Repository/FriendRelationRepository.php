@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\FriendRelation;
+use App\Entity\Character\FriendRelation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

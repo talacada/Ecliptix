@@ -14,7 +14,6 @@ use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
-use App\Entity\FriendRelation;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
