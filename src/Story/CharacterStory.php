@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Story;
 
-use App\Entity\Character\ActiveElixir;
+use App\Entity\ActiveElixir;
 use App\Entity\Character\Character;
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\InventoryContainerEnum;

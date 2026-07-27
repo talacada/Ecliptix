@@ -6,7 +6,7 @@ namespace App\State\Processor\Character\Inventory;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Entity\Character\ActiveElixir;
+use App\Entity\ActiveElixir;
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
 use App\Repository\Character\ActiveElixirRepository;

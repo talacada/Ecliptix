@@ -14,13 +14,13 @@ use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
+use App\Entity\ActiveElixir;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
-use App\State\Provider\Character\PublicCharacterProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -59,9 +59,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(
             uriTemplate: '/character/{id}',
             requirements: ['id' => '\d+'],
-            normalizationContext: ['groups' => self::READ_PUBLIC_GROUP],
             security: 'is_granted("ROLE_USER")',
-            provider: PublicCharacterProvider::class,
         ),
         new Get(
             uriTemplate: '/character',
@@ -92,16 +90,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Character implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const string READ_GROUP = 'character:read';
-    public const string READ_PUBLIC_GROUP = 'character:public:read';
     public const string UPDATE_GROUP = 'update:read';
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $id;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups([self::READ_GROUP, self::UPDATE_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP, self::UPDATE_GROUP])]
     #[Assert\NotBlank(groups: [self::UPDATE_GROUP])]
     #[Assert\Length(min: 4, max: 20, groups: [self::UPDATE_GROUP])]
     private string $username;
@@ -118,19 +114,19 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     private int $diamonds;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP])]
     private int $level;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP])]
     private int $experience;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP])]
     private int $damage;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP])]
     private int $health;
 
     /**
@@ -157,23 +153,12 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     /**
      * @var Collection<int, ActiveElixir>
      */
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     #[ORM\OneToMany(targetEntity: ActiveElixir::class, mappedBy: 'character', orphanRemoval: true)]
     private Collection $activeElixirs;
 
     #[ORM\Column]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
-    private int $prestigePoints = 0;
-
-    /**
-     * @var Collection<int, FriendRelation>
-     */
     #[Groups([self::READ_GROUP])]
-    #[ORM\OneToMany(targetEntity: FriendRelation::class, mappedBy: 'character', orphanRemoval: true)]
-    private Collection $friendsCollection;
-
-    #[Groups([self::READ_PUBLIC_GROUP])]
-    private bool $friends = false;
+    private int $prestigePoints = 0;
 
     public function __construct()
     {
@@ -186,7 +171,6 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->health = 100;
         $this->characterInventories = new ArrayCollection();
         $this->activeElixirs = new ArrayCollection();
-        $this->friendsCollection = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -421,6 +405,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     /**
      * @return Collection<int, ActiveElixir>
      */
+    #[Groups([self::READ_GROUP])]
     public function getActiveElixirs(): Collection
     {
         return $this->activeElixirs;
@@ -458,31 +443,5 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->prestigePoints = $prestigePoints;
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, FriendRelation>
-     */
-    public function getFriendsCollection(): Collection
-    {
-        return $this->friendsCollection;
-    }
-
-    /**
-     * @param Collection<int, FriendRelation> $friendsCollection
-     */
-    public function setFriendsCollection(Collection $friendsCollection): void
-    {
-        $this->friendsCollection = $friendsCollection;
-    }
-
-    public function isFriends(): bool
-    {
-        return $this->friends;
-    }
-
-    public function setFriends(bool $friends): void
-    {
-        $this->friends = $friends;
     }
 }

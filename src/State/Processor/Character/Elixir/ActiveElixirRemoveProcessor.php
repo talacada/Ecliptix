@@ -6,7 +6,7 @@ namespace App\State\Processor\Character\Elixir;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Entity\Character\ActiveElixir;
+use App\Entity\ActiveElixir;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

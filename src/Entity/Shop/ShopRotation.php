@@ -7,7 +7,6 @@ namespace App\Entity\Shop;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\ApiResource\Item\ItemViewDTO;
-use App\Attribute\CurrentUserScope;
 use App\Entity\Character\Character;
 use App\Repository\Shop\ShopRotationRepository;
 use App\State\Provider\Shop\Rotation\ShopRotationProvider;
@@ -29,7 +28,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
     security: 'is_granted("ROLE_USER")',
 )]
-// #[CurrentUserScope('character')]
 class ShopRotation
 {
     public const string READ_GROUP = 'shopRotation:read';
