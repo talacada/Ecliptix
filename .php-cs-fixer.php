@@ -4,7 +4,7 @@ $finder = PhpCsFixer\Finder::create()
     ->in(['src', 'tests'])
     ->notPath('vendor');
 
-return (new PhpCsFixer\Config())
+return new PhpCsFixer\Config()
     ->setRules([
         '@Symfony' => true,
         'phpdoc_to_comment' => ['ignored_tags' => ['var']],

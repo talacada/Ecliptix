@@ -6,6 +6,7 @@ namespace App\Repository\Shop;
 
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
+use App\Entity\Shop\ShopRotationEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -74,5 +75,20 @@ class ShopRotationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    public function hasActiveDailyRotation(Character $character): bool
+    {
+        return (int) $this->createQueryBuilder('shopRotation')
+            ->select('COUNT(shopRotation.id)')
+            ->andWhere('shopRotation.character = :character')
+            ->andWhere('shopRotation.rotationType = :type')
+            ->andWhere('shopRotation.validUntil > :now')
+            ->andWhere('shopRotation.validFrom <= :now')
+            ->setParameter('character', $character)
+            ->setParameter('now', new \DateTimeImmutable('today'))
+            ->setParameter('type', ShopRotationEnum::Daily)
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository\Character;
 
-use App\Entity\ActiveElixir;
+use App\Entity\Character\ActiveElixir;
 use App\Entity\Character\Character;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
