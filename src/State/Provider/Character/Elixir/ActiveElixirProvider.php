@@ -6,7 +6,7 @@ namespace App\State\Provider\Character\Elixir;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\ActiveElixir;
+use App\Entity\Character\ActiveElixir;
 use App\Repository\Character\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
