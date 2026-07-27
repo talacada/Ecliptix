@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Character;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -31,14 +33,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
             uriTemplate: '/friends/{id}',
             security: 'is_granted("ROLE_USER")',
             processor: FriendsAddProcessor::class,
-        )
-    ]
+        ),
+    ],
 )]
-#[CurrentUserScope('follower')]
+#[CurrentUserScope('character')]
 #[ORM\Entity(repositoryClass: FriendRelationRepository::class)]
+#[ORM\Table(name: 'friend_relation')]
+#[ORM\UniqueConstraint(columns: ['character_id', 'friend_id'])]
 class FriendRelation
 {
-
     public const string READ_GROUP = 'friend_relation:read';
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -46,40 +49,40 @@ class FriendRelation
     #[Groups([self::READ_GROUP])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'friendsCollection')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Character $follower = null;
+    private ?Character $character = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups([self::READ_GROUP])]
-    private ?Character $followed = null;
+    private ?Character $friend = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getFollower(): ?Character
+    public function getCharacter(): ?Character
     {
-        return $this->follower;
+        return $this->character;
     }
 
-    public function setFollower(?Character $follower): static
+    public function setCharacter(?Character $character): static
     {
-        $this->follower = $follower;
+        $this->character = $character;
 
         return $this;
     }
 
-    public function getFollowed(): ?Character
+    public function getFriend(): ?Character
     {
-        return $this->followed;
+        return $this->friend;
     }
 
-    public function setFollowed(?Character $followed): static
+    public function setFriend(?Character $friend): static
     {
-        $this->followed = $followed;
+        $this->friend = $friend;
 
         return $this;
     }

@@ -29,7 +29,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
     security: 'is_granted("ROLE_USER")',
 )]
-//#[CurrentUserScope('character')]
+// #[CurrentUserScope('character')]
 class ShopRotation
 {
     public const string READ_GROUP = 'shopRotation:read';

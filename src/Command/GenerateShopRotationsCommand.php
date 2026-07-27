@@ -10,7 +10,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 
 #[AsCommand('app:shop:generate-rotations')]
 class GenerateShopRotationsCommand extends Command
@@ -33,7 +32,7 @@ class GenerateShopRotationsCommand extends Command
             try {
                 $this->generator->generate($character);
                 ++$success;
-            } catch (Throwable $e) {
+            } catch (\Throwable $e) {
                 ++$failed;
                 $output->writeln(sprintf(
                     '<error>Character %s failed: %s</error>',

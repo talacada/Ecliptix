@@ -14,10 +14,10 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class LoggedInCharacter
 {
     public function __construct(
-        private readonly Security               $security,
-        private readonly ElixirCleanUp          $elixirCleanUp,
+        private readonly Security $security,
+        private readonly ElixirCleanUp $elixirCleanUp,
         private readonly ShopRotationRepository $shopRotationRepository,
-        private readonly RotationGenerator      $rotationGenerator
+        private readonly RotationGenerator $rotationGenerator,
     ) {
     }
 
@@ -31,7 +31,7 @@ class LoggedInCharacter
 
         $this->elixirCleanUp->removeExpired($character);
 
-        if ($this->shopRotationRepository->hasActiveDailyRotation($character)) {
+        if (false === $this->shopRotationRepository->hasActiveDailyRotation($character)) {
             $this->rotationGenerator->generate($character);
         }
 

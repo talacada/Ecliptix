@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Extension;
 
 use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
@@ -9,30 +11,28 @@ use ApiPlatform\Metadata\Operation;
 use App\Attribute\CurrentUserScope;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\QueryBuilder;
-use ReflectionClass;
-use ReflectionException;
 
 final class CurrentUserScopeExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
-
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
-    ) {}
+    ) {
+    }
 
-    //Apply extension to COLLECTION
+    // Apply extension to COLLECTION
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
         $this->applyScope($queryBuilder, $resourceClass);
     }
 
-    //Apply extension to SINGLE ITEM
+    // Apply extension to SINGLE ITEM
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?Operation $operation = null, array $context = []): void
     {
@@ -40,14 +40,18 @@ final class CurrentUserScopeExtension implements QueryCollectionExtensionInterfa
     }
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     private function applyScope(QueryBuilder $queryBuilder, string $resourceClass): void
     {
-        $reflection = new ReflectionClass($resourceClass);
+        if (!class_exists($resourceClass)) {
+            return;
+        }
+
+        $reflection = new \ReflectionClass($resourceClass);
         $attributes = $reflection->getAttributes(CurrentUserScope::class);
 
-        if (count($attributes) === 0) {
+        if (0 === count($attributes)) {
             return;
         }
 

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
+use App\Entity\Character\Character;
 use App\Entity\Character\FriendRelation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,4 +43,14 @@ class FriendRelationRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findRelation(Character $character, Character $friend): ?FriendRelation
+    {
+        return $this->createQueryBuilder('fr')
+            ->andWhere('fr.character = :character')
+            ->andWhere('fr.friend = :friend')
+            ->setParameter('character', $character)
+            ->setParameter('friend', $friend)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

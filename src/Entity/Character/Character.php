@@ -165,12 +165,16 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $prestigePoints = 0;
 
+    /**
+     * @var Collection<int, FriendRelation>
+     */
     #[Groups([self::READ_GROUP])]
-    #[ORM\OneToMany(targetEntity: FriendRelation::class, mappedBy: 'follower', orphanRemoval: true)]
-    private Collection $following;
+    #[ORM\OneToMany(targetEntity: FriendRelation::class, mappedBy: 'character', orphanRemoval: true)]
+    private Collection $friendsCollection;
 
     #[Groups([self::READ_PUBLIC_GROUP])]
-    private bool $isFollowed = false;
+    private bool $friends = false;
+
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
@@ -182,6 +186,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->health = 100;
         $this->characterInventories = new ArrayCollection();
         $this->activeElixirs = new ArrayCollection();
+        $this->friendsCollection = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -455,15 +460,29 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         return $this;
     }
 
-
-    public function getFollowing(): Collection
+    /**
+     * @return Collection<int, FriendRelation>
+     */
+    public function getFriendsCollection(): Collection
     {
-        return $this->following;
+        return $this->friendsCollection;
     }
 
-    public function setFollowing(Collection $following): void
+    /**
+     * @param Collection<int, FriendRelation> $friendsCollection
+     */
+    public function setFriendsCollection(Collection $friendsCollection): void
     {
-        $this->following = $following;
+        $this->friendsCollection = $friendsCollection;
     }
 
+    public function isFriends(): bool
+    {
+        return $this->friends;
+    }
+
+    public function setFriends(bool $friends): void
+    {
+        $this->friends = $friends;
+    }
 }

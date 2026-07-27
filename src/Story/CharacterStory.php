@@ -17,6 +17,7 @@ use App\Service\Item\ItemFactory;
 use App\Service\Shop\RotationGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 use function Zenstruck\Foundry\faker;
 
 final class CharacterStory
