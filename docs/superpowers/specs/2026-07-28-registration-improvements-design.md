@@ -42,7 +42,7 @@ Four features bundled into one change:
 | `expires_at` | datetime | now + 24h |
 | `used_at` | datetime, nullable | null = nepoužitý |
 
-### PasswordResetToken
+### ---- PasswordResetToken
 
 | Column | Type | Notes |
 |---|---|---|
