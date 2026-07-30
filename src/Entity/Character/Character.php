@@ -14,6 +14,8 @@ use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
+use App\Entity\AppearanceOption;
+use App\Entity\Race;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
@@ -174,6 +176,33 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[Groups([self::READ_PUBLIC_GROUP])]
     private bool $friends = false;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Race $race = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?AppearanceOption $hair = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?AppearanceOption $eyes = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?AppearanceOption $mouth = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?AppearanceOption $nose = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?AppearanceOption $ears = null;
+
+    #[ORM\Column]
+    private ?bool $email_verified = null;
 
     public function __construct()
     {
@@ -484,5 +513,89 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function setFriends(bool $friends): void
     {
         $this->friends = $friends;
+    }
+
+    public function getRace(): ?Race
+    {
+        return $this->race;
+    }
+
+    public function setRace(?Race $race): static
+    {
+        $this->race = $race;
+
+        return $this;
+    }
+
+    public function getHair(): ?AppearanceOption
+    {
+        return $this->hair;
+    }
+
+    public function setHair(?AppearanceOption $hair): static
+    {
+        $this->hair = $hair;
+
+        return $this;
+    }
+
+    public function getEyes(): ?AppearanceOption
+    {
+        return $this->eyes;
+    }
+
+    public function setEyes(?AppearanceOption $eyes): static
+    {
+        $this->eyes = $eyes;
+
+        return $this;
+    }
+
+    public function getMouth(): ?AppearanceOption
+    {
+        return $this->mouth;
+    }
+
+    public function setMouth(?AppearanceOption $mouth): static
+    {
+        $this->mouth = $mouth;
+
+        return $this;
+    }
+
+    public function getNose(): ?AppearanceOption
+    {
+        return $this->nose;
+    }
+
+    public function setNose(?AppearanceOption $nose): static
+    {
+        $this->nose = $nose;
+
+        return $this;
+    }
+
+    public function getEars(): ?AppearanceOption
+    {
+        return $this->ears;
+    }
+
+    public function setEars(?AppearanceOption $ears): static
+    {
+        $this->ears = $ears;
+
+        return $this;
+    }
+
+    public function isEmailVerified(): ?bool
+    {
+        return $this->email_verified;
+    }
+
+    public function setEmailVerified(bool $email_verified): static
+    {
+        $this->email_verified = $email_verified;
+
+        return $this;
     }
 }

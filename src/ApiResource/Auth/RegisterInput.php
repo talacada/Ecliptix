@@ -20,6 +20,14 @@ class RegisterInput
     #[Assert\Length(min: 8, minMessage: 'Password must be at least {{ limit }} characters long.')]
     private string $password;
 
+    #[Assert\NotBlank(message: 'Race should not be blank.')]
+    private int $race_id;
+
+    #[Assert\NotBlank(message: 'Hair should not be blank.')]
+    private int $hair_id;
+
+    //TODO others
+
     public function getPassword(): string
     {
         return $this->password;
