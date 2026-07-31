@@ -21,10 +21,28 @@ class RegisterInput
     private string $password;
 
     #[Assert\NotBlank(message: 'Race should not be blank.')]
+    #[Assert\Positive(message: 'Race must be a positive integer.')]
     private int $race_id;
 
     #[Assert\NotBlank(message: 'Hair should not be blank.')]
+    #[Assert\Positive(message: 'Hair must be a positive integer.')]
     private int $hair_id;
+
+    #[Assert\NotBlank(message: 'Eyes should not be blank.')]
+    #[Assert\Positive(message: 'Eyes must be a positive integer.')]
+    private int $eyes_id;
+
+    #[Assert\NotBlank(message: 'Mouth should not be blank.')]
+    #[Assert\Positive(message: 'Mouth must be a positive integer.')]
+    private int $mouth_id;
+
+    #[Assert\NotBlank(message: 'Nose should not be blank.')]
+    #[Assert\Positive(message: 'Nose must be a positive integer.')]
+    private int $nose_id;
+
+    #[Assert\NotBlank(message: 'Ears should not be blank.')]
+    #[Assert\Positive(message: 'Ears must be a positive integer.')]
+    private int $ears_id;
 
     //TODO others
 
@@ -57,4 +75,66 @@ class RegisterInput
     {
         $this->username = $username;
     }
+
+    public function getRaceId(): int
+    {
+        return $this->race_id;
+    }
+
+    public function setRaceId(int $race_id): void
+    {
+        $this->race_id = $race_id;
+    }
+
+    public function getHairId(): int
+    {
+        return $this->hair_id;
+    }
+
+    public function setHairId(int $hair_id): void
+    {
+        $this->hair_id = $hair_id;
+    }
+
+    public function getEyesId(): int
+    {
+        return $this->eyes_id;
+    }
+
+    public function setEyesId(int $eyes_id): void
+    {
+        $this->eyes_id = $eyes_id;
+    }
+
+    public function getMouthId(): int
+    {
+        return $this->mouth_id;
+    }
+
+    public function setMouthId(int $mouth_id): void
+    {
+        $this->mouth_id = $mouth_id;
+    }
+
+    public function getNoseId(): int
+    {
+        return $this->nose_id;
+    }
+
+    public function setNoseId(int $nose_id): void
+    {
+        $this->nose_id = $nose_id;
+    }
+
+    public function getEarsId(): int
+    {
+        return $this->ears_id;
+    }
+
+    public function setEarsId(int $ears_id): void
+    {
+        $this->ears_id = $ears_id;
+    }
+
+
 }

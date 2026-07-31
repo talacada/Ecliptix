@@ -154,7 +154,8 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     private Collection $characterInventories;
 
     #[ORM\Column]
-    private int $backpackCapacity = 4;
+    #[Groups([self::READ_GROUP])]
+    private int $backpackCapacity;
 
     /**
      * @var Collection<int, ActiveElixir>
@@ -177,32 +178,39 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_PUBLIC_GROUP])]
     private bool $friends = false;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Race $race = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?AppearanceOption $hair = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?AppearanceOption $eyes = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?AppearanceOption $mouth = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?AppearanceOption $nose = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?AppearanceOption $ears = null;
-
     #[ORM\Column]
-    private ?bool $email_verified = null;
+    #[Groups([self::READ_GROUP])]
+    private bool $email_verified;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    private Race $race;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    private AppearanceOption $hair;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    private AppearanceOption $eyes;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    private AppearanceOption $mouth;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    private AppearanceOption $nose;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    private AppearanceOption $ears;
 
     public function __construct()
     {
@@ -216,6 +224,9 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->characterInventories = new ArrayCollection();
         $this->activeElixirs = new ArrayCollection();
         $this->friendsCollection = new ArrayCollection();
+        $this->backpackCapacity = 4;
+        $this->prestigePoints = 0;
+        $this->email_verified = false;
     }
 
     public function getId(): ?int
@@ -515,79 +526,79 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->friends = $friends;
     }
 
-    public function getRace(): ?Race
+    public function getRace(): Race
     {
         return $this->race;
     }
 
-    public function setRace(?Race $race): static
+    public function setRace(Race $race): static
     {
         $this->race = $race;
 
         return $this;
     }
 
-    public function getHair(): ?AppearanceOption
+    public function getHair(): AppearanceOption
     {
         return $this->hair;
     }
 
-    public function setHair(?AppearanceOption $hair): static
+    public function setHair(AppearanceOption $hair): static
     {
         $this->hair = $hair;
 
         return $this;
     }
 
-    public function getEyes(): ?AppearanceOption
+    public function getEyes(): AppearanceOption
     {
         return $this->eyes;
     }
 
-    public function setEyes(?AppearanceOption $eyes): static
+    public function setEyes(AppearanceOption $eyes): static
     {
         $this->eyes = $eyes;
 
         return $this;
     }
 
-    public function getMouth(): ?AppearanceOption
+    public function getMouth(): AppearanceOption
     {
         return $this->mouth;
     }
 
-    public function setMouth(?AppearanceOption $mouth): static
+    public function setMouth(AppearanceOption $mouth): static
     {
         $this->mouth = $mouth;
 
         return $this;
     }
 
-    public function getNose(): ?AppearanceOption
+    public function getNose(): AppearanceOption
     {
         return $this->nose;
     }
 
-    public function setNose(?AppearanceOption $nose): static
+    public function setNose(AppearanceOption $nose): static
     {
         $this->nose = $nose;
 
         return $this;
     }
 
-    public function getEars(): ?AppearanceOption
+    public function getEars(): AppearanceOption
     {
         return $this->ears;
     }
 
-    public function setEars(?AppearanceOption $ears): static
+    public function setEars(AppearanceOption $ears): static
     {
         $this->ears = $ears;
 
         return $this;
     }
 
-    public function isEmailVerified(): ?bool
+    public function isEmailVerified(): bool
     {
         return $this->email_verified;
     }

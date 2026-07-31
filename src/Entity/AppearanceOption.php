@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
-use App\Entity\Item\AppearanceTypeEnum;
+use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Entity\Item\InventoryContainerEnum;
 use App\Repository\AppearanceOptionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: AppearanceOptionRepository::class)]
 class AppearanceOption
 {

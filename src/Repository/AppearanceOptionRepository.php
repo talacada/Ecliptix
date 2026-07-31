@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Entity\AppearanceOption;
+use App\Entity\Race;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +18,25 @@ class AppearanceOptionRepository extends ServiceEntityRepository
         parent::__construct($registry, AppearanceOption::class);
     }
 
-    //    /**
-    //     * @return AppearanceOption[] Returns an array of AppearanceOption objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getByIdRaceType(int $id, Race $race, AppearanceTypeEnum $type): ?AppearanceOption
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.id = :id')
+            ->andWhere('a.race = :race')
+            ->andWhere('a.type = :type')
+            ->setParameter('id', $id)
+            ->setParameter('race', $race)
+            ->setParameter('type', $type->value)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
-    //    public function findOneBySomeField($value): ?AppearanceOption
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function getAllOptionsByRace(Race $race): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.race = :race')
+            ->setParameter('race', $race)
+            ->getQuery()
+            ->getResult();
+    }
 }

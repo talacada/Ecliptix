@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Item;
+namespace App\Entity\Appearance;
 
 enum AppearanceTypeEnum: string
 {
-    //TODO
+    case hair = 'hair';
+    case eyes = 'eyes';
+    case mouth = 'mouth';
+    case nose = 'nose';
+    case ears = 'ears';
 }

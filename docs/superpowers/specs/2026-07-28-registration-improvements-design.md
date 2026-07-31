@@ -42,7 +42,7 @@ Four features bundled into one change:
 | `expires_at` | datetime | now + 24h |
 | `used_at` | datetime, nullable | null = nepoužitý |
 
-### ---- PasswordResetToken
+### PasswordResetToken
 
 | Column | Type | Notes |
 |---|---|---|
@@ -84,6 +84,7 @@ Request:
   "earsId": 20
 }
 ```
+----------------------------- IM HERE, NEED insert into db default looks via migration and not return character on register
 
 Response: `201 Created`, empty body or status message. **No token returned** — user must verify email first.
 
