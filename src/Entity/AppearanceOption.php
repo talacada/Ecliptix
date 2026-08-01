@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Appearance\AppearanceTypeEnum;
-use App\Entity\Item\InventoryContainerEnum;
 use App\Repository\AppearanceOptionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,7 +20,7 @@ class AppearanceOption
     #[ORM\JoinColumn(nullable: false)]
     private ?Race $race = null;
 
-    #[ORM\Column(enumType: InventoryContainerEnum::class)]
+    #[ORM\Column(enumType: AppearanceTypeEnum::class)]
     private ?AppearanceTypeEnum $type = null;
 
     #[ORM\Column(length: 255)]

@@ -84,26 +84,26 @@ Request:
   "earsId": 20
 }
 ```
------------------------------ IM HERE, NEED insert into db default looks via migration and not return character on register
-
 Response: `201 Created`, empty body or status message. **No token returned** — user must verify email first.
 
 ### GET /api/auth/verify-email?token=<uuid>
 
-Public, no auth required.
+~~Public, no auth required.~~
 
-| Outcome | Redirect |
-|---|---|
-| Success | `{FRONTEND_URL}/login?verified=ok` |
-| Token not found | `{FRONTEND_URL}/login?verified=error&reason=not-found` |
-| Already used | `{FRONTEND_URL}/login?verified=error&reason=already-used` |
-| Expired (>24h) | `{FRONTEND_URL}/login?verified=error&reason=expired` |
+| ~~Outcome~~         | ~~Redirect~~                                                  |
+|-----------------|-----------------------------------------------------------|
+| ~~Success~~     | ~~`{FRONTEND_URL}/login?verified=ok`~~                    |
+| ~~Token not found~~ | ~~`{FRONTEND_URL}/login?verified=error&reason=not-found` ~~   |
+| ~~Already used~~  | ~~`{FRONTEND_URL}/login?verified=error&reason=already-used`~~ |
+| ~~Expired (>24h~~ | ~~`{FRONTEND_URL}/login?verified=error&reason=expired`~~      |
 
 ### POST /api/auth/login — change
 
 After password validation, check `email_verified`. If `false` → `403 Forbidden "Email not verified"`.
 
 No other changes. Credential error stays ambiguous (`401 "Invalid credentials"`).
+
+---------- IM HERE - next is to generate EmailVerificationToken, save it to DB and send Email to user to verifie
 
 ### GET /api/auth/register/options
 

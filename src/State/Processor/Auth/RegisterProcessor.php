@@ -14,11 +14,12 @@ use App\Repository\AppearanceOptionRepository;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\RaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * @implements ProcessorInterface<RegisterInput, Character>
+ * @implements ProcessorInterface<RegisterInput, Response>
  */
 readonly class RegisterProcessor implements ProcessorInterface
 {
@@ -36,7 +37,7 @@ readonly class RegisterProcessor implements ProcessorInterface
         Operation $operation,
         array $uriVariables = [],
         array $context = [],
-    ): Character {
+    ): Response {
         if (null !== $this->characterRepository->findOneBy(['email' => $data->getEmail()])) {
             throw new UnprocessableEntityHttpException('Email already registered');
         }
@@ -66,7 +67,7 @@ readonly class RegisterProcessor implements ProcessorInterface
         $entityManager->persist($character);
         $entityManager->flush();
 
-        return $character;
+        return new Response(status: Response::HTTP_CREATED);
     }
 
     /**

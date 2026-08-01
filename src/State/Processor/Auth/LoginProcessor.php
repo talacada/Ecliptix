@@ -37,6 +37,10 @@ readonly class LoginProcessor implements ProcessorInterface
             throw new UnauthorizedHttpException('', 'Invalid credentials');
         }
 
+        if ($character->isEmailVerified() === false) {
+            throw new UnauthorizedHttpException('', 'Email is not verified');
+        }
+
         $token = $this->jwtManager->create($character);
 
         return new LoginOutput(
