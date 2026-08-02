@@ -1,0 +1,13 @@
+<h1>Vítej v Ecliptixu, {{ username }}!</h1>
+
+<p>Díky za registraci. Pro aktivaci účtu klikni na odkaz níže:</p>
+
+<p>
+    <a href="{{ verify_url }}/login?verified=ok&token={{ token }}">
+        Ověřit e-mailovou adresu
+    </a>
+</p>
+
+<p>Odkaz je platný 24 hodin.</p>
+
+<p>Pokud jsi účet nevytvářel(a), tento e-mail ignoruj.</p>

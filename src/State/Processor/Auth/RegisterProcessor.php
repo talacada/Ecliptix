@@ -9,13 +9,17 @@ use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\RegisterInput;
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Entity\Character\Character;
-use App\Entity\Race;
 use App\Repository\AppearanceOptionRepository;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\RaceRepository;
+use App\Service\Auth\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -29,9 +33,14 @@ readonly class RegisterProcessor implements ProcessorInterface
         private CharacterRepository $characterRepository,
         private RaceRepository $raceRepository,
         private AppearanceOptionRepository $appearanceOptionRepository,
+        private EmailVerificationService  $emailVerificationService,
+        private MessageBusInterface $bus
     ) {
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function process(
         mixed $data,
         Operation $operation,
@@ -62,6 +71,23 @@ readonly class RegisterProcessor implements ProcessorInterface
         $character->setMouth($appearanceOptions['mouth']);
         $character->setNose($appearanceOptions['nose']);
         $character->setEars($appearanceOptions['ears']);
+
+
+        $token = $this->emailVerificationService->createToken($character);
+
+        $email = new TemplatedEmail()
+            ->from($_ENV['MAILER_FROM'] ?? 'noreply@ecliptix.local')
+            ->to($character->getEmail())
+            ->subject('Vítej v Ecliptixu — ověř svůj účet')
+            ->htmlTemplate('email/verify.html.twig')
+            ->textTemplate('email/verify.txt.twig')
+            ->context([
+                'token' => (string) $token->getToken(),
+                'username' => $character->getUsername(),
+                'verify_url' => $_ENV['VERIFY_EMAIL_URL'],
+            ]);
+
+        $this->bus->dispatch(new SendEmailMessage($email));
 
         $entityManager = $this->entityManager;
         $entityManager->persist($character);

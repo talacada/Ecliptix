@@ -103,7 +103,7 @@ After password validation, check `email_verified`. If `false` → `403 Forbidden
 
 No other changes. Credential error stays ambiguous (`401 "Invalid credentials"`).
 
----------- IM HERE - next is to generate EmailVerificationToken, save it to DB and send Email to user to verifie
+---------- email is sending, but verifies the url, why is there verified ok? that should do the token and processor.
 
 ### GET /api/auth/register/options
 
