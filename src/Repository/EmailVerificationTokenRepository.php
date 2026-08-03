@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\EmailVerificationToken;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,15 @@ class EmailVerificationTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, EmailVerificationToken::class);
     }
 
-    //    /**
-    //     * @return EmailVerificationToken[] Returns an array of EmailVerificationToken objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?EmailVerificationToken
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function getToken(mixed $data): ?EmailVerificationToken
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.token = :token')
+            ->andWhere('t.exipres_at > :now')
+            ->andWhere('t.used_at IS NULL')
+            ->setParameter('token', $data->getToken())
+            ->setParameter('now', new DateTimeImmutable('now'))
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

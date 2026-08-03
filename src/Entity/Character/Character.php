@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
@@ -36,17 +35,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Post(
             uriTemplate: '/auth/register',
-            openapi: new Operation(
-                tags: ['Auth'],
-            ),
             input: RegisterInput::class,
             processor: RegisterProcessor::class,
         ),
         new Post(
             uriTemplate: '/auth/login',
-            openapi: new Operation(
-                tags: ['Auth'],
-            ),
             normalizationContext: ['groups' => ['login:read']],
             input: LoginInput::class,
             output: LoginOutput::class,

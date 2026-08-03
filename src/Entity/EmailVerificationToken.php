@@ -2,17 +2,30 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Character\Character;
 use App\Repository\EmailVerificationTokenRepository;
+use App\State\Processor\Auth\VerifyEmailProcessor;
+use App\State\Provider\VerifyEmailProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EmailVerificationTokenRepository::class)]
+#[ApiResource(
+    operations: [
+        new Post (
+            uriTemplate: '/auth/verify-email',
+            processor: VerifyEmailProcessor::class
+        ),
+    ]
+)]
 class EmailVerificationToken
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+
     private ?int $id = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

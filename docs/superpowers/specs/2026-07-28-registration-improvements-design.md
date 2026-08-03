@@ -86,16 +86,35 @@ Request:
 ```
 Response: `201 Created`, empty body or status message. **No token returned** — user must verify email first.
 
-### GET /api/auth/verify-email?token=<uuid>
+### POST /api/auth/verify-email
 
-~~Public, no auth required.~~
+Public, no auth required. Request:
 
-| ~~Outcome~~         | ~~Redirect~~                                                  |
-|-----------------|-----------------------------------------------------------|
-| ~~Success~~     | ~~`{FRONTEND_URL}/login?verified=ok`~~                    |
-| ~~Token not found~~ | ~~`{FRONTEND_URL}/login?verified=error&reason=not-found` ~~   |
-| ~~Already used~~  | ~~`{FRONTEND_URL}/login?verified=error&reason=already-used`~~ |
-| ~~Expired (>24h~~ | ~~`{FRONTEND_URL}/login?verified=error&reason=expired`~~      |
+```json
+{
+  "token": "uuid-z-emailu"
+}
+```
+
+Response 200:
+
+```json
+{
+  "message": "Email verified."
+}
+```
+
+| Condition | HTTP | Message |
+|---|---|---|
+| Token not found | 422 | `Invalid or expired token.` |
+| Token already used | 422 | `Invalid or expired token.` |
+| Token expired (>24h) | 422 | `Invalid or expired token.` |
+
+Stejná chybová zpráva pro všechny selhání tokenu — neprozrazuje, který scénář nastal.
+
+Na úspěch nastaví `Character.email_verified = true` a `EmailVerificationToken.used_at = now`.
+
+Flow: frontend dostane token z URL (`{FRONTEND_URL}/verify-email?token=<uuid>`), extrahuje ho a zavolá tento POST endpoint. Backend vrátí JSON — frontend důvěřuje API odpovědi, ne URL parametrům.
 
 ### POST /api/auth/login — change
 
@@ -103,8 +122,8 @@ After password validation, check `email_verified`. If `false` → `403 Forbidden
 
 No other changes. Credential error stays ambiguous (`401 "Invalid credentials"`).
 
----------- email is sending, but verifies the url, why is there verified ok? that should do the token and processor.
 
+---------------------------------------- IM HERE
 ### GET /api/auth/register/options
 
 Public, no auth required. Response:
@@ -214,13 +233,21 @@ RegisterInput (DTO) → RegisterProcessor
 ### Email Verification
 
 ```
-GET /auth/verify-email?token=uuid → VerifyEmailAction (controller)
+VerifyEmailInput (DTO) → VerifyEmailProcessor
   1. Find token by value
   2. Check not used (usedAt === null)
   3. Check not expired (expiresAt > now)
   4. Set Character.emailVerified = true
   5. Set token.usedAt = now
-  6. flush → 302 redirect
+  6. flush → 200 JSON
+```
+
+Frontend flow:
+```
+1. Uživatel klikne na odkaz v emailu: {FRONTEND_URL}/verify-email?token=<uuid>
+2. Frontend získá token z URL, zavolá POST /api/auth/verify-email s {"token": "uuid"}
+3. Backend vrátí 200 (úspěch) nebo 422 (chyba)
+4. Frontend zobrazí výsledek podle API odpovědi
 ```
 
 ### Login
@@ -324,7 +351,8 @@ Používáme IP-based limiting — pro MVP stačí. Do budoucna lze přidat comp
 | `src/State/Processor/Auth/LoginProcessor.php` | Modify — email_verified check |
 | `src/State/Processor/Character/CharacterUpdateProcessor.php` | New — handles PATCH /character with diamond cost |
 | `src/State/Provider/Auth/RegisterOptionsProvider.php` | New — provides race/appearance data |
-| `src/Controller/Auth/VerifyEmailAction.php` | New — handles token verification + redirect |
+| `src/ApiResource/Auth/VerifyEmailInput.php` | New DTO |
+| `src/State/Processor/Auth/VerifyEmailProcessor.php` | New — token validation + sets email_verified |
 | `src/State/Processor/Auth/RequestPasswordResetProcessor.php` | New |
 | `src/State/Processor/Auth/ResetPasswordProcessor.php` | New |
 | `src/ApiResource/Auth/RequestPasswordResetInput.php` | New DTO |
