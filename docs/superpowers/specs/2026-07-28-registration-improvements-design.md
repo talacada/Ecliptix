@@ -123,7 +123,7 @@ After password validation, check `email_verified`. If `false` → `403 Forbidden
 No other changes. Credential error stays ambiguous (`401 "Invalid credentials"`).
 
 
----------------------------------------- IM HERE
+---------------------------------------- IM HERE - just provider remaining
 ### GET /api/auth/register/options
 
 Public, no auth required. Response:

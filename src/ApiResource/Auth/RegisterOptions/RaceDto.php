@@ -7,8 +7,7 @@ class RaceDto
     private int $id;
     private string $name;
 
-    /* @var AppearanceGroupDto[] */
-    private array $appearances;
+    private AppearanceGroupDto $appearance;
 
     public function getId(): int
     {
@@ -30,14 +29,14 @@ class RaceDto
         $this->name = $name;
     }
 
-    public function getAppearances(): array
+    public function getAppearance(): AppearanceGroupDto
     {
-        return $this->appearances;
+        return $this->appearance;
     }
 
-    public function setAppearances(array $appearances): void
+    public function setAppearance(AppearanceGroupDto $appearance): void
     {
-        $this->appearances = $appearances;
+        $this->appearance = $appearance;
     }
 
 
