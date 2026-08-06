@@ -19,6 +19,14 @@ class AppearanceGroupDto
     /* @var AppearanceOptionDto[] $ears */
     private array $ears;
 
+    public function __construct() {
+        $hair = [];
+        $eyes = [];
+        $mouth = [];
+        $nose = [];
+        $ears = [];
+    }
+
     /**
      * @return AppearanceOptionDto[]
      */
@@ -97,6 +105,29 @@ class AppearanceGroupDto
     public function setEars(array $ears): void
     {
         $this->ears = $ears;
+    }
+
+    public function addHair(AppearanceOptionDto $optionDto): void
+    {
+        $this->hair[] = $optionDto;
+    }
+
+    public function addEars(AppearanceOptionDto $optionDto): void
+    {
+        $this->ears[] = $optionDto;
+    }
+    public function addMouth(AppearanceOptionDto $optionDto): void
+    {
+        $this->mouth[] = $optionDto;
+    }
+
+    public function addNose(AppearanceOptionDto $optionDto): void
+    {
+        $this->nose[] = $optionDto;
+    }
+    public function addEyes(AppearanceOptionDto $optionDto): void
+    {
+        $this->eyes[] = $optionDto;
     }
 
 

@@ -2,6 +2,8 @@
 
 namespace App\ApiResource\Auth\RegisterOptions;
 
+use App\Entity\AppearanceOption;
+
 class AppearanceOptionDto
 {
     private int $id;
@@ -40,5 +42,13 @@ class AppearanceOptionDto
         $this->sortOrder = $sortOrder;
     }
 
+    public static function fromEntity(AppearanceOption $entity): self
+    {
+        $dto = new self();
+        $dto->id = $entity->getId();
+        $dto->label = $entity->getLabel();
+        $dto->sortOrder = $entity->getSortOrder() ?? 0;
+        return $dto;
+    }
 
 }

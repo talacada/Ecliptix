@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\ApiResource\Auth\RegisterOptions\AppearanceOptionDto;
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Repository\AppearanceOptionRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,7 +22,7 @@ class AppearanceOption
     private ?Race $race = null;
 
     #[ORM\Column(enumType: AppearanceTypeEnum::class)]
-    private ?AppearanceTypeEnum $type = null;
+    private AppearanceTypeEnum $type;
 
     #[ORM\Column(length: 255)]
     private ?string $label = null;
@@ -46,7 +47,7 @@ class AppearanceOption
         return $this;
     }
 
-    public function getType(): ?AppearanceTypeEnum
+    public function getType(): AppearanceTypeEnum
     {
         return $this->type;
     }

@@ -31,6 +31,7 @@ class AppearanceOptionRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /* @return AppearanceOption[] */
     public function getAllOptionsByRace(Race $race): array
     {
         return $this->createQueryBuilder('a')

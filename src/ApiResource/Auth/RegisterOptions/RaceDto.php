@@ -2,6 +2,8 @@
 
 namespace App\ApiResource\Auth\RegisterOptions;
 
+use ApiPlatform\Metadata\ApiProperty;
+
 class RaceDto
 {
     private int $id;

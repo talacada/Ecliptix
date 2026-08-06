@@ -24,4 +24,20 @@ class RaceRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function getByName(string $name): ?Race
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.name = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getAllRaces(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->getQuery()
+            ->getResult();
+    }
 }
