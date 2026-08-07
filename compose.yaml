@@ -8,10 +8,6 @@ services:
       - "8443:443"
     environment:
       APP_ENV: dev
-      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-DBpassword}@db:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-16}&charset=utf8
-      MAILER_DSN: smtp://mailpit:1025
-      MAILER_FROM: noreply@ecliptix.local
-      VERIFY_EMAIL_URL: https://localhost:8443
     volumes:
       - ./:/app:rw
       - caddy_data:/data
@@ -34,8 +30,6 @@ services:
     command: php bin/console messenger:consume async --memory-limit=128M --time-limit=3600
     environment:
       APP_ENV: dev
-      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-DBpassword}@db:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-16}&charset=utf8
-      MAILER_DSN: smtp://mailpit:1025
     volumes:
       - ./:/app:rw
     depends_on:

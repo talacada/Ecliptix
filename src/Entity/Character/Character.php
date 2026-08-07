@@ -20,6 +20,7 @@ use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
+use App\State\Processor\Character\UpdateCharacterProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
 use App\State\Provider\Character\PublicCharacterProvider;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -70,6 +71,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             validationContext: ['groups' => ['Default', self::UPDATE_GROUP]],
             read: true,
             provider: MineCharacterProvider::class,
+            processor: UpdateCharacterProcessor::class,
         ),
         new Delete(
             uriTemplate: '/character',
@@ -82,8 +84,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: 'character')]
-#[UniqueEntity('username')]
-#[UniqueEntity('email')]
+#[UniqueEntity(fields: ['username'], groups: ['Default', self::UPDATE_GROUP])]
+#[UniqueEntity(fields: ['email'])]
 class Character implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const string READ_GROUP = 'character:read';
@@ -177,32 +179,32 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
     private Race $race;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
     private AppearanceOption $hair;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
     private AppearanceOption $eyes;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
     private AppearanceOption $mouth;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
     private AppearanceOption $nose;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
     private AppearanceOption $ears;
 
     public function __construct()

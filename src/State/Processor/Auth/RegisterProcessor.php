@@ -15,6 +15,7 @@ use App\Repository\RaceRepository;
 use App\Service\Auth\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
@@ -34,7 +35,11 @@ readonly class RegisterProcessor implements ProcessorInterface
         private RaceRepository $raceRepository,
         private AppearanceOptionRepository $appearanceOptionRepository,
         private EmailVerificationService  $emailVerificationService,
-        private MessageBusInterface $bus
+        private MessageBusInterface $bus,
+        #[Autowire(env: 'MAILER_FROM')]
+        private string $mailerFrom,
+        #[Autowire(env: 'VERIFY_EMAIL_URL')]
+        private string $verifyEmailUrl,
     ) {
     }
 
@@ -76,7 +81,7 @@ readonly class RegisterProcessor implements ProcessorInterface
         $token = $this->emailVerificationService->createToken($character);
 
         $email = new TemplatedEmail()
-            ->from($_ENV['MAILER_FROM'] ?? 'noreply@ecliptix.local')
+            ->from($this->mailerFrom)
             ->to($character->getEmail())
             ->subject('Vítej v Ecliptixu — ověř svůj účet')
             ->htmlTemplate('email/verify.html.twig')
@@ -84,7 +89,7 @@ readonly class RegisterProcessor implements ProcessorInterface
             ->context([
                 'token' => (string) $token->getToken(),
                 'username' => $character->getUsername(),
-                'verify_url' => $_ENV['VERIFY_EMAIL_URL'],
+                'verify_url' => $this->verifyEmailUrl,
             ]);
 
         $this->bus->dispatch(new SendEmailMessage($email));
