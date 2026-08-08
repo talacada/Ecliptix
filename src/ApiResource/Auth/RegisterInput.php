@@ -44,8 +44,6 @@ class RegisterInput
     #[Assert\Positive(message: 'Ears must be a positive integer.')]
     private int $ears_id;
 
-    //TODO others
-
     public function getPassword(): string
     {
         return $this->password;

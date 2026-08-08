@@ -13,6 +13,7 @@ use App\Repository\AppearanceOptionRepository;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\RaceRepository;
 use App\Service\Auth\EmailVerificationService;
+use AppearanceValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -32,10 +33,9 @@ readonly class RegisterProcessor implements ProcessorInterface
         private EntityManagerInterface $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
         private CharacterRepository $characterRepository,
-        private RaceRepository $raceRepository,
-        private AppearanceOptionRepository $appearanceOptionRepository,
         private EmailVerificationService  $emailVerificationService,
         private MessageBusInterface $bus,
+        private AppearanceValidationService $appearanceValidationService,
         #[Autowire(env: 'MAILER_FROM')]
         private string $mailerFrom,
         #[Autowire(env: 'VERIFY_EMAIL_URL')]
@@ -45,6 +45,7 @@ readonly class RegisterProcessor implements ProcessorInterface
 
     /**
      * @throws ExceptionInterface
+     * @param RegisterInput $data
      */
     public function process(
         mixed $data,
@@ -60,7 +61,14 @@ readonly class RegisterProcessor implements ProcessorInterface
             throw new UnprocessableEntityHttpException('Username already registered');
         }
 
-        $appearanceOptions = $this->verifiesAppearance($data);
+        $appearanceOptions = $this->appearanceValidationService->verifiesAppearance(
+            $data->getRaceId(),
+            $data->getHairId(),
+            $data->getEyesId(),
+            $data->getMouthId(),
+            $data->getNoseId(),
+            $data->getEarsId()
+        );
 
         $character = new Character();
 
@@ -100,44 +108,4 @@ readonly class RegisterProcessor implements ProcessorInterface
 
         return new Response(status: Response::HTTP_CREATED);
     }
-
-    /**
-     * @return array <string, AppearanceOption>
-     */
-    private function verifiesAppearance(RegisterInput $data): array
-    {
-
-        $race = $this->raceRepository->getById($data->getRaceId());
-        if ($race === null) {
-            throw new UnprocessableEntityHttpException('Invalid race_id');
-        }
-
-        $options = [
-            'race' => $race,
-            'hair' => $this->appearanceOptionRepository->getByIdRaceType($data->getHairId(), $race, AppearanceTypeEnum::hair),
-            'eyes' => $this->appearanceOptionRepository->getByIdRaceType($data->getEyesId(), $race, AppearanceTypeEnum::eyes),
-            'mouth' => $this->appearanceOptionRepository->getByIdRaceType($data->getMouthId(), $race, AppearanceTypeEnum::mouth),
-            'nose' => $this->appearanceOptionRepository->getByIdRaceType($data->getNoseId(), $race, AppearanceTypeEnum::nose),
-            'ears' => $this->appearanceOptionRepository->getByIdRaceType($data->getEarsId(), $race, AppearanceTypeEnum::ears),
-        ];
-
-        if ($options['hair'] === null) {
-            throw new UnprocessableEntityHttpException('Invalid hair_id');
-        }
-        if ($options['eyes'] === null){
-            throw new UnprocessableEntityHttpException('Invalid eyes_id');
-        }
-        if ($options['mouth'] === null){
-            throw new UnprocessableEntityHttpException('Invalid mouth_id');
-        }
-        if ($options['nose'] === null){
-            throw new UnprocessableEntityHttpException('Invalid nose_id');
-        }
-        if ($options['ears'] === null){
-            throw new UnprocessableEntityHttpException('Invalid ears_id');
-        }
-
-        return $options;
-    }
-
 }
