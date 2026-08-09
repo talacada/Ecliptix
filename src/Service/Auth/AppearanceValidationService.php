@@ -1,6 +1,8 @@
 <?php
 
 
+namespace App\Service\Auth;
+
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Repository\AppearanceOptionRepository;
 use App\Repository\RaceRepository;
@@ -10,9 +12,11 @@ class AppearanceValidationService
 {
 
     public function __construct(
-        private RaceRepository $raceRepository,
+        private RaceRepository             $raceRepository,
         private AppearanceOptionRepository $appearanceOptionRepository,
-    ) {}
+    )
+    {
+    }
 
     /**
      * @return array <string, AppearanceOption>
@@ -44,16 +48,16 @@ class AppearanceValidationService
         if ($options['hair'] === null) {
             throw new UnprocessableEntityHttpException('Invalid hair_id');
         }
-        if ($options['eyes'] === null){
+        if ($options['eyes'] === null) {
             throw new UnprocessableEntityHttpException('Invalid eyes_id');
         }
-        if ($options['mouth'] === null){
+        if ($options['mouth'] === null) {
             throw new UnprocessableEntityHttpException('Invalid mouth_id');
         }
-        if ($options['nose'] === null){
+        if ($options['nose'] === null) {
             throw new UnprocessableEntityHttpException('Invalid nose_id');
         }
-        if ($options['ears'] === null){
+        if ($options['ears'] === null) {
             throw new UnprocessableEntityHttpException('Invalid ears_id');
         }
 

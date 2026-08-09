@@ -7,8 +7,9 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Character\Character;
 use App\Enum\CurrencyEnum;
 use App\Enum\GameCostEnum;
-use AppearanceValidationService;
+use App\Service\Auth\AppearanceValidationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 /**
  * @implements ProcessorInterface<Character, Character>
@@ -20,19 +21,34 @@ class UpdateCharacterProcessor implements ProcessorInterface
         private AppearanceValidationService $appearanceValidationService,
     ) {}
 
+    /**
+     * @throws Exception
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Character
     {
         /* @var Character $prevEntity */
         $prevEntity = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);
         $character = $data;
 
-        $newAppearanceOptions = $this->appearanceValidationService->verifiesAppearance(
+        if (
+            $prevEntity['race'] === $character->getRace() &&
+            $prevEntity['hair'] === $character->getHair() &&
+            $prevEntity['eyes'] === $character->getEyes() &&
+            $prevEntity['mouth'] === $character->getMouth() &&
+            $prevEntity['nose'] === $character->getNose() &&
+            $prevEntity['ears'] === $character->getEars() &&
+            $prevEntity['username'] === $character->getUsername()
+        ) {
+            throw new Exception('Nothing changed');
+        }
+
+        $this->appearanceValidationService->verifiesAppearance(
             $character->getRace()->getId(),
             $character->getHair()->getId(),
-            $character->getEyeColor()->getId(),
+            $character->getEyes()->getId(),
             $character->getMouth()->getId(),
             $character->getNose()->getId(),
-            $character->getEat()->getId(),
+            $character->getEars()->getId(),
         );
 
         $cost = GameCostEnum::CHANGE_APPEARANCE;
@@ -41,12 +57,7 @@ class UpdateCharacterProcessor implements ProcessorInterface
             CurrencyEnum::GOLD => $character->subtractGold($cost->getAmount()),
         };
 
-        //TODO here continue - set only changed values
-
-        // 2. Porovnáme původní rasa/vzhled vs. nový stav v $data a spočítáme počet změn
-        // 4. Pokud $data->getDiamonds() < cena -> vyhodíme výjimku (např. UnprocessableEntityHttpException nebo custom exception s kód 402)
-        // 5. Validujeme, že vybrané AppearanceOption patří ke zvolené rase
-        // 6. Odečteme diamanty: $data->setDiamonds($data->getDiamonds() - cena)
-        // 7. Flushneme změny do databáze a vrátíme $data
+        $this->entityManager->flush();
+        return $character;
     }
 }

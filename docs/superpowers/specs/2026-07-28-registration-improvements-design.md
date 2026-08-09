@@ -144,7 +144,7 @@ Public, no auth required. Response:
   ]
 }
 ```
----------------------------------------- IM HERE
+
 ### PATCH /character — extended
 
 Accepts `raceId`, `hairId`, `eyesId`, `mouthId`, `noseId`, `earsId`.
@@ -154,6 +154,8 @@ Accepts `raceId`, `hairId`, `eyesId`, `mouthId`, `noseId`, `earsId`.
 Same validation as registration: appearance IDs must match race and type.
 
 On race change: all appearance IDs must be re-sent (old ones won't match new race).
+
+--------- IM HERE
 
 ### POST /api/auth/request-password-reset
 

@@ -13,7 +13,7 @@ use App\Repository\AppearanceOptionRepository;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\RaceRepository;
 use App\Service\Auth\EmailVerificationService;
-use AppearanceValidationService;
+use App\Service\Auth\AppearanceValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
