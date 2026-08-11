@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Character\Character;
 use App\Entity\PasswordResetToken;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,29 +16,13 @@ class PasswordResetTokenRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, PasswordResetToken::class);
     }
-
-    //    /**
-    //     * @return PasswordResetToken[] Returns an array of PasswordResetToken objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?PasswordResetToken
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+	public function getByCharacter(Character $character): ?PasswordResetToken
+	{
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.character = :character')
+            ->andWhere('p.used_at IS NULL')
+            ->setParameter('character', $character)
+            ->getQuery()
+            ->getOneOrNullResult();
+	}
 }

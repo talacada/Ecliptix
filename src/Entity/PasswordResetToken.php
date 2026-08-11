@@ -6,6 +6,7 @@ use App\Entity\Character\Character;
 use App\Repository\PasswordResetTokenRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: PasswordResetTokenRepository::class)]
 class PasswordResetToken
@@ -15,11 +16,12 @@ class PasswordResetToken
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
     private Character $character;
 
-    #[ORM\Column(length: 255)]
-    private string $token;
+    #[ORM\Column(type: 'uuid')]
+    private Uuid $token;
 
     #[ORM\Column]
     private ?DateTimeImmutable $expires_at = null;
@@ -44,12 +46,12 @@ class PasswordResetToken
         return $this;
     }
 
-    public function getToken(): string
+    public function getToken(): Uuid
     {
         return $this->token;
     }
 
-    public function setToken(string $token): static
+    public function setToken(Uuid $token): static
     {
         $this->token = $token;
 

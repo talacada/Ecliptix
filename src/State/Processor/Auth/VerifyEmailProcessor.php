@@ -24,6 +24,10 @@ class VerifyEmailProcessor implements ProcessorInterface
             throw new UnprocessableEntityHttpException('Invalid or expired token');
         }
 
+        if ($dbToken->getExpiresAt() < new DateTimeImmutable('now')) {
+            throw new UnprocessableEntityHttpException('Invalid or expired token');
+        }
+
         $dbToken->setUsedAt(new DateTimeImmutable('now'));
         $dbToken->getCharacter()->setEmailVerified(true);
 

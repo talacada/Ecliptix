@@ -21,7 +21,7 @@ class EmailVerificationTokenRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('t')
             ->andWhere('t.token = :token')
-            ->andWhere('t.exipres_at > :now')
+            ->andWhere('t.expires_at > :now')
             ->andWhere('t.used_at IS NULL')
             ->setParameter('token', $data->getToken())
             ->setParameter('now', new DateTimeImmutable('now'))

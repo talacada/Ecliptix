@@ -155,8 +155,6 @@ Same validation as registration: appearance IDs must match race and type.
 
 On race change: all appearance IDs must be re-sent (old ones won't match new race).
 
---------- IM HERE
-
 ### POST /api/auth/request-password-reset
 
 Public, no auth required. Request:
@@ -177,6 +175,8 @@ Public, no auth required. Request:
 Pokud email existuje: vygeneruje `PasswordResetToken` (UUID, expires_at = now+1h), smaže starý token pokud existuje, pošle email s reset odkazem.
 
 ### POST /api/auth/reset-password
+
+--------- IM HERE + fix verification only needs GET
 
 Public, no auth required. Request:
 

@@ -8,12 +8,14 @@ use App\Entity\Character\Character;
 use App\Repository\EmailVerificationTokenRepository;
 use App\State\Processor\Auth\VerifyEmailProcessor;
 use App\State\Provider\VerifyEmailProvider;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EmailVerificationTokenRepository::class)]
 #[ApiResource(
     operations: [
+        //TODO next transform this to GET from email
         new Post (
             uriTemplate: '/auth/verify-email',
             processor: VerifyEmailProcessor::class
@@ -28,7 +30,7 @@ class EmailVerificationToken
 
     private ?int $id = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Character $character = null;
 
@@ -36,10 +38,10 @@ class EmailVerificationToken
     private ?Uuid $token = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $exipres_at = null;
+    private ?DateTimeImmutable $expires_at = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $used_at = null;
+    private ?DateTimeImmutable $used_at = null;
 
     public function getId(): ?int
     {
@@ -70,24 +72,24 @@ class EmailVerificationToken
         return $this;
     }
 
-    public function getExipresAt(): ?\DateTimeImmutable
+    public function getExpiresAt(): ?DateTimeImmutable
     {
-        return $this->exipres_at;
+        return $this->expires_at;
     }
 
-    public function setExipresAt(\DateTimeImmutable $exipres_at): static
+    public function setExpiresAt(DateTimeImmutable $expires_at): static
     {
-        $this->exipres_at = $exipres_at;
+        $this->expires_at = $expires_at;
 
         return $this;
     }
 
-    public function getUsedAt(): ?\DateTimeImmutable
+    public function getUsedAt(): ?DateTimeImmutable
     {
         return $this->used_at;
     }
 
-    public function setUsedAt(?\DateTimeImmutable $used_at): static
+    public function setUsedAt(?DateTimeImmutable $used_at): static
     {
         $this->used_at = $used_at;
 
