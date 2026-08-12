@@ -30,16 +30,16 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 readonly class RegisterProcessor implements ProcessorInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private EntityManagerInterface      $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
-        private CharacterRepository $characterRepository,
-        private EmailVerificationService  $emailVerificationService,
-        private MessageBusInterface $bus,
+        private CharacterRepository         $characterRepository,
+        private EmailVerificationService    $emailVerificationService,
+        private MessageBusInterface         $bus,
         private AppearanceValidationService $appearanceValidationService,
         #[Autowire(env: 'MAILER_FROM')]
-        private string $mailerFrom,
-        #[Autowire(env: 'VERIFY_EMAIL_URL')]
-        private string $verifyEmailUrl,
+        private string                      $mailerFrom,
+        #[Autowire(env: 'FRONTEND_URL')]
+        private string                      $frontEndUrl,
     ) {
     }
 
@@ -97,7 +97,7 @@ readonly class RegisterProcessor implements ProcessorInterface
             ->context([
                 'token' => (string) $token->getToken(),
                 'username' => $character->getUsername(),
-                'verify_url' => $this->verifyEmailUrl,
+                'verify_url' => $this->frontEndUrl . '/api/auth/verify-email',
             ]);
 
         $this->bus->dispatch(new SendEmailMessage($email));

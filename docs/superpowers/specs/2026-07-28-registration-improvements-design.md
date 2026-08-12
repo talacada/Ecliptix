@@ -176,7 +176,7 @@ Pokud email existuje: vygeneruje `PasswordResetToken` (UUID, expires_at = now+1h
 
 ### POST /api/auth/reset-password
 
---------- IM HERE + fix verification only needs GET
+--------- IM HERE
 
 Public, no auth required. Request:
 
@@ -353,7 +353,7 @@ Používáme IP-based limiting — pro MVP stačí. Do budoucna lze přidat comp
 | `src/State/Processor/Character/CharacterUpdateProcessor.php` | New — handles PATCH /character with diamond cost |
 | `src/State/Provider/Auth/RegisterOptionsProvider.php` | New — provides race/appearance data |
 | `src/ApiResource/Auth/VerifyEmailInput.php` | New DTO |
-| `src/State/Processor/Auth/VerifyEmailProcessor.php` | New — token validation + sets email_verified |
+| `../../../src/State/Processor/Auth/VerifyEmailProvider.php` | New — token validation + sets email_verified |
 | `src/State/Processor/Auth/RequestPasswordResetProcessor.php` | New |
 | `src/State/Processor/Auth/ResetPasswordProcessor.php` | New |
 | `src/ApiResource/Auth/RequestPasswordResetInput.php` | New DTO |

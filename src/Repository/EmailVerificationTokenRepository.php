@@ -17,13 +17,15 @@ class EmailVerificationTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, EmailVerificationToken::class);
     }
 
-    public function getToken(mixed $data): ?EmailVerificationToken
+    public function getToken(mixed $token): ?EmailVerificationToken
     {
+        $tokenValue = $token instanceof EmailVerificationToken ? $token->getToken() : $token;
+
         return $this->createQueryBuilder('t')
             ->andWhere('t.token = :token')
             ->andWhere('t.expires_at > :now')
             ->andWhere('t.used_at IS NULL')
-            ->setParameter('token', $data->getToken())
+            ->setParameter('token', $tokenValue)
             ->setParameter('now', new DateTimeImmutable('now'))
             ->getQuery()
             ->getOneOrNullResult();

@@ -1,24 +1,32 @@
 <?php
 
-namespace App\State\Processor\Auth;
+namespace App\State\Provider\Auth;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use ApiPlatform\State\ProviderInterface;
 use App\Repository\EmailVerificationTokenRepository;
 use DateTimeImmutable;
+use Doctrine\DBAL\Exception\DatabaseDoesNotExist;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
-class VerifyEmailProcessor implements ProcessorInterface
+class VerifyEmailProvider implements ProviderInterface
 {
     public function __construct(
         private EmailVerificationTokenRepository $emailVerificationTokenRepository,
         private EntityManagerInterface $entityManager,
     ) { }
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        $dbToken = $this->emailVerificationTokenRepository->getToken($data);
+        $tokenFromUrl = $uriVariables['token'] ?? null;
+
+        if ($tokenFromUrl === null) {
+            throw new UnprocessableEntityHttpException('Token is required');
+        }
+
+        $dbToken = $this->emailVerificationTokenRepository->getToken($tokenFromUrl);
 
         if ($dbToken === null) {
             throw new UnprocessableEntityHttpException('Invalid or expired token');
