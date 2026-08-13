@@ -176,7 +176,7 @@ Pokud email existuje: vygeneruje `PasswordResetToken` (UUID, expires_at = now+1h
 
 ### POST /api/auth/reset-password
 
---------- IM HERE
+--------- IM HERE - create processor that changes password
 
 Public, no auth required. Request:
 
