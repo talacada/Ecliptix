@@ -24,7 +24,7 @@ class PasswordResetToken
     private Uuid $token;
 
     #[ORM\Column]
-    private ?DateTimeImmutable $expires_at = null;
+    private DateTimeImmutable $expires_at;
 
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $used_at = null;
@@ -58,7 +58,7 @@ class PasswordResetToken
         return $this;
     }
 
-    public function getExpiresAt(): ?DateTimeImmutable
+    public function getExpiresAt(): DateTimeImmutable
     {
         return $this->expires_at;
     }

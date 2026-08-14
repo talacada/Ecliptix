@@ -23,6 +23,7 @@ class PasswordResetInput
     private string $password;
 
     #[Assert\NotBlank(message: 'Token should not be blank.')]
+    #[Assert\Uuid(message: 'Token is not valid')]
     private string $token;
 
 
