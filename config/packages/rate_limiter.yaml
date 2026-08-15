@@ -1,0 +1,14 @@
+framework:
+    rate_limiter:
+        login_limiter:
+            policy: 'token_bucket'
+            limit: 5
+            rate: { amount: 5, interval: '1 minute' }
+        register_limiter:
+            policy: 'token_bucket'
+            limit: 3
+            rate: { amount: 3, interval: '1 minute' }
+        password_reset_limiter:
+            policy: 'token_bucket'
+            limit: 3
+            rate: { amount: 3, interval: '1 minute' }

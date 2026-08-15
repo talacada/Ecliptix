@@ -176,7 +176,6 @@ Pokud email existuje: vygeneruje `PasswordResetToken` (UUID, expires_at = now+1h
 
 ### POST /api/auth/reset-password
 
---------- IM HERE - create processor that changes password
 
 Public, no auth required. Request:
 
@@ -214,6 +213,8 @@ Používá se Symfony RateLimiter komponenta. Konfigurace v `config/packages/rat
 | `POST /api/auth/request-password-reset` | 3 pokusy/minutu na IP | 429 Too Many Requests |
 
 Rate limiter se kontroluje **před** jakoukoliv business logikou — na úrovni listeneru/event subscriberu, nebo jako první krok v procesoru. Tím se zabrání zbytečným DB dotazům při útoku.
+
+--------- IM HERE - create processor that changes password
 
 ## Data Flow
 
