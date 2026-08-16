@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -26,16 +27,19 @@ use Symfony\Component\Uid\Uuid;
 readonly class RequestPasswordResetProcessor implements ProcessorInterface
 {
     public function __construct(
-        private CharacterRepository $characterRepository,
+        private CharacterRepository          $characterRepository,
         private PasswordResetTokenRepository $passwordResetTokenRepository,
-        private EntityManagerInterface $entityManager,
-        private MessageBusInterface $bus,
+        private EntityManagerInterface       $entityManager,
+        private MessageBusInterface          $bus,
         #[Autowire(env: 'MAILER_FROM')]
         private string $mailerFrom,
-        #[Autowire(env: 'VERIFY_EMAIL_URL')]
-        private string $resetPasswordUrl,
+        #[Autowire(env: 'FRONTEND_URL')]
+        private string $frontEndUrl,
     ) {}
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): JsonResponse
     {
         $emailAddress = $data instanceof RequestPasswordResetInput ? $data->getEmail() : ($data['email'] ?? '');
@@ -74,7 +78,7 @@ readonly class RequestPasswordResetProcessor implements ProcessorInterface
             ->context([
                 'token' => (string) $newToken->getToken(),
                 'username' => $character->getUsername(),
-                'reset_url' => $this->resetPasswordUrl,
+                'reset_url' => $this->frontEndUrl,
             ]);
 
         $this->bus->dispatch(new SendEmailMessage($email));

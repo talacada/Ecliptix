@@ -20,11 +20,11 @@ class AppearanceGroupDto
     private array $ears;
 
     public function __construct() {
-        $hair = [];
-        $eyes = [];
-        $mouth = [];
-        $nose = [];
-        $ears = [];
+        $this->hair = [];
+        $this->eyes = [];
+        $this->mouth = [];
+        $this->nose = [];
+        $this->ears = [];
     }
 
     /**

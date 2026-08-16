@@ -7,22 +7,24 @@ use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\Auth\RegisterOptions\AppearanceGroupDto;
 use App\ApiResource\Auth\RegisterOptions\AppearanceOptionDto;
 use App\ApiResource\Auth\RegisterOptions\RaceDto;
+use App\ApiResource\Auth\RegisterOptions\RegisterOptionsResponse;
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Repository\AppearanceOptionRepository;
 use App\Repository\RaceRepository;
 
+/**
+ * @implements ProviderInterface<RegisterOptionsResponse>
+ */
 class RegisterOptionsProvider implements ProviderInterface
 {
-
     public function __construct(
         private AppearanceOptionRepository $appearanceOptionRepository,
         private RaceRepository $raceRepository,
     ) {}
 
-    /* @return RaceDto[] */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): RegisterOptionsResponse
     {
-        $response = [];
+        $races = [];
 
         foreach ($this->raceRepository->getAllRaces() as $race) {
             $raceDto = new RaceDto();
@@ -44,8 +46,11 @@ class RegisterOptionsProvider implements ProviderInterface
                 }
             }
             $raceDto->setAppearance($appearanceGroup);
-            $response[] = $raceDto;
+            $races[] = $raceDto;
         }
+
+        $response = new RegisterOptionsResponse();
+        $response->setRaces($races);
 
         return $response;
     }

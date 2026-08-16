@@ -3,11 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Character\Character;
 use App\Repository\EmailVerificationTokenRepository;
-use App\State\Provider\Auth\VerifyEmailProvider;
+use App\State\Processor\Auth\VerifyEmailProcessor;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -15,15 +14,9 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: EmailVerificationTokenRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(
-            uriTemplate: '/auth/verify-email/{token}',
-            uriVariables: [
-                'token' => new Link(
-                    fromClass: EmailVerificationToken::class,
-                    identifiers: ['token'],
-                ),
-            ],
-            provider: VerifyEmailProvider::class
+        new Post(
+            uriTemplate: '/auth/verify-email',
+            processor: VerifyEmailProcessor::class,
         ),
     ]
 )]

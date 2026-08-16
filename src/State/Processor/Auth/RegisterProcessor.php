@@ -97,7 +97,7 @@ readonly class RegisterProcessor implements ProcessorInterface
             ->context([
                 'token' => (string) $token->getToken(),
                 'username' => $character->getUsername(),
-                'verify_url' => $this->frontEndUrl . '/api/auth/verify-email',
+                'verify_url' => $this->frontEndUrl,
             ]);
 
         $this->bus->dispatch(new SendEmailMessage($email));
