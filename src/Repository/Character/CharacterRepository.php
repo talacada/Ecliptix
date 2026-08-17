@@ -39,12 +39,12 @@ class CharacterRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-	public function getCharacterByEmail(mixed $email): ?Character
-	{
+    public function getCharacterByEmail(mixed $email): ?Character
+    {
         return $this->createQueryBuilder('c')
             ->andWhere('c.email = :email')
             ->setParameter('email', $email)
             ->getQuery()
             ->getOneOrNullResult();
-	}
+    }
 }

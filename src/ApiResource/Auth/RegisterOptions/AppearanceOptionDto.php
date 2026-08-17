@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Auth\RegisterOptions;
 
 use App\Entity\AppearanceOption;
@@ -48,7 +50,7 @@ class AppearanceOptionDto
         $dto->id = $entity->getId();
         $dto->label = $entity->getLabel();
         $dto->sortOrder = $entity->getSortOrder() ?? 0;
+
         return $dto;
     }
-
 }

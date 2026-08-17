@@ -7,13 +7,10 @@ namespace App\State\Processor\Auth;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\RegisterInput;
-use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Entity\Character\Character;
-use App\Repository\AppearanceOptionRepository;
 use App\Repository\Character\CharacterRepository;
-use App\Repository\RaceRepository;
-use App\Service\Auth\EmailVerificationService;
 use App\Service\Auth\AppearanceValidationService;
+use App\Service\Auth\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -30,22 +27,23 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 readonly class RegisterProcessor implements ProcessorInterface
 {
     public function __construct(
-        private EntityManagerInterface      $entityManager,
+        private EntityManagerInterface $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
-        private CharacterRepository         $characterRepository,
-        private EmailVerificationService    $emailVerificationService,
-        private MessageBusInterface         $bus,
+        private CharacterRepository $characterRepository,
+        private EmailVerificationService $emailVerificationService,
+        private MessageBusInterface $bus,
         private AppearanceValidationService $appearanceValidationService,
         #[Autowire(env: 'MAILER_FROM')]
-        private string                      $mailerFrom,
+        private string $mailerFrom,
         #[Autowire(env: 'FRONTEND_URL')]
-        private string                      $frontEndUrl,
+        private string $frontEndUrl,
     ) {
     }
 
     /**
-     * @throws ExceptionInterface
      * @param RegisterInput $data
+     *
+     * @throws ExceptionInterface
      */
     public function process(
         mixed $data,
@@ -67,7 +65,7 @@ readonly class RegisterProcessor implements ProcessorInterface
             $data->getEyesId(),
             $data->getMouthId(),
             $data->getNoseId(),
-            $data->getEarsId()
+            $data->getEarsId(),
         );
 
         $character = new Character();
@@ -84,7 +82,6 @@ readonly class RegisterProcessor implements ProcessorInterface
         $character->setMouth($appearanceOptions['mouth']);
         $character->setNose($appearanceOptions['nose']);
         $character->setEars($appearanceOptions['ears']);
-
 
         $token = $this->emailVerificationService->createToken($character);
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\ApiResource\Auth\RegisterOptions;
+declare(strict_types=1);
 
-use ApiPlatform\Metadata\ApiProperty;
+namespace App\ApiResource\Auth\RegisterOptions;
 
 class RaceDto
 {
@@ -40,6 +40,4 @@ class RaceDto
     {
         $this->appearance = $appearance;
     }
-
-
 }

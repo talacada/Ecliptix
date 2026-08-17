@@ -10,7 +10,6 @@ use App\ApiResource\Auth\RequestPasswordResetInput;
 use App\Entity\PasswordResetToken;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\PasswordResetTokenRepository;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -27,15 +26,16 @@ use Symfony\Component\Uid\Uuid;
 readonly class RequestPasswordResetProcessor implements ProcessorInterface
 {
     public function __construct(
-        private CharacterRepository          $characterRepository,
+        private CharacterRepository $characterRepository,
         private PasswordResetTokenRepository $passwordResetTokenRepository,
-        private EntityManagerInterface       $entityManager,
-        private MessageBusInterface          $bus,
+        private EntityManagerInterface $entityManager,
+        private MessageBusInterface $bus,
         #[Autowire(env: 'MAILER_FROM')]
         private string $mailerFrom,
         #[Autowire(env: 'FRONTEND_URL')]
         private string $frontEndUrl,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws ExceptionInterface
@@ -45,24 +45,24 @@ readonly class RequestPasswordResetProcessor implements ProcessorInterface
         $emailAddress = $data->getEmail();
         $character = $this->characterRepository->getCharacterByEmail($emailAddress);
 
-        if ($character === null) {
+        if (null === $character) {
             return new JsonResponse(
                 ['message' => 'If the email exists, a reset link has been sent.'],
-                Response::HTTP_OK
+                Response::HTTP_OK,
             );
         }
 
         $oldToken = $this->passwordResetTokenRepository->getByCharacter($character);
 
         // When will add created_at will check if oldToken is older than 1min
-        if ($oldToken !== null) {
+        if (null !== $oldToken) {
             $this->entityManager->remove($oldToken);
             $this->entityManager->flush();
         }
 
         $newToken = new PasswordResetToken();
         $newToken->setCharacter($character);
-        $newToken->setExpiresAt(new DateTimeImmutable('now + 1hours'));
+        $newToken->setExpiresAt(new \DateTimeImmutable('now + 1hours'));
         $newToken->setToken(Uuid::v4());
         $newToken->setUsedAt(null);
 
@@ -85,8 +85,7 @@ readonly class RequestPasswordResetProcessor implements ProcessorInterface
 
         return new JsonResponse(
             ['message' => 'If the email exists, a reset link has been sent.'],
-            Response::HTTP_OK
+            Response::HTTP_OK,
         );
     }
 }
-

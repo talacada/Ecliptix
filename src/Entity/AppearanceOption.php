@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use App\ApiResource\Auth\RegisterOptions\AppearanceOptionDto;
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Repository\AppearanceOptionRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
     operations: [
         new Get(),
         new GetCollection(),
-    ]
+    ],
 )]
 #[ORM\Entity(repositoryClass: AppearanceOptionRepository::class)]
 class AppearanceOption

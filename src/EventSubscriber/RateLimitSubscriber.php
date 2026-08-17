@@ -7,8 +7,8 @@ namespace App\EventSubscriber;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 
 class RateLimitSubscriber implements EventSubscriberInterface
@@ -22,7 +22,8 @@ class RateLimitSubscriber implements EventSubscriberInterface
 
         #[Autowire(service: 'limiter.password_reset_limiter')]
         private RateLimiterFactory $passwordResetLimiter,
-    ) {}
+    ) {
+    }
 
     public static function getSubscribedEvents(): array
     {
@@ -43,7 +44,7 @@ class RateLimitSubscriber implements EventSubscriberInterface
             default => null,
         };
 
-        if ($limiter === null) {
+        if (null === $limiter) {
             return;
         }
 
@@ -52,10 +53,7 @@ class RateLimitSubscriber implements EventSubscriberInterface
         $limit = $limiter->create($ip)->consume(1);
 
         if (!$limit->isAccepted()) {
-            throw new TooManyRequestsHttpException(
-                retryAfter: $limit->getRetryAfter()->getTimestamp() - time(),
-                message: 'Too many attempts. Try again later.'
-            );
+            throw new TooManyRequestsHttpException(retryAfter: $limit->getRetryAfter()->getTimestamp() - time(), message: 'Too many attempts. Try again later.');
         }
     }
 }

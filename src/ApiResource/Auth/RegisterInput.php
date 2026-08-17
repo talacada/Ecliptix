@@ -133,6 +133,4 @@ class RegisterInput
     {
         $this->ears_id = $ears_id;
     }
-
-
 }

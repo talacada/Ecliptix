@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Auth\RegisterOptions;
 
 class AppearanceGroupDto
@@ -19,7 +21,8 @@ class AppearanceGroupDto
     /** @var AppearanceOptionDto[] */
     private array $ears;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->hair = [];
         $this->eyes = [];
         $this->mouth = [];
@@ -116,6 +119,7 @@ class AppearanceGroupDto
     {
         $this->ears[] = $optionDto;
     }
+
     public function addMouth(AppearanceOptionDto $optionDto): void
     {
         $this->mouth[] = $optionDto;
@@ -125,10 +129,9 @@ class AppearanceGroupDto
     {
         $this->nose[] = $optionDto;
     }
+
     public function addEyes(AppearanceOptionDto $optionDto): void
     {
         $this->eyes[] = $optionDto;
     }
-
-
 }

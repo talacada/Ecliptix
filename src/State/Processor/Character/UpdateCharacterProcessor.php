@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Processor\Character;
 
 use ApiPlatform\Metadata\Operation;
@@ -9,7 +11,6 @@ use App\Enum\CurrencyEnum;
 use App\Enum\GameCostEnum;
 use App\Service\Auth\AppearanceValidationService;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<Character, Character>
@@ -19,10 +20,11 @@ class UpdateCharacterProcessor implements ProcessorInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private AppearanceValidationService $appearanceValidationService,
-    ) {}
+    ) {
+    }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Character
     {
@@ -31,15 +33,15 @@ class UpdateCharacterProcessor implements ProcessorInterface
         $character = $data;
 
         if (
-            $prevEntity['race'] === $character->getRace() &&
-            $prevEntity['hair'] === $character->getHair() &&
-            $prevEntity['eyes'] === $character->getEyes() &&
-            $prevEntity['mouth'] === $character->getMouth() &&
-            $prevEntity['nose'] === $character->getNose() &&
-            $prevEntity['ears'] === $character->getEars() &&
-            $prevEntity['username'] === $character->getUsername()
+            $prevEntity['race'] === $character->getRace()
+            && $prevEntity['hair'] === $character->getHair()
+            && $prevEntity['eyes'] === $character->getEyes()
+            && $prevEntity['mouth'] === $character->getMouth()
+            && $prevEntity['nose'] === $character->getNose()
+            && $prevEntity['ears'] === $character->getEars()
+            && $prevEntity['username'] === $character->getUsername()
         ) {
-            throw new Exception('Nothing changed');
+            throw new \Exception('Nothing changed');
         }
 
         $this->appearanceValidationService->verifiesAppearance(
@@ -58,6 +60,7 @@ class UpdateCharacterProcessor implements ProcessorInterface
         };
 
         $this->entityManager->flush();
+
         return $character;
     }
 }

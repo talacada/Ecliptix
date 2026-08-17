@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Service\Auth;
 
@@ -15,7 +16,8 @@ class AppearanceValidationService
     public function __construct(
         private RaceRepository $raceRepository,
         private AppearanceOptionRepository $appearanceOptionRepository,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array{
@@ -33,35 +35,35 @@ class AppearanceValidationService
         int $eyesId,
         int $mouthId,
         int $noseId,
-        int $earsId
+        int $earsId,
     ): array {
         $race = $this->raceRepository->getById($raceId);
-        if ($race === null) {
+        if (null === $race) {
             throw new UnprocessableEntityHttpException('Invalid race_id');
         }
 
         $hair = $this->appearanceOptionRepository->getByIdRaceType($hairId, $race, AppearanceTypeEnum::hair);
-        if ($hair === null) {
+        if (null === $hair) {
             throw new UnprocessableEntityHttpException('Invalid hair_id');
         }
 
         $eyes = $this->appearanceOptionRepository->getByIdRaceType($eyesId, $race, AppearanceTypeEnum::eyes);
-        if ($eyes === null) {
+        if (null === $eyes) {
             throw new UnprocessableEntityHttpException('Invalid eyes_id');
         }
 
         $mouth = $this->appearanceOptionRepository->getByIdRaceType($mouthId, $race, AppearanceTypeEnum::mouth);
-        if ($mouth === null) {
+        if (null === $mouth) {
             throw new UnprocessableEntityHttpException('Invalid mouth_id');
         }
 
         $nose = $this->appearanceOptionRepository->getByIdRaceType($noseId, $race, AppearanceTypeEnum::nose);
-        if ($nose === null) {
+        if (null === $nose) {
             throw new UnprocessableEntityHttpException('Invalid nose_id');
         }
 
         $ears = $this->appearanceOptionRepository->getByIdRaceType($earsId, $race, AppearanceTypeEnum::ears);
-        if ($ears === null) {
+        if (null === $ears) {
             throw new UnprocessableEntityHttpException('Invalid ears_id');
         }
 
@@ -74,5 +76,4 @@ class AppearanceValidationService
             'ears' => $ears,
         ];
     }
-
 }

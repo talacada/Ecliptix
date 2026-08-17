@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Auth\RegisterOptions;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -11,8 +13,8 @@ use App\State\Provider\Auth\RegisterOptionsProvider;
         new Get(
             uriTemplate: '/auth/register/options',
             provider: RegisterOptionsProvider::class,
-        )
-    ]
+        ),
+    ],
 )]
 class RegisterOptionsResponse
 {
@@ -34,6 +36,4 @@ class RegisterOptionsResponse
     {
         $this->races = $races;
     }
-
-
 }

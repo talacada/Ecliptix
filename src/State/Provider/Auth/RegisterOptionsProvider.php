@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\State\Provider\Auth;
 
 use ApiPlatform\Metadata\Operation;
@@ -20,7 +22,8 @@ class RegisterOptionsProvider implements ProviderInterface
     public function __construct(
         private AppearanceOptionRepository $appearanceOptionRepository,
         private RaceRepository $raceRepository,
-    ) {}
+    ) {
+    }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): RegisterOptionsResponse
     {
@@ -38,11 +41,16 @@ class RegisterOptionsProvider implements ProviderInterface
             foreach ($allOptionsByRace as $option) {
                 $optionDto = AppearanceOptionDto::fromEntity($option);
                 switch ($option->getType()) {
-                    case AppearanceTypeEnum::hair : $appearanceGroup->addHair($optionDto); break;
-                    case AppearanceTypeEnum::ears : $appearanceGroup->addEars($optionDto); break;
-                    case AppearanceTypeEnum::eyes : $appearanceGroup->addEyes($optionDto); break;
-                    case AppearanceTypeEnum::mouth : $appearanceGroup->addMouth($optionDto); break;
-                    case AppearanceTypeEnum::nose : $appearanceGroup->addNose($optionDto); break;
+                    case AppearanceTypeEnum::hair: $appearanceGroup->addHair($optionDto);
+                        break;
+                    case AppearanceTypeEnum::ears: $appearanceGroup->addEars($optionDto);
+                        break;
+                    case AppearanceTypeEnum::eyes: $appearanceGroup->addEyes($optionDto);
+                        break;
+                    case AppearanceTypeEnum::mouth: $appearanceGroup->addMouth($optionDto);
+                        break;
+                    case AppearanceTypeEnum::nose: $appearanceGroup->addNose($optionDto);
+                        break;
                 }
             }
             $raceDto->setAppearance($appearanceGroup);

@@ -37,7 +37,7 @@ readonly class LoginProcessor implements ProcessorInterface
             throw new UnauthorizedHttpException('', 'Invalid credentials');
         }
 
-        if ($character->isEmailVerified() === false) {
+        if (false === $character->isEmailVerified()) {
             throw new UnauthorizedHttpException('', 'Email is not verified');
         }
 

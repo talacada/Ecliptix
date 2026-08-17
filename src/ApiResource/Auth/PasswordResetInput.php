@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Auth;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -12,9 +14,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             uriTemplate: '/auth/password-reset',
             input: PasswordResetInput::class,
-            processor: PasswordResetProcessor::class
-        )
-    ]
+            processor: PasswordResetProcessor::class,
+        ),
+    ],
 )]
 class PasswordResetInput
 {
@@ -25,7 +27,6 @@ class PasswordResetInput
     #[Assert\NotBlank(message: 'Token should not be blank.')]
     #[Assert\Uuid(message: 'Token is not valid')]
     private string $token;
-
 
     public function getToken(): string
     {
@@ -46,6 +47,4 @@ class PasswordResetInput
     {
         $this->password = $password;
     }
-
-
 }

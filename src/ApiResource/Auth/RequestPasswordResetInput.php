@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ApiResource\Auth;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -12,9 +14,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             uriTemplate: '/auth/request-password-reset',
             input: RequestPasswordResetInput::class,
-            processor: RequestPasswordResetProcessor::class
-        )
-    ]
+            processor: RequestPasswordResetProcessor::class,
+        ),
+    ],
 )]
 class RequestPasswordResetInput
 {
@@ -31,6 +33,4 @@ class RequestPasswordResetInput
     {
         $this->email = $email;
     }
-
-
 }
