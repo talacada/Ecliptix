@@ -4,19 +4,19 @@ namespace App\ApiResource\Auth\RegisterOptions;
 
 class AppearanceGroupDto
 {
-    /* @var AppearanceOptionDto[] $hair */
+    /** @var AppearanceOptionDto[] */
     private array $hair;
 
-    /* @var AppearanceOptionDto[] $eyes */
+    /** @var AppearanceOptionDto[] */
     private array $eyes;
 
-    /* @var AppearanceOptionDto[] $mouth */
+    /** @var AppearanceOptionDto[] */
     private array $mouth;
 
-    /* @var AppearanceOptionDto[] $nose */
+    /** @var AppearanceOptionDto[] */
     private array $nose;
 
-    /* @var AppearanceOptionDto[] $ears */
+    /** @var AppearanceOptionDto[] */
     private array $ears;
 
     public function __construct() {

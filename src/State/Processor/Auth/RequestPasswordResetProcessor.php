@@ -42,7 +42,7 @@ readonly class RequestPasswordResetProcessor implements ProcessorInterface
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): JsonResponse
     {
-        $emailAddress = $data instanceof RequestPasswordResetInput ? $data->getEmail() : ($data['email'] ?? '');
+        $emailAddress = $data->getEmail();
         $character = $this->characterRepository->getCharacterByEmail($emailAddress);
 
         if ($character === null) {

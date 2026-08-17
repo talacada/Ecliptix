@@ -22,32 +22,32 @@ class AppearanceOption
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Race $race = null;
+    private Race $race;
 
     #[ORM\Column(enumType: AppearanceTypeEnum::class)]
     private AppearanceTypeEnum $type;
 
     #[ORM\Column(length: 255)]
-    private ?string $label = null;
+    private string $label;
 
     #[ORM\Column(nullable: true)]
     private ?int $sort_order = null;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getRace(): ?Race
+    public function getRace(): Race
     {
         return $this->race;
     }
 
-    public function setRace(?Race $race): static
+    public function setRace(Race $race): static
     {
         $this->race = $race;
 
@@ -66,7 +66,7 @@ class AppearanceOption
         return $this;
     }
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->label;
     }

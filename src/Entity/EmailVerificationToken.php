@@ -26,27 +26,27 @@ class EmailVerificationToken
     #[ORM\GeneratedValue]
     #[ORM\Column]
 
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\OneToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Character $character = null;
+    private Character $character;
 
     #[ORM\Column(type: 'uuid')]
-    private ?Uuid $token = null;
+    private Uuid $token;
 
     #[ORM\Column]
-    private ?DateTimeImmutable $expires_at = null;
+    private DateTimeImmutable $expires_at;
 
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $used_at = null;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCharacter(): ?Character
+    public function getCharacter(): Character
     {
         return $this->character;
     }
@@ -58,7 +58,7 @@ class EmailVerificationToken
         return $this;
     }
 
-    public function getToken(): ?Uuid
+    public function getToken(): Uuid
     {
         return $this->token;
     }
@@ -70,7 +70,7 @@ class EmailVerificationToken
         return $this;
     }
 
-    public function getExpiresAt(): ?DateTimeImmutable
+    public function getExpiresAt(): DateTimeImmutable
     {
         return $this->expires_at;
     }

@@ -34,6 +34,7 @@ class RaceRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /** @return array<Race> */
     public function getAllRaces(): array
     {
         return $this->createQueryBuilder('r')

@@ -242,7 +242,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
