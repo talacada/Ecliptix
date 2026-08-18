@@ -9,16 +9,18 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
+use App\Entity\AppearanceOption;
+use App\Entity\Race;
 use App\Entity\Shop\ShopRotation;
 use App\Repository\Character\CharacterRepository;
 use App\State\Processor\Auth\ChangePasswordProcessor;
 use App\State\Processor\Auth\LoginProcessor;
 use App\State\Processor\Auth\RegisterProcessor;
+use App\State\Processor\Character\UpdateCharacterProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
 use App\State\Provider\Character\PublicCharacterProvider;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,17 +36,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Post(
             uriTemplate: '/auth/register',
-            openapi: new Operation(
-                tags: ['Auth'],
-            ),
             input: RegisterInput::class,
             processor: RegisterProcessor::class,
         ),
         new Post(
             uriTemplate: '/auth/login',
-            openapi: new Operation(
-                tags: ['Auth'],
-            ),
             normalizationContext: ['groups' => ['login:read']],
             input: LoginInput::class,
             output: LoginOutput::class,
@@ -75,6 +71,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             validationContext: ['groups' => ['Default', self::UPDATE_GROUP]],
             read: true,
             provider: MineCharacterProvider::class,
+            processor: UpdateCharacterProcessor::class,
         ),
         new Delete(
             uriTemplate: '/character',
@@ -87,8 +84,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: 'character')]
-#[UniqueEntity('username')]
-#[UniqueEntity('email')]
+#[UniqueEntity(fields: ['username'], groups: ['Default', self::UPDATE_GROUP])]
+#[UniqueEntity(fields: ['email'])]
 class Character implements PasswordAuthenticatedUserInterface, UserInterface
 {
     public const string READ_GROUP = 'character:read';
@@ -152,7 +149,8 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     private Collection $characterInventories;
 
     #[ORM\Column]
-    private int $backpackCapacity = 4;
+    #[Groups([self::READ_GROUP])]
+    private int $backpackCapacity;
 
     /**
      * @var Collection<int, ActiveElixir>
@@ -175,6 +173,40 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_PUBLIC_GROUP])]
     private bool $friends = false;
 
+    #[ORM\Column]
+    #[Groups([self::READ_GROUP])]
+    private bool $email_verified;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
+    private Race $race;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
+    private AppearanceOption $hair;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
+    private AppearanceOption $eyes;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
+    private AppearanceOption $mouth;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
+    private AppearanceOption $nose;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP, self::UPDATE_GROUP])]
+    private AppearanceOption $ears;
+
     public function __construct()
     {
         $this->shopRotations = new ArrayCollection();
@@ -187,6 +219,9 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->characterInventories = new ArrayCollection();
         $this->activeElixirs = new ArrayCollection();
         $this->friendsCollection = new ArrayCollection();
+        $this->backpackCapacity = 4;
+        $this->prestigePoints = 0;
+        $this->email_verified = false;
     }
 
     public function getId(): ?int
@@ -206,7 +241,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -484,5 +519,89 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function setFriends(bool $friends): void
     {
         $this->friends = $friends;
+    }
+
+    public function getRace(): Race
+    {
+        return $this->race;
+    }
+
+    public function setRace(Race $race): static
+    {
+        $this->race = $race;
+
+        return $this;
+    }
+
+    public function getHair(): AppearanceOption
+    {
+        return $this->hair;
+    }
+
+    public function setHair(AppearanceOption $hair): static
+    {
+        $this->hair = $hair;
+
+        return $this;
+    }
+
+    public function getEyes(): AppearanceOption
+    {
+        return $this->eyes;
+    }
+
+    public function setEyes(AppearanceOption $eyes): static
+    {
+        $this->eyes = $eyes;
+
+        return $this;
+    }
+
+    public function getMouth(): AppearanceOption
+    {
+        return $this->mouth;
+    }
+
+    public function setMouth(AppearanceOption $mouth): static
+    {
+        $this->mouth = $mouth;
+
+        return $this;
+    }
+
+    public function getNose(): AppearanceOption
+    {
+        return $this->nose;
+    }
+
+    public function setNose(AppearanceOption $nose): static
+    {
+        $this->nose = $nose;
+
+        return $this;
+    }
+
+    public function getEars(): AppearanceOption
+    {
+        return $this->ears;
+    }
+
+    public function setEars(AppearanceOption $ears): static
+    {
+        $this->ears = $ears;
+
+        return $this;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->email_verified;
+    }
+
+    public function setEmailVerified(bool $email_verified): static
+    {
+        $this->email_verified = $email_verified;
+
+        return $this;
     }
 }
