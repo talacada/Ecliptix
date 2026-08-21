@@ -13,6 +13,7 @@ use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
+use App\Config\CharacterConfig;
 use App\Entity\AppearanceOption;
 use App\Entity\Race;
 use App\Entity\Shop\ShopRotation;
@@ -161,7 +162,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
-    private int $prestigePoints = 0;
+    private int $prestigePoints;
 
     /**
      * @var Collection<int, FriendRelation>
@@ -209,18 +210,18 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function __construct()
     {
+        $this->gold = CharacterConfig::INITIAL_GOLD;
+        $this->diamonds = CharacterConfig::INITIAL_DIAMONDS;
+        $this->level = CharacterConfig::INITIAL_LEVEL;
+        $this->experience = CharacterConfig::INITIAL_EXPERIENCE;
+        $this->damage = CharacterConfig::INITIAL_DAMAGE;
+        $this->health = CharacterConfig::INITIAL_HEALTH;
+        $this->backpackCapacity = CharacterConfig::INITIAL_BACKPACK_CAPACITY;
+        $this->prestigePoints = CharacterConfig::INITIAL_PRESTIGE_POINTS;
         $this->shopRotations = new ArrayCollection();
-        $this->gold = 10000000;
-        $this->diamonds = 10000000;
-        $this->level = 1;
-        $this->experience = 0;
-        $this->damage = 1;
-        $this->health = 100;
         $this->characterInventories = new ArrayCollection();
         $this->activeElixirs = new ArrayCollection();
         $this->friendsCollection = new ArrayCollection();
-        $this->backpackCapacity = 4;
-        $this->prestigePoints = 0;
         $this->email_verified = false;
     }
 

@@ -1,55 +1,55 @@
 # Testing Architecture Plan — Ecliptix
 
-Tento dokument slouží jako architektonický plán a metodická příručka pro zavedení testovací infrastruktury v projektu Ecliptix (Symfony 8 + API Platform 4 + PHP 8.4).
+This document serves as the architectural plan and testing guide for establishing the testing infrastructure in Ecliptix (Symfony 8 + API Platform 4 + PHP 8.4).
 
 ---
 
-## 1. Architektonický koncept testů
+## 1. Architectural Concept of Tests
 
-Projekt bude využívat dvě striktně oddělené testovací sady (**Test Suites**):
+The project utilizes two strictly separated **Test Suites**:
 
 1. **Unit Test Suite (`tests/Unit/`)**:
-   - **Báze**: `PHPUnit\Framework\TestCase`
-   - **Účel**: Bleskové ověření doménové logiky, entit, kalkulací a rozhodovacích procesů ve službách.
-   - **Závislosti**: Žádné externí závislosti. Žádný start Symfony Kernelu, žádné volání DB. Externí závislosti jsou nahrazeny mocky (`createMock()`).
-   - **Rychlost**: ~1–5 ms na test.
+   - **Base**: `PHPUnit\Framework\TestCase`
+   - **Purpose**: Lightning-fast verification of domain logic, entities, mathematical calculations, and decision-making processes in services.
+   - **Dependencies**: No external dependencies. No Symfony Kernel boot, no database queries. External dependencies are replaced by test doubles (`createMock()`).
+   - **Execution speed**: ~1–5 ms per test.
 
 2. **Integration Test Suite (`tests/Integration/`)**:
-   - **Báze**: `ApiPlatform\Symfony\Bundle\Test\ApiTestCase` / `Symfony\Bundle\FrameworkBundle\Test\KernelTestCase`
-   - **Účel**: Ověření celých API endpointů, bezpečnosti (JWT), persistence v DB a integrity repozitářů.
-   - **Závislosti**: Běží v testovacím prostředí (`APP_ENV=test`), startuje Symfony Kernel, pracuje s reálnou testovací DB (`app_test`) a využívá **Zenstruck Foundry** + `ResetDatabase`.
-   - **Rychlost**: ~50–200 ms na test.
+   - **Base**: `ApiPlatform\Symfony\Bundle\Test\ApiTestCase` / `Symfony\Bundle\FrameworkBundle\Test\KernelTestCase`
+   - **Purpose**: End-to-end verification of API endpoints, security (JWT), database persistence, and repository integrity.
+   - **Dependencies**: Runs in the test environment (`APP_ENV=test`), boots Symfony Kernel, uses a real test database (`app_test`), and utilizes **Zenstruck Foundry** + `ResetDatabase`.
+   - **Execution speed**: ~50–200 ms per test.
 
 ---
 
-## 2. Tok dat (Data Flow)
+## 2. Data Flow
 
-### A. Tok v Unit testu
+### A. Unit Test Flow
 ```
 [Unit Test Method]
        │
        ▼
-[Instanciace testované třídy (new) + Mocky závislostí]
+[Instantiate class under test (new) + Dependency Mocks]
        │
        ▼
-[Volání metody s testovacími parametry]
+[Execute target method with test arguments]
        │
        ▼
-[Assertion: Návratová hodnota / Změna stavu / Očekávaná výjimka]
+[Assertion: Return value / State mutation / Expected exception]
 ```
 
-### B. Tok v Integračním API testu
+### B. Integration API Test Flow
 ```
 [Integration Test Method]
        │
        ▼
-[ResetDatabase: DB transakce / čistý stav]
+[ResetDatabase: DB transaction / clean schema state]
        │
        ▼
-[Foundry: Vytvoření výchozích dat (např. CharacterFactory, ItemDefinitionStory)]
+[Foundry: Seed required test state (e.g. CharacterFactory, ItemDefinitionStory)]
        │
        ▼
-[ApiTestCase Client: HTTP Request (např. POST /api/auth/login)]
+[ApiTestCase Client: HTTP Request (e.g. POST /api/auth/login)]
        │
        ▼
 [Symfony Kernel → API Platform Router → Processor → Service → PostgreSQL (app_test)]
@@ -60,47 +60,50 @@ Projekt bude využívat dvě striktně oddělené testovací sady (**Test Suites
 
 ---
 
-## 3. Rozhraní a příkazy (CLI Contract)
+## 3. CLI Contract
 
-Příkazy pro spouštění testů v Docker kontejneru:
+Commands for running tests:
 
 ```bash
-# Spuštění všech testů (Unit + Integration)
+# Run all tests (Unit + Integration)
 make test
-# nebo: docker compose exec app php bin/phpunit
+# or: php bin/phpunit
 
-# Spuštění pouze rychlých Unit testů
-docker compose exec app php bin/phpunit --testsuite=unit
+# Run Unit tests only
+make test-unit
+# or: php bin/phpunit --testsuite=unit
 
-# Spuštění pouze Integračních / API testů
-docker compose exec app php bin/phpunit --testsuite=integration
+# Run Integration / API tests only
+make test-integration
+# or: php bin/phpunit --testsuite=integration
 
-# Spuštění konkrétního testovacího souboru
-docker compose exec app php bin/phpunit tests/Unit/Entity/Character/CharacterTest.php
+# Run a specific test file
+php bin/phpunit tests/Unit/Entity/Character/CharacterTest.php
 
-# Filtrování podle názvu testu
-docker compose exec app php bin/phpunit --filter=testSubtractGold
+# Filter by test method name
+php bin/phpunit --filter=testSubtractGoldDecreasesAmount
 ```
 
 ---
 
-## 4. Konfigurační změny v infrastruktuře
+## 4. Infrastructure & Configuration Changes
 
 ### 1. `phpunit.dist.xml`
-- Rozdělení na testovací sady `unit` a `integration`.
-- Zachování `Zenstruck\Foundry\PHPUnit\FoundryExtension`.
+- Split into `unit` and `integration` test suites.
+- Register `Zenstruck\Foundry\PHPUnit\FoundryExtension`.
 
 ### 2. `.env.test`
-- Nastavení izolované testovací databáze (např. `DATABASE_URL="postgresql://app:DBpassword@db:5432/app_test?serverVersion=16&charset=utf8"`).
+- Configure isolated test database (e.g. `DATABASE_URL="postgresql://app:DBpassword@db:5432/app_test?serverVersion=16&charset=utf8"`).
+- Set test `APP_SECRET` and test environment flags.
 
 ### 3. `Makefile`
-- Doplnění zkrácených cílů:
+- Added convenience targets:
   - `make test-unit`
   - `make test-integration`
 
 ---
 
-## 5. Struktura adresářů a Scaffolding tříd
+## 5. Directory Structure & Class Scaffolding
 
 ```
 tests/
@@ -133,9 +136,9 @@ tests/
 
 ---
 
-## 6. Class Scaffolding (Šablony tříd s pseudokódem)
+## 6. Class Scaffolding (Templates with Pseudocode)
 
-### A. Unit Test — Entita bez závislostí
+### A. Unit Test — Entity without dependencies
 ```php
 namespace App\Tests\Unit\Entity\Character;
 
@@ -146,27 +149,26 @@ class CharacterTest extends TestCase
 {
     public function testSubtractGoldDecreasesAmount(): void
     {
-        // 1. Založ novou instanci Character
-        // 2. Nastav počáteční stav zlata (např. 100)
-        // 3. Zavolej subtractGold(30)
-        // 4. Assert: zkontroluj, že hodnota je 70
+        // 1. Arrange: Create a new Character instance and set gold to 100
+        // 2. Act: Call subtractGold(30)
+        // 3. Assert: Verify getGold() returns 70
     }
 
     public function testSubtractGoldThrowsExceptionWhenInsufficientFunds(): void
     {
-        // 1. Založ Character s 50 zlatými
-        // 2. Nastav očekávanou výjimku InvalidArgumentException
-        // 3. Zavolej subtractGold(100)
+        // 1. Arrange: Create Character with 50 gold
+        // 2. Expect Exception: InvalidArgumentException ('Not enough gold')
+        // 3. Act: Call subtractGold(100)
     }
 
     public function testSubtractDiamondsDecreasesAmount(): void
     {
-        // 1. Obdobně ověř odečítání diamantů
+        // 1. Arrange & Act: Similar verification for diamond currency
     }
 }
 ```
 
-### B. Unit Test — Servisa se závislostmi (s Mockem)
+### B. Unit Test — Service with Dependencies (Mocks)
 ```php
 namespace App\Tests\Unit\Service\Inventory;
 
@@ -180,24 +182,24 @@ class InventoryManagerTest extends TestCase
 {
     public function testAddToBackpackThrowsExceptionWhenBackpackFull(): void
     {
-        // 1. Vytvoř Mock pro CharacterInventoryRepository
-        // 2. Nakonfiguruj Mock: metoda getUnequippedItems vrátí pole o délce rovné kapacitě batohu
-        // 3. Vytvoř instanci InventoryManager s předaným Mockem
-        // 4. Nastav očekávanou výjimku Exception ('Not enough backpack space')
-        // 5. Zavolej addToBackpack()
+        // 1. Arrange: Create mock for CharacterInventoryRepository
+        // 2. Configure mock: getUnequippedItems returns array with count >= backpackCapacity
+        // 3. Create InventoryManager instance injecting the mock repository
+        // 4. Expect Exception: Exception ('Not enough backpack space')
+        // 5. Act: Call addToBackpack()
     }
 
     public function testAddToBackpackIncreasesQuantityForExistingElixir(): void
     {
-        // 1. Vytvoř Mock pro CharacterInventoryRepository
-        // 2. Nakonfiguruj Mock: getByDefinition vrátí existující instanci CharacterInventory (elixír)
-        // 3. Zavolej addToBackpack() s elixírem
-        // 4. Assert: zkontroluj, že stávajícímu stacku se zvedla quantity o 1
+        // 1. Arrange: Create mock for CharacterInventoryRepository
+        // 2. Configure mock: getByDefinition returns existing CharacterInventory elixir stack
+        // 3. Act: Call addToBackpack() with an elixir item
+        // 4. Assert: Verify existing stack quantity increased by 1
     }
 }
 ```
 
-### C. Integrační API Test — API Platform s JWT a Foundry
+### C. Integration API Test — API Platform with JWT and Foundry
 ```php
 namespace App\Tests\Integration\Api\Auth;
 
@@ -210,54 +212,61 @@ class LoginApiTest extends ApiTestCase
 
     public function testLoginReturnsJwtToken(): void
     {
-        // 1. Pomocí Foundry (např. CharacterFactory / Story) vytvoř uživatele se známým emailem a heslem
-        // 2. Vytvoř HTTP klienta: static::createClient()
-        // 3. Pošli POST požadavek na '/api/auth/login' s přihlašovacími údaji v JSON těle
-        // 4. Assert: ověř HTTP status 200 OK
-        // 5. Assert: ověř přítomnost JWT tokenu v odpovědi
+        // 1. Arrange: Create user with known email and password using Foundry (CharacterFactory)
+        // 2. Act: Send POST request to '/api/auth/login' with JSON payload via static::createClient()
+        // 3. Assert: Verify HTTP status 200 OK
+        // 4. Assert: Verify JSON response contains 'token'
     }
 
     public function testLoginFailsWithInvalidCredentials(): void
     {
-        // 1. Pošli POST na '/api/auth/login' se špatným heslem
-        // 2. Assert: ověř HTTP status 401 Unauthorized
+        // 1. Act: Send POST request to '/api/auth/login' with invalid password
+        // 2. Assert: Verify HTTP status 401 Unauthorized
     }
 }
 ```
 
 ---
 
-## 7. Rozhodnutí a Trade-offy (Decisions & Trade-offs)
+## 7. Architectural Decisions & Trade-offs
 
-1. **Zenstruck Foundry vs. Doctrine Fixtures**:
-   - *Volba*: Zenstruck Foundry.
-   - *Důvod*: Umožňuje vytvářet konkrétní testovací stav přímo uvnitř testu (`CharacterFactory::createOne(['gold' => 500])`) namísto obřích statických fixture souborů, které se špatně udržují.
+1. **Zenstruck Foundry vs. Static Fixtures**:
+   - *Choice*: Zenstruck Foundry.
+   - *Rationale*: Allows declaring explicit, test-specific state directly within each test method (`CharacterFactory::createOne(['gold' => 500])`) instead of relying on large static fixtures that are fragile and hard to maintain.
 
-2. **Dvě testovací sady (Unit + Integration) vs. Jedna plochá složka**:
-   - *Volba*: Striktní rozdělení na `tests/Unit` a `tests/Integration`.
-   - *Důvod*: Vývojář může spouštět unit testy neustále bez čekání na databázi a kernel. Integrační testy běží separátně a spolehlivě ověřují celistvost API.
+2. **Two Test Suites (Unit + Integration) vs. Single Flat Directory**:
+   - *Choice*: Strict separation into `tests/Unit` and `tests/Integration`.
+   - *Rationale*: Developers can continuously run fast unit tests without overhead. Integration tests run separately, providing comprehensive coverage of API contracts and persistence.
 
-3. **Izolovaná testovací DB (`app_test`)**:
-   - *Volba*: Samostatná databáze pro testy namísto sdílení vývojové DB.
-   - *Důvod*: Spuštění testů nikdy nesmaže ani neovlivní data, která vývojář používá při manuálním hraní/vývoji v `APP_ENV=dev`.
+3. **Isolated Test Database (`app_test`)**:
+   - *Choice*: Dedicated test database rather than sharing the development database.
+   - *Rationale*: Running tests never purges or interferes with local development data in `APP_ENV=dev`.
+
+4. **Foundry Factories for Entity Relations**:
+   - *Choice*: Dedicated `CharacterFactory` handling non-nullable relations (`Race`, `AppearanceOption`).
+   - *Rationale*: Guarantees valid entity creation in integration tests without boilerplate duplication.
 
 ---
 
-## 8. Krok za krokem: Doporučený postup implementace
+## 8. Step-by-Step Implementation Roadmap
 
-1. **Fáze 1 — Konfigurace prostředí**:
-   - [ ] Upravit `phpunit.dist.xml` (přidat testsuites `unit` a `integration`).
-   - [ ] Nastavit `DATABASE_URL` pro testovací prostředí v `.env.test`.
-   - [ ] Doplnit cíle `test-unit` a `test-integration` do `Makefile`.
-   - [ ] Vytvořit testovací DB v Postgresu (`php bin/console --env=test doctrine:database:create`).
+1. **Phase 1 — Environment & Infrastructure Configuration**:
+   - [x] Configure `phpunit.dist.xml` (split into `unit` and `integration` test suites).
+   - [x] Configure `DATABASE_URL` for test environment in `.env.test`.
+   - [x] Add `test-unit` and `test-integration` targets to `Makefile`.
+   - [ ] Create test DB in PostgreSQL (`php bin/console --env=test doctrine:database:create`).
 
-2. **Fáze 2 — První Unit testy**:
-   - [ ] Vytvořit `tests/Unit/Entity/Character/CharacterTest.php` (ekonomika, staty).
-   - [ ] Vytvořit `tests/Unit/Factory/ItemDefinitionFactoryTest.php` (výpočty cen a statů).
-   - [ ] Vytvořit `tests/Unit/Service/Inventory/InventoryManagerTest.php` (pravidla batohu a stackování).
-   - [ ] Ověřit průchod přes `make test-unit`.
+2. **Phase 2 — Unit Tests**:
+   - [ ] Implement `tests/Unit/Entity/Character/CharacterTest.php` (currency operations, stats, default invariants).
+   - [ ] Implement `tests/Unit/Factory/ItemDefinitionFactoryTest.php` (stat formulas and pricing calculations).
+   - [ ] Implement `tests/Unit/Service/Auth/AppearanceValidationServiceTest.php` (race and appearance option validation).
+   - [ ] Implement `tests/Unit/Service/Inventory/InventoryManagerTest.php` (backpack capacity, elixir stacking).
+   - [ ] Implement `tests/Unit/Service/Item/ItemFactoryTest.php` (bonus stat rolling).
+   - [ ] Verify test suite passes with `make test-unit`.
 
-3. **Fáze 3 — První Integrační API testy**:
-   - [ ] Vytvořit `tests/Integration/Api/Auth/LoginApiTest.php`.
-   - [ ] Vytvořit `tests/Integration/Api/Auth/RegisterApiTest.php`.
-   - [ ] Ověřit průchod přes `make test-integration`.
+3. **Phase 3 — Integration & API Tests**:
+   - [ ] Create `CharacterFactory` (with default `Race` and `AppearanceOption` relations).
+   - [ ] Implement `tests/Integration/Api/Auth/LoginApiTest.php`.
+   - [ ] Implement `tests/Integration/Api/Auth/RegisterApiTest.php`.
+   - [ ] Implement `tests/Integration/Api/Character/CharacterApiTest.php`.
+   - [ ] Verify integration test suite passes with `make test-integration`.
