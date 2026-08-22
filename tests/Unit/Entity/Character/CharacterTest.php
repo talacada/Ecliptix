@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity\Character;
 
+use App\Config\CharacterConfig;
 use App\Entity\Character\Character;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class CharacterTest extends TestCase
@@ -26,59 +28,72 @@ class CharacterTest extends TestCase
 
     public function testAddGoldIncreasesAmount(): void
     {
-        // 1. Arrange: Create a character and set initial gold balance (e.g. 100) via setGold()
-
-        // 2. Act: Add gold via addGold(50)
-
-        // 3. Assert: Verify that getGold() returns 150
+        $character = new Character();
+        $character->addGold(50);
+        $this->assertSame( CharacterConfig::INITIAL_GOLD + 50, $character->getGold());
     }
 
-    public function testSubtractGoldDecreasesAmount(): void
+    public function testSetGold(): void
     {
-        // 1. Arrange: Create a character and set initial gold balance to 100 via setGold()
+        $character = new Character();
+        $character->setGold(777);
+        $this->assertSame( 777, $character->getGold());
+    }
 
-        // 2. Act: Subtract 30 gold via subtractGold(30)
-
-        // 3. Assert: Verify that getGold() returns 70
+    public function testSubtractGoldValidAmount(): void
+    {
+        $character = new Character();
+        $character->setGold(111);
+        $character->subtractGold(12);
+        $this->assertSame( 99, $character->getGold());
     }
 
     public function testSubtractGoldThrowsExceptionWhenInsufficientGold(): void
     {
-        // 1. Arrange: Create a character with 50 gold
+        $character = new Character();
+        $character->setGold(111);
 
-        // 2. Expect Exception:
-        // $this->expectException(\InvalidArgumentException::class);
-        // $this->expectExceptionMessage('Not enough gold');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Not enough gold');
 
-        // 3. Act: Attempt to subtract 100 gold via subtractGold(100)
+        $character->subtractGold(112);
     }
 
-    public function testSubtractDiamondsDecreasesAmount(): void
+    public function testSetDiamonds(): void
     {
-        // 1. Arrange: Create a character and set initial diamonds balance to 50 via setDiamonds()
+        $character = new Character();
+        $character->setDiamonds(222);
 
-        // 2. Act: Subtract 20 diamonds via subtractDiamonds(20)
+        $this->assertSame( 222, $character->getDiamonds());
+    }
 
-        // 3. Assert: Verify that getDiamonds() returns 30
+    public function testAddDiamonds(): void
+    {
+        $character = new Character();
+        $character->setDiamonds(10);
+        $character->addDiamonds(222);
+
+        $this->assertSame( 232, $character->getDiamonds());
     }
 
     public function testSubtractDiamondsThrowsExceptionWhenInsufficientDiamonds(): void
     {
-        // 1. Arrange: Create a character with 10 diamonds
+        $character = new Character();
+        $character->setDiamonds(10);
 
-        // 2. Expect Exception:
-        // $this->expectException(\InvalidArgumentException::class);
-        // $this->expectExceptionMessage('Not enough diamonds');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Not enough diamonds');
 
-        // 3. Act: Attempt to subtract 20 diamonds via subtractDiamonds(20)
+        $character->subtractDiamonds(11);
     }
 
     public function testGetUserIdentifierReturnsEmail(): void
     {
-        // 1. Arrange: Create a character and set email via setEmail('hero@ecliptix.local')
+        $character = new Character();
 
-        // 2. Act: Call getUserIdentifier()
+        $character->setEmail('test.test@test.com');
 
-        // 3. Assert: Verify that the returned value is 'hero@ecliptix.local'
+        $this->assertSame('test.test@test.com', $character->getUserIdentifier());
+        $this->assertSame('test.test@test.com', $character->getEmail());
     }
 }
