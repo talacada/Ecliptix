@@ -5,50 +5,133 @@ namespace App\Tests\Unit\Service\Item;
 use App\Entity\Item\ItemRarityEnum;
 use App\Entity\Item\ItemSlotEnum;
 use App\Service\Item\ItemStatCalculator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ItemStatCalculatorTest extends TestCase
 {
-    //TODO this is bad
-    public function testCalculateStatsCommonWeaponLevelOne() {
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Common, 1);
+    /**
+     * @param array{float, float, float} $expectedStats
+     */
+    #[DataProvider('provideStatsScenarios')]
+    public function testCalculateStats(
+        ItemSlotEnum $slot,
+        ItemRarityEnum $rarity,
+        int $level,
+        array $expectedStats
+    ): void {
+        $stats = ItemStatCalculator::calculateStats($slot, $rarity, $level);
 
-        $this->assertSame([8.0, 1.0, 0.0], $stats);
+        $this->assertSame($expectedStats, $stats);
     }
 
-    public function testCalculateStatsRandomWeapon() {
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Common, 5);
-        $this->assertSame([20.0, 5.0, 0.0], $stats);
+    /**
+     * @param array{int, int} $expectedPrice
+     */
+    #[DataProvider('providePriceScenarios')]
+    public function testCalculatePrice(
+        float $damage,
+        float $crit,
+        float $health,
+        ItemRarityEnum $rarity,
+        array $expectedPrice,
+    ): void {
+        $stats = ItemStatCalculator::calculatePrice($damage, $crit, $health, $rarity);
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Common, 25);
-        $this->assertSame([80.0, 25.0, 0.0], $stats);
+        $this->assertSame($expectedPrice, $stats);
+    }
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Rare, 1);
-        $this->assertSame([20.0, 2.5, 0.0], $stats);
+    /**
+     * @return iterable<string, array{ItemSlotEnum, ItemRarityEnum, int, array{float, float, float}}>
+     */
+    public static function provideStatsScenarios(): iterable
+    {
+        yield 'weapon common lvl 1' => [
+            ItemSlotEnum::Weapon,
+            ItemRarityEnum::Common,
+            1,
+            [8.0, 1.0, 0.0],
+        ];
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Rare, 5);
-        $this->assertSame([50.0, 12.5, 0.0], $stats);
+        yield 'weapon epic lvl 5' => [
+            ItemSlotEnum::Weapon,
+            ItemRarityEnum::Epic,
+            5,
+            [100.0, 25.0, 0.0],
+        ];
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Rare, 25);
-        $this->assertSame([200.0, 62.5, 0.0], $stats);
+        yield 'armour rare lvl 10' => [
+            ItemSlotEnum::Armour,
+            ItemRarityEnum::Rare,
+            10,
+            [0.0, 0.0, 170.0],
+        ];
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Epic, 1);
-        $this->assertSame([40.0, 5.0, 0.0], $stats);
+        yield 'elixir has zero stats at any level' => [
+            ItemSlotEnum::Elixir,
+            ItemRarityEnum::Legendary,
+            50,
+            [0.0, 0.0, 0.0],
+        ];
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Epic, 5);
-        $this->assertSame([100.0, 25.0, 0.0], $stats);
+        yield 'helmet has no damage' => [
+            ItemSlotEnum::Helmet,
+            ItemRarityEnum::Legendary,
+            25,
+            [0.0, 250.0, 1050.0],
+        ];
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Epic, 25);
-        $this->assertSame([400.0, 125.0, 0.0], $stats);
+        yield 'armour has no dmg no crit' => [
+            ItemSlotEnum::Armour,
+            ItemRarityEnum::Epic,
+            50,
+            [0.0, 0.0, 1540.0],
+        ];
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Legendary, 1);
-        $this->assertSame([80.0, 10.0, 0.0], $stats);
+        yield 'boots has no dmg' => [
+            ItemSlotEnum::Boots,
+            ItemRarityEnum::Common,
+            111,
+            [0.0, 223.0, 225.0],
+        ];
+    }
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Legendary, 5);
-        $this->assertSame([200.0, 50.0, 0.0], $stats);
+    /**
+     * @return iterable<string, array{float, float, float, ItemRarityEnum, array{int, int}}>
+     */
+    public static function providePriceScenarios(): iterable
+    {
+        yield 'Common price' => [
+            10.0,
+            8.0,
+            20.0,
+            ItemRarityEnum::Common,
+            [380, 0],
+        ];
 
-        $stats = ItemStatCalculator::calculateStats(ItemSlotEnum::Weapon, ItemRarityEnum::Legendary, 25);
-        $this->assertSame([800.0, 250.0, 0.0], $stats);
+        yield 'Rare price' => [
+            10.0,
+            8.0,
+            20.0,
+            ItemRarityEnum::Rare,
+            [380, 0],
+        ];
+
+        yield 'Epic price' => [
+            10.0,
+            8.0,
+            20.0,
+            ItemRarityEnum::Epic,
+            [380, 38],
+        ];
+
+        yield 'Legendary price' => [
+            10.0,
+            8.0,
+            20.0,
+            ItemRarityEnum::Legendary,
+            [380, 65],
+        ];
     }
 
 }

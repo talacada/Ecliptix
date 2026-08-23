@@ -11,6 +11,7 @@ use App\Entity\Item\InventoryContainerEnum;
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Character\CharacterInventoryRepository;
+use Exception;
 
 class InventoryManager
 {
@@ -20,7 +21,7 @@ class InventoryManager
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function addToBackpack(Character $character, Item $item): CharacterInventory
     {
@@ -37,7 +38,7 @@ class InventoryManager
         }
 
         if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
-            throw new \Exception('Not enough backpack space');
+            throw new Exception('Not enough backpack space');
         }
 
         $characterInventory = new CharacterInventory();
@@ -50,7 +51,7 @@ class InventoryManager
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getFirstAvailablePosition(Character $character): int
     {
@@ -66,7 +67,7 @@ class InventoryManager
         }
 
         if (0 === $firstAvailablePosition) {
-            throw new \Exception('Not enough backpack space');
+            throw new Exception('Not enough backpack space');
         }
 
         return $firstAvailablePosition;
