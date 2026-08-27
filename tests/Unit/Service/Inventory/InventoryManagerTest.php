@@ -10,8 +10,10 @@ use App\Entity\Item\ElixirDefinition;
 use App\Entity\Item\InventoryContainerEnum;
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemDefinition;
+use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Service\Inventory\InventoryManager;
+use App\Tests\Helper\EntityHelper;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -33,6 +35,7 @@ class InventoryManagerTest extends TestCase
     public function testIncreaseElixirStack(): void
     {
         $definition = new ElixirDefinition();
+        EntityHelper::setId($definition, 10);
 
         $item = new Item();
         $item->setDefinition($definition);
@@ -49,7 +52,7 @@ class InventoryManagerTest extends TestCase
         $this->characterInventoryRepository
             ->expects($this->once())
             ->method('getByDefinition')
-            ->with($character, 0)
+            ->with($character, 10)
             ->willReturn($characterInventory);
 
         $result = $this->manager->addToBackpack($character, $item);
@@ -57,6 +60,7 @@ class InventoryManagerTest extends TestCase
         $this->assertSame(InventoryContainerEnum::Backpack, $result->getContainer());
         $this->assertSame(3, $result->getQuantity());
         $this->assertSame(4, $result->getPosition());
+        $this->assertSame(10, $result->getItem()->getDefinition()->getId());
     }
 
     /**
@@ -115,7 +119,7 @@ class InventoryManagerTest extends TestCase
             ->expects($this->once())
             ->method('getAllTakenPositions')
             ->with($character)
-            ->willReturn([0, 3, 2]);
+            ->willReturn([4, 3, 2]);
 
         $result = $this->manager->addToBackpack($character, $item);
 
@@ -126,5 +130,97 @@ class InventoryManagerTest extends TestCase
         $this->assertSame($item, $result->getItem());
     }
 
-    //TODO continue with two more methods in InventoryManager
+    //TODO Přidání prvního lektvaru (když stack ještě neexistuje)
+
+    public function testGetFirstAvailablePositionButThereIsNone(): void
+    {
+        $character = new Character();
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getAllTakenPositions')
+            ->with($character)
+            ->willReturn([1, 3, 2, 4]);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Not enough backpack space');
+
+        $this->manager->getFirstAvailablePosition($character);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetFirstAvailablePosition(): void
+    {
+        $character = new Character();
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getAllTakenPositions')
+            ->with($character)
+            ->willReturn([1, 3, 4]);
+
+        $result = $this->manager->getFirstAvailablePosition($character);
+
+        $this->assertSame(2, $result);
+    }
+
+    public function testGetEquippedItemBySlotNull(): void
+    {
+        $character = new Character();
+
+        $searchedSlot = ItemSlotEnum::Weapon;
+
+        $definition = new ItemDefinition();
+        $definition->setDesiredSlot(ItemSlotEnum::Helmet);
+
+        $item = new Item();
+        $item->setDefinition($definition);
+
+        $characterInventoryRandom = new CharacterInventory();
+        $characterInventoryRandom->setItem($item);
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getEquippedItems')
+            ->with($character)
+            ->willReturn([$characterInventoryRandom, $characterInventoryRandom, $characterInventoryRandom]);
+
+        $result = $this->manager->getEquippedItemBySlot($character, $searchedSlot);
+
+        $this->assertNull($result);
+    }
+
+    public function testGetEquippedItemBySlot(): void
+    {
+        $character = new Character();
+
+        $searchedSlot = ItemSlotEnum::Weapon;
+
+        $definition = new ItemDefinition();
+        $definition->setDesiredSlot(ItemSlotEnum::Helmet);
+        $definitionRight = new ItemDefinition();
+        $definitionRight->setDesiredSlot($searchedSlot);
+
+        $item = new Item();
+        $item->setDefinition($definition);
+        $itemRight = new Item();
+        $itemRight->setDefinition($definitionRight);
+
+        $characterInventoryRandom = new CharacterInventory();
+        $characterInventoryRandom->setItem($item);
+        $characterInventoryRight = new CharacterInventory();
+        $characterInventoryRight->setItem($itemRight);
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getEquippedItems')
+            ->with($character)
+            ->willReturn([$characterInventoryRandom, $characterInventoryRandom, $characterInventoryRandom, $characterInventoryRight]);
+
+        $result = $this->manager->getEquippedItemBySlot($character, $searchedSlot);
+
+        $this->assertSame($characterInventoryRight, $result);
+    }
 }
