@@ -130,7 +130,46 @@ class InventoryManagerTest extends TestCase
         $this->assertSame($item, $result->getItem());
     }
 
-    //TODO Přidání prvního lektvaru (když stack ještě neexistuje)
+    /**
+     * @throws Exception
+     */
+    public function testSuccessfullyAddingFirstElixir(): void
+    {
+        $definition = new ElixirDefinition();
+        EntityHelper::setId($definition, 10);
+
+        $item = new Item();
+        $item->setDefinition($definition);
+
+        $character = new Character();
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getByDefinition')
+            ->with($character, $definition->getId())
+            ->willReturn(null);
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getUnequippedItems')
+            ->with($character)
+            ->willReturn([new CharacterInventory()]);
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getAllTakenPositions')
+            ->with($character)
+            ->willReturn([1]);
+
+        $result = $this->manager->addToBackpack($character, $item);
+
+        $this->assertSame(InventoryContainerEnum::Backpack, $result->getContainer());
+        $this->assertSame(2, $result->getPosition());
+        $this->assertSame(1, $result->getQuantity());
+        $this->assertSame($character, $result->getCharacter());
+        $this->assertSame($item, $result->getItem());
+    }
+
 
     public function testGetFirstAvailablePositionButThereIsNone(): void
     {
