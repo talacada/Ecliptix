@@ -3,6 +3,7 @@
 namespace App\Service\Item;
 
 use App\Config\ItemConfig;
+use App\Entity\Item\ItemDefinition;
 use App\Entity\Item\ItemRarityEnum;
 use App\Entity\Item\ItemSlotEnum;
 
@@ -49,5 +50,37 @@ class ItemStatCalculator
         };
 
         return [$goldPrice, $diamondPrice];
+    }
+
+
+    /**
+     * Roll bonus stats for an item based on its definition.
+     *
+     * The bonus stats are calculated as a random percentage (-20% to +20%) of the base stats defined in the item definition.
+     *
+     * @return array{int, int, int} [bonusDamage, bonusCrit, bonusHealth]
+     */
+    public static function rollBonusStats(ItemDefinition $definition): array
+    {
+        $bonusDamage = 0;
+        $bonusCrit = 0;
+        $bonusHealth = 0;
+
+        if ($definition->getBaseDamage() > 0) {
+            $randPercent = (mt_rand(-20, 20) / 100);
+            $bonusDamage = (int) round($definition->getBaseDamage() * $randPercent);
+        }
+
+        if ($definition->getBaseCrit() > 0) {
+            $randPercent = (mt_rand(-20, 20) / 100);
+            $bonusCrit = (int) round($definition->getBaseCrit() * $randPercent);
+        }
+
+        if ($definition->getBaseHealth() > 0) {
+            $randPercent = (mt_rand(-20, 20) / 100);
+            $bonusHealth = (int) round($definition->getBaseHealth() * $randPercent);
+        }
+
+        return [$bonusDamage, $bonusCrit, $bonusHealth];
     }
 }

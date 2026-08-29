@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Item;
 
+use App\Entity\Item\ItemDefinition;
 use App\Entity\Item\ItemRarityEnum;
 use App\Entity\Item\ItemSlotEnum;
 use App\Service\Item\ItemStatCalculator;
@@ -39,6 +40,41 @@ class ItemStatCalculatorTest extends TestCase
         $stats = ItemStatCalculator::calculatePrice($damage, $crit, $health, $rarity);
 
         $this->assertSame($expectedPrice, $stats);
+    }
+
+    public function testRollBonusStatsReturnsZeroWhenBaseStatsAreZero(): void
+    {
+        $definition = new ItemDefinition();
+        $definition->setBaseDamage(0);
+        $definition->setBaseCrit(0);
+        $definition->setBaseHealth(0);
+
+        [$bonusDamage, $bonusCrit, $bonusHealth] = ItemStatCalculator::rollBonusStats($definition);
+
+        $this->assertSame(0, $bonusDamage);
+        $this->assertSame(0, $bonusCrit);
+        $this->assertSame(0, $bonusHealth);
+    }
+
+    public function testRollBonusStatsStaysWithinExpectedRange(): void
+    {
+        $definition = new ItemDefinition();
+        $definition->setBaseDamage(100);
+        $definition->setBaseCrit(50);
+        $definition->setBaseHealth(200);
+
+        for ($i = 0; $i < 10; ++$i) {
+            [$bonusDamage, $bonusCrit, $bonusHealth] = ItemStatCalculator::rollBonusStats($definition);
+
+            $this->assertGreaterThanOrEqual(-20, $bonusDamage);
+            $this->assertLessThanOrEqual(20, $bonusDamage);
+
+            $this->assertGreaterThanOrEqual(-10, $bonusCrit);
+            $this->assertLessThanOrEqual(10, $bonusCrit);
+
+            $this->assertGreaterThanOrEqual(-40, $bonusHealth);
+            $this->assertLessThanOrEqual(40, $bonusHealth);
+        }
     }
 
     /**

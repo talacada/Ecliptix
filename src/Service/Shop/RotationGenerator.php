@@ -11,6 +11,7 @@ use App\Entity\Shop\ShopRotationEnum;
 use App\Repository\Item\ItemDefinitionRepository;
 use App\Repository\Shop\ShopRotationRepository;
 use App\Service\Item\ItemFactory;
+use App\Service\Item\ItemStatCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RotationGenerator
@@ -24,7 +25,7 @@ class RotationGenerator
         private ItemDefinitionRepository $itemDefinitionRepository,
         private EntityManagerInterface $entityManager,
         private ShopRotationRepository $shopRotationRepository,
-        private ItemFactory $itemFactory,
+        private ItemStatCalculator $itemStatCalculator,
     ) {
     }
 
@@ -63,7 +64,7 @@ class RotationGenerator
             $offer = new ShopOffer($shopRotation, $itemDefinition);
             $offer->setGoldPrice($itemDefinition->getBaseGoldPrice() * (int) (mt_rand(80, 120) / 100)); // Random price between 80% and 120% of base price
             $offer->setDiamondPrice($itemDefinition->getBaseDiamondPrice() * (int) (mt_rand(80, 120) / 100));
-            [$bonusDamage, $bonusCrit, $bonusHealth] = $this->itemFactory->rollBonusStats($itemDefinition);
+            [$bonusDamage, $bonusCrit, $bonusHealth] = ItemStatCalculator::rollBonusStats($itemDefinition);
             $offer->setBonusDamage($bonusDamage);
             $offer->setBonusCrit($bonusCrit);
             $offer->setBonusHealth($bonusHealth);

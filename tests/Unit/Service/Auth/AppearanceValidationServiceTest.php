@@ -84,6 +84,10 @@ class AppearanceValidationServiceTest extends TestCase
             ->with(1)
             ->willReturn(null);
 
+        $this->appearanceOptionRepository
+            ->expects($this->never())
+            ->method($this->anything());
+
         $this->expectException(UnprocessableEntityHttpException::class);
         $this->expectExceptionMessage('Invalid race_id');
 
@@ -105,6 +109,7 @@ class AppearanceValidationServiceTest extends TestCase
             ->willReturn($race);
 
         $this->appearanceOptionRepository
+            ->expects($this->atLeastOnce())
             ->method('getByIdRaceType')
             ->willReturnCallback(
                 function (int $id, Race $race, AppearanceTypeEnum $type) use ($failingType) {

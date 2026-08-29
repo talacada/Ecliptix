@@ -14,6 +14,7 @@ use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Item\ItemDefinitionRepository;
 use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Service\Item\ItemFactory;
+use App\Service\Item\ItemStatCalculator;
 use App\Service\Shop\RotationGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -27,7 +28,7 @@ final class CharacterStory
         private EntityManagerInterface $entityManager,
         private RotationGenerator $rotationGenerator,
         private ItemDefinitionRepository $itemDefinitionRepository,
-        private ItemFactory $itemFactory,
+        private ItemStatCalculator $itemStatCalculator,
         private LeaderboardRepository $leaderboardRepository,
     ) {
     }
@@ -160,7 +161,7 @@ final class CharacterStory
     {
         $item = new Item();
         $item->setDefinition($def);
-        [$bd, $bc, $bh] = $this->itemFactory->rollBonusStats($def);
+        [$bd, $bc, $bh] = ItemStatCalculator::rollBonusStats($def);
         $item->setBonusDamage($bd);
         $item->setBonusCrit($bc);
         $item->setBonusHealth($bh);
