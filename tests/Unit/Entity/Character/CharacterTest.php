@@ -96,4 +96,10 @@ class CharacterTest extends TestCase
         $this->assertSame('test.test@test.com', $character->getUserIdentifier());
         $this->assertSame('test.test@test.com', $character->getEmail());
     }
+
+    //TODO getShopRotations()
+
+    //TODO getUserIdentifier() - without mail throws exception
+
+    //TODO removeActiveElixir()
 }

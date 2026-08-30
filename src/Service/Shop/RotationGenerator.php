@@ -12,6 +12,7 @@ use App\Repository\Item\ItemDefinitionRepository;
 use App\Repository\Shop\ShopRotationRepository;
 use App\Service\Item\ItemFactory;
 use App\Service\Item\ItemStatCalculator;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 class RotationGenerator
@@ -39,8 +40,8 @@ class RotationGenerator
         $shopRotation = new ShopRotation();
         $shopRotation->setCharacter($character);
         $shopRotation->setRotationType(ShopRotationEnum::Daily);
-        $shopRotation->setValidFrom(new \DateTimeImmutable('midnight'));
-        $shopRotation->setValidUntil(new \DateTimeImmutable('tomorrow'));
+        $shopRotation->setValidFrom(new DateTimeImmutable('midnight'));
+        $shopRotation->setValidUntil(new DateTimeImmutable('tomorrow'));
 
         for ($i = 0; $i < self::OFFER_QUOTA['elixir']; ++$i) {
             $elixirDef = $this->itemDefinitionRepository->findRandomElixir();
@@ -62,8 +63,8 @@ class RotationGenerator
                 continue;
             }
             $offer = new ShopOffer($shopRotation, $itemDefinition);
-            $offer->setGoldPrice($itemDefinition->getBaseGoldPrice() * (int) (mt_rand(80, 120) / 100)); // Random price between 80% and 120% of base price
-            $offer->setDiamondPrice($itemDefinition->getBaseDiamondPrice() * (int) (mt_rand(80, 120) / 100));
+            $offer->setGoldPrice((int) ($itemDefinition->getBaseGoldPrice() * (mt_rand(80, 120) / 100))); // Random price between 80% and 120% of base price
+            $offer->setDiamondPrice((int) ($itemDefinition->getBaseDiamondPrice() * (int) (mt_rand(80, 120) / 100)));
             [$bonusDamage, $bonusCrit, $bonusHealth] = ItemStatCalculator::rollBonusStats($itemDefinition);
             $offer->setBonusDamage($bonusDamage);
             $offer->setBonusCrit($bonusCrit);
