@@ -28,6 +28,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use LogicException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -103,10 +104,10 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_GROUP, self::UPDATE_GROUP, self::READ_PUBLIC_GROUP])]
     #[Assert\NotBlank(groups: [self::UPDATE_GROUP])]
     #[Assert\Length(min: 4, max: 20, groups: [self::UPDATE_GROUP])]
-    private string $username;
+    private string $username = '';
 
     #[ORM\Column(length: 255, unique: true)]
-    private string $email;
+    private string $email = '';
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
@@ -391,7 +392,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function getUserIdentifier(): string
     {
         if ('' === $this->email) {
-            throw new \LogicException('User email cant be empty.');
+            throw new LogicException('User email cant be empty.');
         }
 
         return $this->email;

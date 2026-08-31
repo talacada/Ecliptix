@@ -262,4 +262,7 @@ class InventoryManagerTest extends TestCase
 
         $this->assertSame($characterInventoryRight, $result);
     }
+
+    // TODO: testAddToBackpackIncreasesElixirStackEvenWhenBackpackIsFull() - assert elixir quantity is incremented even if unequipped count >= backpackCapacity
+    // TODO: testGetFirstAvailablePositionWhenBackpackIsEmpty() - assert returns 1 when allTakenPositions is empty array []
 }

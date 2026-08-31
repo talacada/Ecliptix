@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Entity\Character;
 use App\Config\CharacterConfig;
 use App\Entity\Character\Character;
 use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 class CharacterTest extends TestCase
@@ -97,9 +98,35 @@ class CharacterTest extends TestCase
         $this->assertSame('test.test@test.com', $character->getEmail());
     }
 
-    //TODO getShopRotations()
+    public function testSubtractDiamondsValidAmount(): void
+    {
+        $character = new Character();
 
-    //TODO getUserIdentifier() - without mail throws exception
+        $character->setDiamonds(222);
+        $character->subtractDiamonds(10);
 
-    //TODO removeActiveElixir()
+        $this->assertSame( 212, $character->getDiamonds());
+    }
+
+    public function testGetUserIdentifierThrowsExceptionWhenEmailIsEmpty(): void
+    {
+        $character = new Character();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('User email cant be empty.');
+
+        $character->getUserIdentifier();
+    }
+
+    // TODO: testGetShopRotationsFiltersExpiredAndFutureRotations() - assert only rotations where validFrom < now < validUntil are returned
+    public function testGetShopRotationsFiltersExpiredAndFutureRotations(): void
+    {
+
+    }
+
+    // TODO: testRemoveActiveElixirUnsetsCharacterReference() - assert character is set to null on the ActiveElixir instance when removed
+    public function testRemoveActiveElixirUnsetsCharacterReference(): void
+    {
+
+    }
 }
