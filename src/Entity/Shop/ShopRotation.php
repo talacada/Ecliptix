@@ -11,6 +11,7 @@ use App\Attribute\CurrentUserScope;
 use App\Entity\Character\Character;
 use App\Repository\Shop\ShopRotationRepository;
 use App\State\Provider\Shop\Rotation\ShopRotationProvider;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -41,11 +42,11 @@ class ShopRotation
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     #[Groups(self::READ_GROUP)]
-    private \DateTimeImmutable $validFrom;
+    private DateTimeImmutable $validFrom;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     #[Groups(self::READ_GROUP)]
-    private \DateTimeImmutable $validUntil;
+    private DateTimeImmutable $validUntil;
 
     #[ORM\ManyToOne(inversedBy: 'shopRotations')]
     #[ORM\JoinColumn(nullable: false)]
@@ -72,24 +73,24 @@ class ShopRotation
         return $this->id;
     }
 
-    public function getValidFrom(): \DateTimeImmutable
+    public function getValidFrom(): DateTimeImmutable
     {
         return $this->validFrom;
     }
 
-    public function setValidFrom(\DateTimeImmutable $validFrom): static
+    public function setValidFrom(DateTimeImmutable $validFrom): static
     {
         $this->validFrom = $validFrom;
 
         return $this;
     }
 
-    public function getValidUntil(): \DateTimeImmutable
+    public function getValidUntil(): DateTimeImmutable
     {
         return $this->validUntil;
     }
 
-    public function setValidUntil(\DateTimeImmutable $validUntil): static
+    public function setValidUntil(DateTimeImmutable $validUntil): static
     {
         $this->validUntil = $validUntil;
 

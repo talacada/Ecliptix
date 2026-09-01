@@ -133,6 +133,9 @@ class AppearanceValidationServiceTest extends TestCase
         );
     }
 
+    /**
+     * @return iterable<string, array{string, AppearanceTypeEnum}>
+     */
     public static function AppearanceOptionsDataProvider(): iterable
     {
         yield 'Hair' => ['Invalid hair_id', AppearanceTypeEnum::hair];

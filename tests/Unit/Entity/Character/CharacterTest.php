@@ -6,6 +6,9 @@ namespace App\Tests\Unit\Entity\Character;
 
 use App\Config\CharacterConfig;
 use App\Entity\Character\Character;
+use App\Entity\Shop\ShopRotation;
+use App\Tests\Helper\EntityHelper;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -118,13 +121,36 @@ class CharacterTest extends TestCase
         $character->getUserIdentifier();
     }
 
-    // TODO: testGetShopRotationsFiltersExpiredAndFutureRotations() - assert only rotations where validFrom < now < validUntil are returned
     public function testGetShopRotationsFiltersExpiredAndFutureRotations(): void
     {
+        $character = new Character();
 
+        $rotationInRange = new ShopRotation();
+        $rotationInRange->setValidFrom(new DateTimeImmutable('today'));
+        $rotationInRange->setValidUntil(new DateTimeImmutable('tomorrow'));
+        EntityHelper::setId($rotationInRange, 10);
+
+        $rotationOld = new ShopRotation();
+        $rotationOld->setValidFrom(new DateTimeImmutable('01-01-2026'));
+        $rotationOld->setValidUntil(new DateTimeImmutable('05-01-2026'));
+        EntityHelper::setId($rotationOld, 33);
+
+        $rotationFuture = new ShopRotation();
+        $rotationFuture->setValidFrom(new DateTimeImmutable('02-02-2040'));
+        $rotationFuture->setValidUntil(new DateTimeImmutable('05-02-2040'));
+        EntityHelper::setId($rotationFuture, 25);
+
+        $character->addShopRotation($rotationOld);
+        $character->addShopRotation($rotationInRange);
+
+        $rotations = $character->getShopRotations();
+
+        $this->assertCount(1, $rotations);
+        $this->assertTrue($rotations->contains($rotationInRange));
     }
 
     // TODO: testRemoveActiveElixirUnsetsCharacterReference() - assert character is set to null on the ActiveElixir instance when removed
+    //TODO next
     public function testRemoveActiveElixirUnsetsCharacterReference(): void
     {
 

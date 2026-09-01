@@ -24,6 +24,7 @@ use App\State\Processor\Auth\RegisterProcessor;
 use App\State\Processor\Character\UpdateCharacterProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
 use App\State\Provider\Character\PublicCharacterProvider;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -334,7 +335,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function getShopRotations(): Collection
     {
         $allRotations = $this->shopRotations;
-        $now = new \DateTimeImmutable();
+        $now = new DateTimeImmutable();
 
         $showRotation = new ArrayCollection();
 
@@ -482,7 +483,6 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function removeActiveElixir(ActiveElixir $activeElixir): static
     {
         if ($this->activeElixirs->removeElement($activeElixir)) {
-            // set the owning side to null (unless already changed)
             if ($activeElixir->getCharacter() === $this) {
                 $activeElixir->setCharacter(null);
             }

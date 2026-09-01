@@ -10,7 +10,6 @@ use App\Entity\Shop\ShopRotation;
 use App\Entity\Shop\ShopRotationEnum;
 use App\Repository\Item\ItemDefinitionRepository;
 use App\Repository\Shop\ShopRotationRepository;
-use App\Service\Item\ItemFactory;
 use App\Service\Item\ItemStatCalculator;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,7 +25,6 @@ class RotationGenerator
         private ItemDefinitionRepository $itemDefinitionRepository,
         private EntityManagerInterface $entityManager,
         private ShopRotationRepository $shopRotationRepository,
-        private ItemStatCalculator $itemStatCalculator,
     ) {
     }
 
