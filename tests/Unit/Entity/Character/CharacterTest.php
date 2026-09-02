@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity\Character;
 
 use App\Config\CharacterConfig;
+use App\Entity\Character\ActiveElixir;
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
 use App\Tests\Helper\EntityHelper;
@@ -149,10 +150,24 @@ class CharacterTest extends TestCase
         $this->assertTrue($rotations->contains($rotationInRange));
     }
 
-    // TODO: testRemoveActiveElixirUnsetsCharacterReference() - assert character is set to null on the ActiveElixir instance when removed
-    //TODO next
+    public function testAddActiveElixir(): void {
+        $character = new Character();
+        $elixir = new ActiveElixir();
+
+        $character->addActiveElixir($elixir);
+
+        $this->assertContains($elixir, $character->getActiveElixirs());
+        $this->assertCount(1, $character->getActiveElixirs());
+    }
+
     public function testRemoveActiveElixirUnsetsCharacterReference(): void
     {
+        $character = new Character();
+        $elixir = new ActiveElixir();
 
+        $character->addActiveElixir($elixir);
+        $character->removeActiveElixir($elixir);
+
+        $this->assertEmpty($character->getActiveElixirs());
     }
 }

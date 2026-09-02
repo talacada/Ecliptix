@@ -30,7 +30,8 @@ class ActiveElixirRemoveProcessor implements ProcessorInterface
             throw new NotFoundHttpException('Not found');
         }
 
-        $this->entityManager->remove($data);
+        $character->removeActiveElixir($data);
+
         $this->entityManager->flush();
 
         return null;
