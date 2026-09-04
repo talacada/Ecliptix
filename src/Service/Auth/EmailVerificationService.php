@@ -6,6 +6,7 @@ namespace App\Service\Auth;
 
 use App\Entity\Character\Character;
 use App\Entity\EmailVerificationToken;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -21,7 +22,7 @@ class EmailVerificationService
         $token = new EmailVerificationToken();
         $token->setCharacter($character);
         $token->setToken(Uuid::v4());
-        $token->setExpiresAt(new \DateTimeImmutable('now + 24 hours'));
+        $token->setExpiresAt(new DateTimeImmutable('now + 24 hours'));
         $token->setUsedAt(null);
 
         $this->entityManager->persist($token);
