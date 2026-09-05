@@ -18,9 +18,9 @@ class ElixirCleanUp
     public function removeExpired(Character $character): void
     {
         $now = new DateTime();
-        foreach ($character->getActiveElixirs() as $elixir) {
+        foreach ($character->getActiveElixirs()->toArray() as $elixir) {
             if ($elixir->getExpiresAt() < $now) {
-                $this->entityManager->remove($elixir);
+                $character->removeActiveElixir($elixir);
             }
         }
 
