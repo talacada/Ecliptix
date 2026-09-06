@@ -263,6 +263,56 @@ class InventoryManagerTest extends TestCase
         $this->assertSame($characterInventoryRight, $result);
     }
 
-    // TODO: testAddToBackpackIncreasesElixirStackEvenWhenBackpackIsFull() - assert elixir quantity is incremented even if unequipped count >= backpackCapacity
-    // TODO: testGetFirstAvailablePositionWhenBackpackIsEmpty() - assert returns 1 when allTakenPositions is empty array []
+    /**
+     * @throws Exception
+     */
+    public function testAddToBackpackIncreasesElixirStackEvenWhenBackpackIsFull(): void
+    {
+        $character = new Character();
+        $character->setBackpackCapacity(2);
+
+        $elixirDefinition = new ElixirDefinition();
+        EntityHelper::setId($elixirDefinition, 5);
+
+        $elixir = new Item();
+        $elixir->setDefinition($elixirDefinition);
+
+        $characterInventoryElixir = new CharacterInventory();
+        $characterInventoryElixir->setItem($elixir);
+        $characterInventoryElixir->setQuantity(2);
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getByDefinition')
+            ->with($character, 5)
+            ->willReturn($characterInventoryElixir);
+
+        $this->characterInventoryRepository
+            ->expects($this->never())
+            ->method('getUnequippedItems');
+
+        $result = $this->manager->addToBackpack($character, $elixir);
+
+        $this->assertSame($characterInventoryElixir, $result);
+        $this->assertSame(3, $result->getQuantity());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetFirstAvailablePositionWhenBackpackIsEmpty(): void
+    {
+        $character = new Character();
+        $character->setBackpackCapacity(5);
+
+        $this->characterInventoryRepository
+            ->expects($this->once())
+            ->method('getAllTakenPositions')
+            ->with($character)
+            ->willReturn([]);
+
+        $result = $this->manager->getFirstAvailablePosition($character);
+
+        $this->assertSame(1, $result);
+    }
 }
