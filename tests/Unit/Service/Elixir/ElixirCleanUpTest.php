@@ -19,7 +19,6 @@ class ElixirCleanUpTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
-    // TODO: testRemoveExpiredRemovesExpiredElixirsAndKeepsActiveOnes() - mock EntityManager, assert remove() is called only for expired elixirs (expiresAt < now)
     public function testRemoveExpiredRemovesExpiredElixirsAndKeepsActiveOnes(): void
     {
         $character = new Character();

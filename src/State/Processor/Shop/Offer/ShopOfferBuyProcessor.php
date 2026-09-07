@@ -61,7 +61,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new \Exception('Not enough backpack space');
         }
 
-        $item = $this->itemFactory->createFromDefinitionAndOffer($data->getItemDefinition(), $data);
+        $item = $this->itemFactory->createFromDefinitionAndOffer($data);
 
         $inventory = $this->inventoryManager->addToBackpack($character, $item);
 

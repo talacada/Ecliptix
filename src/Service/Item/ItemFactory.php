@@ -10,11 +10,11 @@ use App\Entity\Shop\ShopOffer;
 
 class ItemFactory
 {
-    public function createFromDefinitionAndOffer(ItemDefinition $definition, ShopOffer $offer): Item
+    public function createFromDefinitionAndOffer(ShopOffer $offer): Item
     {
         $item = new Item();
 
-        $item->setDefinition($definition);
+        $item->setDefinition($offer->getItemDefinition());
         $item->setBonusDamage($offer->getBonusDamage() ?? 0);
         $item->setBonusCrit($offer->getBonusCrit() ?? 0);
         $item->setBonusHealth($offer->getBonusHealth() ?? 0);
