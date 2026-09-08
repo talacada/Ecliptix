@@ -32,7 +32,7 @@ class LoggedInCharacter
         $this->elixirCleanUp->removeExpired($character);
 
         if (false === $this->shopRotationRepository->hasActiveDailyRotation($character)) {
-            $this->rotationGenerator->generate($character);
+            $this->rotationGenerator->generateDaily($character);
         }
 
         return $character;

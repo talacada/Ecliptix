@@ -28,13 +28,14 @@ class RotationGenerator
     ) {
     }
 
-    public function generate(Character $character): ShopRotation
+    public function generateDaily(Character $character): ShopRotation
     {
         $oldRotations = $this->shopRotationRepository->findAllExpired($character);
-        foreach ($oldRotations as $rotation) {
-            $this->entityManager->remove($rotation);
+        if ($oldRotations !== []) {
+            foreach ($oldRotations as $rotation) {
+                $this->entityManager->remove($rotation);
+            }
         }
-        $this->entityManager->flush();
         $shopRotation = new ShopRotation();
         $shopRotation->setCharacter($character);
         $shopRotation->setRotationType(ShopRotationEnum::Daily);
@@ -62,7 +63,7 @@ class RotationGenerator
             }
             $offer = new ShopOffer($shopRotation, $itemDefinition);
             $offer->setGoldPrice((int) ($itemDefinition->getBaseGoldPrice() * (mt_rand(80, 120) / 100))); // Random price between 80% and 120% of base price
-            $offer->setDiamondPrice((int) ($itemDefinition->getBaseDiamondPrice() * (int) (mt_rand(80, 120) / 100)));
+            $offer->setDiamondPrice((int) ($itemDefinition->getBaseDiamondPrice() * (mt_rand(80, 120) / 100)));
             [$bonusDamage, $bonusCrit, $bonusHealth] = ItemStatCalculator::rollBonusStats($itemDefinition);
             $offer->setBonusDamage($bonusDamage);
             $offer->setBonusCrit($bonusCrit);

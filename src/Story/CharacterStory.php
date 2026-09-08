@@ -119,7 +119,7 @@ final class CharacterStory
 
         $defaultChar = $this->entityManager->find(Character::class, $defaultChar->getId());
         assert($defaultChar instanceof Character);
-        $this->rotationGenerator->generate($defaultChar);
+        $this->rotationGenerator->generateDaily($defaultChar);
     }
 
     /**
