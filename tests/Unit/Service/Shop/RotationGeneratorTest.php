@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Shop;
 
 use App\Entity\Character\Character;
+use App\Entity\Item\ElixirDefinition;
+use App\Entity\Item\Item;
+use App\Entity\Item\ItemDefinition;
 use App\Entity\Shop\ShopRotation;
 use App\Entity\Shop\ShopRotationEnum;
 use App\Repository\Item\ItemDefinitionRepository;
@@ -27,7 +30,6 @@ class RotationGeneratorTest extends TestCase
         $this->shopRotationRepository = $this->createMock(ShopRotationRepository::class);
         $this->itemDefinitionRepository = $this->createMock(ItemDefinitionRepository::class);
     }
-    // TODO: testGenerateDailyRotationCleansUpOldExpiredRotations() - mock ShopRotationRepository::findAllExpired() and assert EntityManager::remove() is called for each
     public function testGenerateDailyRotationCleansUpOldExpiredRotations(): void
     {
         $character = new Character();
@@ -46,11 +48,14 @@ class RotationGeneratorTest extends TestCase
             ->expects($this->once())
             ->method('flush');
 
+        $this->itemDefinitionRepository
+            ->expects($this->exactly(2))
+            ->method('findRandomElixir');
+
         $generator = new RotationGenerator($this->itemDefinitionRepository, $this->entityManager, $this->shopRotationRepository);
         $generator->generateDaily($character);
     }
 
-    // TODO: testGenerateCreatesDailyRotationWithCorrectDateRange() - assert rotationType is Daily, validFrom is midnight, validUntil is tomorrow
     public function testGenerateCreatesDailyRotationWithCorrectDateRange(): void
     {
         $character = new Character();
@@ -65,6 +70,10 @@ class RotationGeneratorTest extends TestCase
             ->expects($this->never())
             ->method('remove');
 
+        $this->itemDefinitionRepository
+            ->expects($this->exactly(2))
+            ->method('findRandomElixir');
+
         $generator = new RotationGenerator($this->itemDefinitionRepository, $this->entityManager, $this->shopRotationRepository);
         $rotation = $generator->generateDaily($character);
 
@@ -75,7 +84,53 @@ class RotationGeneratorTest extends TestCase
 
     }
 
-    // TODO: testGenerateCreatesExactQuotaOfOffers() - assert creates 2 elixir offers and 8 equipment offers linked to the rotation
+    public function testGenerateCreatesExactQuotaOfOffers(): void
+    {
+        $character = new Character();
+
+        $this->shopRotationRepository
+            ->expects($this->once())
+            ->method('findAllExpired')
+            ->with($character)
+            ->willReturn([]);
+
+        $this->itemDefinitionRepository
+            ->expects($this->exactly(2))
+            ->method('findRandomElixir')
+            ->willReturn(new ElixirDefinition());
+
+        $this->itemDefinitionRepository
+            ->expects($this->exactly(8))
+            ->method('findRandomByLevel')
+            ->with($character->getLevel())
+            ->willReturn(new ItemDefinition());
+
+        $this->entityManager
+            ->expects($this->once())
+            ->method('flush');
+
+        $generator = new RotationGenerator($this->itemDefinitionRepository, $this->entityManager, $this->shopRotationRepository);
+        $rotation = $generator->generateDaily($character);
+
+        $elixirCount = 0;
+        $equipmentCount = 0;
+
+        $this->assertCount(10, $rotation->getShopOffers());
+
+        foreach ($rotation->getShopOffers() as $offer) {
+            $this->assertSame($rotation, $offer->getRotation());
+
+            if ($offer->getItemDefinition() instanceof ElixirDefinition) {
+                $elixirCount++;
+            } elseif ($offer->getItemDefinition() instanceof ItemDefinition) {
+                $equipmentCount++;
+            }
+        }
+
+        $this->assertSame(2, $elixirCount);
+        $this->assertSame(8, $equipmentCount);
+
+    }
     // TODO: testGenerateCalculatesPricesAndBonusStatsCorrectly() - assert gold/diamond prices and bonus stats match item definition & level calculations
     // TODO: testGenerateSkipsOfferWhenRepositoryReturnsNull() - assert continues without error if findRandomElixir or findRandomByLevel returns null
 }
