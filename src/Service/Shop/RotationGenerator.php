@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Shop;
 
+use App\Config\ItemConfig;
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopOffer;
 use App\Entity\Shop\ShopRotation;
@@ -48,7 +49,7 @@ class RotationGenerator
                 continue;
             }
             $offer = new ShopOffer($shopRotation, $elixirDef);
-            $offer->setGoldPrice((int) ($elixirDef->getBaseGoldPrice() * $character->getLevel() * (mt_rand(80, 120) / 100)));
+            $offer->setGoldPrice((int) ($elixirDef->getBaseGoldPrice() * $character->getLevel() * (mt_rand(ItemConfig::SHOP_PRICE_VARIANCE_MIN, ItemConfig::SHOP_PRICE_VARIANCE_MAX) / 100)));
             $offer->setDiamondPrice($elixirDef->getBaseDiamondPrice());
             $offer->setBonusDamage(0);
             $offer->setBonusCrit(0);
@@ -62,8 +63,8 @@ class RotationGenerator
                 continue;
             }
             $offer = new ShopOffer($shopRotation, $itemDefinition);
-            $offer->setGoldPrice((int) ($itemDefinition->getBaseGoldPrice() * (mt_rand(80, 120) / 100))); // Random price between 80% and 120% of base price
-            $offer->setDiamondPrice((int) ($itemDefinition->getBaseDiamondPrice() * (mt_rand(80, 120) / 100)));
+            $offer->setGoldPrice((int) ($itemDefinition->getBaseGoldPrice() * $character->getLevel() * (mt_rand(ItemConfig::SHOP_PRICE_VARIANCE_MIN, ItemConfig::SHOP_PRICE_VARIANCE_MAX) / 100)));
+            $offer->setDiamondPrice((int) ($itemDefinition->getBaseDiamondPrice() * (mt_rand(ItemConfig::SHOP_PRICE_VARIANCE_MIN, ItemConfig::SHOP_PRICE_VARIANCE_MAX) / 100)));
             [$bonusDamage, $bonusCrit, $bonusHealth] = ItemStatCalculator::rollBonusStats($itemDefinition);
             $offer->setBonusDamage($bonusDamage);
             $offer->setBonusCrit($bonusCrit);

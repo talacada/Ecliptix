@@ -67,17 +67,17 @@ class ItemStatCalculator
         $bonusHealth = 0;
 
         if ($definition->getBaseDamage() > 0) {
-            $randPercent = (mt_rand(-20, 20) / 100);
+            $randPercent = (mt_rand(-ItemConfig::BONUS_STAT_VARIANCE_PERCENT, ItemConfig::BONUS_STAT_VARIANCE_PERCENT) / 100);
             $bonusDamage = (int) round($definition->getBaseDamage() * $randPercent);
         }
 
         if ($definition->getBaseCrit() > 0) {
-            $randPercent = (mt_rand(-20, 20) / 100);
+            $randPercent = (mt_rand(-ItemConfig::BONUS_STAT_VARIANCE_PERCENT, ItemConfig::BONUS_STAT_VARIANCE_PERCENT) / 100);
             $bonusCrit = (int) round($definition->getBaseCrit() * $randPercent);
         }
 
         if ($definition->getBaseHealth() > 0) {
-            $randPercent = (mt_rand(-20, 20) / 100);
+            $randPercent = (mt_rand(-ItemConfig::BONUS_STAT_VARIANCE_PERCENT, ItemConfig::BONUS_STAT_VARIANCE_PERCENT) / 100);
             $bonusHealth = (int) round($definition->getBaseHealth() * $randPercent);
         }
 

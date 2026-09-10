@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Item;
 
+use App\Config\ItemConfig;
 use App\Entity\Item\ItemDefinition;
 use App\Entity\Item\ItemRarityEnum;
 use App\Entity\Item\ItemSlotEnum;
@@ -63,17 +64,22 @@ class ItemStatCalculatorTest extends TestCase
         $definition->setBaseCrit(50);
         $definition->setBaseHealth(200);
 
+        $variance = ItemConfig::BONUS_STAT_VARIANCE_PERCENT / 100;
+        $expectedMaxDamage = (int) round(100 * $variance);
+        $expectedMaxCrit = (int) round(50 * $variance);
+        $expectedMaxHealth = (int) round(200 * $variance);
+
         for ($i = 0; $i < 10; ++$i) {
             [$bonusDamage, $bonusCrit, $bonusHealth] = ItemStatCalculator::rollBonusStats($definition);
 
-            $this->assertGreaterThanOrEqual(-20, $bonusDamage);
-            $this->assertLessThanOrEqual(20, $bonusDamage);
+            $this->assertGreaterThanOrEqual(-$expectedMaxDamage, $bonusDamage);
+            $this->assertLessThanOrEqual($expectedMaxDamage, $bonusDamage);
 
-            $this->assertGreaterThanOrEqual(-10, $bonusCrit);
-            $this->assertLessThanOrEqual(10, $bonusCrit);
+            $this->assertGreaterThanOrEqual(-$expectedMaxCrit, $bonusCrit);
+            $this->assertLessThanOrEqual($expectedMaxCrit, $bonusCrit);
 
-            $this->assertGreaterThanOrEqual(-40, $bonusHealth);
-            $this->assertLessThanOrEqual(40, $bonusHealth);
+            $this->assertGreaterThanOrEqual(-$expectedMaxHealth, $bonusHealth);
+            $this->assertLessThanOrEqual($expectedMaxHealth, $bonusHealth);
         }
     }
 

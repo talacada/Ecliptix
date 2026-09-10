@@ -44,4 +44,15 @@ final class ItemConfig
 
     /** Gold price = totalStats × this multiplier. Diamond price ≈ 1% of gold price. */
     public const int GOLD_PER_STAT_POINT = 10;
+
+    /** Final movement of price by this percentage UP */
+    public const int SHOP_PRICE_VARIANCE_MAX = 120;
+
+    /** Final movement of price by this percentage DOWN*/
+    public const int SHOP_PRICE_VARIANCE_MIN = 80;
+
+    /** Final movement of price by this percentage DOWN*/
+    public const int BONUS_STAT_VARIANCE_PERCENT = 20;
+
+
 }
