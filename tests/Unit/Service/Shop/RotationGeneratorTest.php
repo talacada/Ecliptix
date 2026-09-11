@@ -134,15 +134,14 @@ class RotationGeneratorTest extends TestCase
 
     }
 
-    // TODO: testGenerateCalculatesPricesAndBonusStatsCorrectly() - assert gold/diamond prices and bonus stats match item definition & level calculations
     #[DataProvider('providePriceAndStats')]
     public function testGenerateCalculatesPricesAndBonusStatsCorrectly(
-        $characterLevel,
-        $baseGoldPrice,
-        $baseDiamondPrice,
-        $baseDamage,
-        $baseCrit,
-        $baseHealth,
+        int $characterLevel,
+        int $baseGoldPrice,
+        int $baseDiamondPrice,
+        int $baseDamage,
+        int $baseCrit,
+        int $baseHealth,
     ): void
     {
         $character = new Character();
