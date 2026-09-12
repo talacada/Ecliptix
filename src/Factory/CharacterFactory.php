@@ -47,4 +47,11 @@ final class CharacterFactory extends PersistentObjectFactory
     {
         return $this->with(['email_verified' => false]);
     }
+
+    public function withPassword(string $plainPassword): self
+    {
+        return $this->with([
+            'passwordHash' => $this->passwordHasher->hashPassword(new Character(), $plainPassword),
+        ]);
+    }
 }
