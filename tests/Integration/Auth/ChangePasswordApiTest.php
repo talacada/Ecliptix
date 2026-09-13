@@ -70,5 +70,46 @@ class ChangePasswordApiTest extends AbstractApiTestCase
         $this->assertSame('newPassword: This value is too short. It should have 8 characters or more.', $data['description']);
     }
 
-    // TODO - testChangePasswordSuccessfulUpdatesPasswordHash - Overit, ze prihlaseny uzivatel s platnym starym heslem uspesne zmeni heslo
+    public function testChangePasswordSuccessfulUpdatesPasswordHash(): void
+    {
+        $character = CharacterFactory::new()->withPassword('TestPassword123')->with([
+            'email' => 'email.email@google.com',
+        ])->create();
+        $client = $this->createAuthenticatedClient($character);
+
+        $response = $client->request('POST', '/api/auth/change-password', [
+            'json' => [
+                'oldPassword' => 'TestPassword123',
+                'newPassword' => 'NewPassword321',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $data = $response->toArray(false);
+        $this->assertArrayHasKey('@type', $data);
+        $this->assertSame('Character', $data['@type']);
+
+        $client->request('POST', '/api/auth/login', [
+            'json' => [
+                'email' => 'email.email@google.com',
+                'password' => 'TestPassword123',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $responseLogin = $client->request('POST', '/api/auth/login', [
+            'json' => [
+                'email' => 'email.email@google.com',
+                'password' => 'NewPassword321',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $data = $responseLogin->toArray(false);
+        $this->assertArrayHasKey('token', $data);
+        $this->assertNotEmpty($data['token']);
+    }
 }

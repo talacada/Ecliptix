@@ -43,10 +43,6 @@ final class CharacterFactory extends PersistentObjectFactory
         ];
     }
 
-    public function unverified(): self
-    {
-        return $this->with(['email_verified' => false]);
-    }
 
     public function withPassword(string $plainPassword): self
     {
