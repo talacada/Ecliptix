@@ -8,8 +8,11 @@ use App\Tests\Integration\AbstractApiTestCase;
 
 class RequestPasswordResetApiTest extends AbstractApiTestCase
 {
-
     // TODO - testRequestPasswordResetGeneratesTokenAndDispatchesEmail - Overit, ze pro existujici email vznikne PasswordResetToken a odesle se email
+    public function testRequestPasswordResetGeneratesTokenAndDispatchesEmail(): void
+    {
+
+    }
     // TODO - testRequestPasswordResetHandlesGracefullyNonExistentEmail - Overit bezpecne chovani pri neexistujicim emailu (neprozrazovat existenci uctu)
     // TODO - testRequestPasswordResetFailsWithInvalidEmailFormat - Overit validacni chybu pri neplatnem tvaru emailu
 }

@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\PasswordResetInput;
 use App\Repository\PasswordResetTokenRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +41,7 @@ class PasswordResetProcessor implements ProcessorInterface
             $this->passwordHasher->hashPassword($character, $data->getPassword()),
         );
 
-        $now = new \DateTimeImmutable('now');
+        $now = new DateTimeImmutable('now');
         $token->setUsedAt($now);
 
         $this->entityManager->flush();
