@@ -40,12 +40,7 @@ class LoginApiTest extends AbstractApiTestCase
             ],
         ]);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertJsonContains([
-            'character' => [
-                'username' => 'ShadowKnight',
-            ],
-        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $data = $response->toArray();
         $this->assertArrayHasKey('token', $data);

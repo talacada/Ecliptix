@@ -7,17 +7,72 @@ namespace App\Tests\Integration\Auth;
 use App\Factory\CharacterFactory;
 use App\Factory\PasswordResetTokenFactory;
 use App\Tests\Integration\AbstractApiTestCase;
-use DateTime;
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Uid\Uuid;
 
 class PasswordResetApiTest extends AbstractApiTestCase
 {
-    // TODO - testPasswordResetSuccessfulChangesPassword - Overit, ze s platnym tokenem se zmeni heslo postavy a token se oznaci jako pouzity
     public function testPasswordResetSuccessfulChangesPassword(): void
     {
+        $character = CharacterFactory::createOne([
+            'email' => 'hero@ecliptix.com',
+        ]);
 
+        $token = PasswordResetTokenFactory::createOne([
+            'character' => $character,
+        ]);
+
+        $client = static::createClient();
+
+        $data = $client->request('POST', '/api/auth/password-reset', [
+            'json' => [
+                'password' => 'NewPassword1',
+                'token' => $token->getToken(),
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $data = $data->toArray(false);
+        $this->assertArrayHasKey('message', $data);
+        $this->assertSame('Password reset successfully.', $data['message']);
+
+        // Token cant be used again
+
+        $client->request('POST', '/api/auth/password-reset', [
+            'json' => [
+                'password' => 'NewPassword1',
+                'token' => $token->getToken(),
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+
+        // Old password not working
+
+        $response = $client->request('POST', '/api/auth/login', [
+            'json' => [
+                'email' => 'hero@ecliptix.com',
+                'password' => 'password123',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        // Login with new password OK
+
+        $response = $client->request('POST', '/api/auth/login', [
+            'json' => [
+                'email' => 'hero@ecliptix.com',
+                'password' => 'NewPassword1',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $data = $response->toArray();
+        $this->assertArrayHasKey('token', $data);
+        $this->assertNotEmpty($data['token']);
     }
 
     public function testPasswordResetFailsWithNonExistingToken(): void
@@ -38,14 +93,14 @@ class PasswordResetApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
-    public function testPasswordResetFailsWithWrongToken(): void
+    public function testPasswordResetFailsWithExpiredToken(): void
     {
         $character = CharacterFactory::createOne([
             'email' => 'hero@ecliptix.com',
             'email_verified' => true,
         ]);
 
-        PasswordResetTokenFactory::createOne([
+        $token = PasswordResetTokenFactory::createOne([
             'character' => $character,
             'expires_at' => new DateTimeImmutable('-1 hour'),
         ]);
@@ -55,7 +110,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
         $client->request('POST', '/api/auth/password-reset', [
             'json' => [
                 'password' => 'NewPassword',
-                'token' => '8bea0ac7-27a4-484b-b89c-3c3f76ce05d5',
+                'token' => $token->getToken(),
             ],
         ]);
 
@@ -68,7 +123,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
             'email_verified' => true,
         ]);
 
-        PasswordResetTokenFactory::createOne([
+        $token = PasswordResetTokenFactory::createOne([
             'character' => $character,
             'used_at' => new DateTimeImmutable('-1 hour'),
         ]);
@@ -78,7 +133,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
         $client->request('POST', '/api/auth/password-reset', [
             'json' => [
                 'password' => 'NewPassword',
-                'token' => '8bea0ac7-27a4-484b-b89c-3c3f76ce05d5',
+                'token' => $token->getToken(),
             ],
         ]);
 
@@ -106,5 +161,24 @@ class PasswordResetApiTest extends AbstractApiTestCase
         $data = $data->toArray(false);
         $this->assertArrayHasKey('description', $data);
         $this->assertSame('password: Password must be at least 8 characters long.', $data['description']);
+    }
+
+    public function testPasswordResetFailsWithInvalidUuidFormat(): void
+    {
+        CharacterFactory::createOne();
+        $client = static::createClient();
+
+        $data = $client->request('POST', '/api/auth/password-reset', [
+            'json' => [
+                'password' => 'PasswordPassword2',
+                'token' => 'not-uuid',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $data = $data->toArray(false);
+        $this->assertArrayHasKey('description', $data);
+        $this->assertSame('token: Token is not valid', $data['description']);
     }
 }

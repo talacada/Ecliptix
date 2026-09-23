@@ -26,7 +26,7 @@ class CharacterApiTest extends AbstractApiTestCase
         $character = CharacterFactory::createOne([
             'username' => 'Arthas',
             'gold' => 150,
-        ])->_real();
+        ]);
 
         $jwtManager = static::getContainer()->get(JWTTokenManagerInterface::class);
         $token = $jwtManager->create($character);

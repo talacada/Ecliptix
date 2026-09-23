@@ -12,3 +12,12 @@ framework:
             policy: 'token_bucket'
             limit: 3
             rate: { amount: 3, interval: '1 minute' }
+when@test:
+    framework:
+        rate_limiter:
+            login_limiter:
+                policy: 'no_limit'
+            register_limiter:
+                policy: 'no_limit'
+            password_reset_limiter:
+                policy: 'no_limit'
