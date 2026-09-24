@@ -10,6 +10,7 @@ use App\ApiResource\Auth\RequestPasswordResetInput;
 use App\Entity\PasswordResetToken;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\PasswordResetTokenRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -62,7 +63,7 @@ readonly class RequestPasswordResetProcessor implements ProcessorInterface
 
         $newToken = new PasswordResetToken();
         $newToken->setCharacter($character);
-        $newToken->setExpiresAt(new \DateTimeImmutable('now + 1hours'));
+        $newToken->setExpiresAt(new DateTimeImmutable('now + 1hours'));
         $newToken->setToken(Uuid::v4());
         $newToken->setUsedAt(null);
 
