@@ -4,33 +4,45 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Auth;
 
+use App\Factory\CharacterFactory;
 use App\Tests\Integration\AbstractApiTestCase;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 class RequestPasswordResetApiTest extends AbstractApiTestCase
 {
-    // TODO - testRequestPasswordResetGeneratesTokenAndDispatchesEmail - Overit, ze pro existujici email vznikne PasswordResetToken a odesle se email
     public function testRequestPasswordResetGeneratesTokenAndDispatchesEmail(): void
     {
+        $character = CharacterFactory::createOne([
+            'email' => 'player@ecliptix.com',
+            'username' => 'MightyPlayer',
+        ]);
+
+        $client = static::createClient();
+
+        $client->request('POST', '/api/auth/request-password-reset', [
+            'json' => [
+                'email' => $character->getEmail(),
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
         /** @var InMemoryTransport $transport */
         $transport = static::getContainer()->get('messenger.transport.async');
 
-        // 1. Ověříme počet odeslaných zpráv
         $this->assertCount(1, $transport->getSent());
 
-        // 2. Vytáhneme zprávu z první obálky
         $envelopes = $transport->getSent();
         $message = $envelopes[0]->getMessage();
 
-        $this->assertInstanceOf(\Symfony\Component\Mailer\Messenger\SendEmailMessage::class, $message);
+        $this->assertInstanceOf(SendEmailMessage::class, $message);
 
-        // 3. Získáme samotný e-mail (TemplatedEmail)
         /** @var TemplatedEmail $email */
         $email = $message->getMessage();
 
-        // 4. Ověříme příjemce, předmět a kontext šablony
         $this->assertSame('player@ecliptix.com', $email->getTo()[0]->getAddress());
         $this->assertSame('Ecliptix — Password Reset', $email->getSubject());
 
@@ -38,7 +50,7 @@ class RequestPasswordResetApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('token', $context);
         $this->assertSame('MightyPlayer', $context['username']);
     }
-    // TODO - testRequestPasswordResetHandlesGracefullyNonExistentEmail - Overit bezpecne chovani pri neexistujicim emailu (neprozrazovat existenci uctu)
+
     public function testRequestPasswordResetHandlesGracefullyNonExistentEmail(): void
     {
         $client = static::createClient();
@@ -60,6 +72,7 @@ class RequestPasswordResetApiTest extends AbstractApiTestCase
         $transport = static::getContainer()->get('messenger.transport.async');
         $this->assertCount(0, $transport->getSent());
     }
+
     public function testRequestPasswordResetFailsWithInvalidEmailFormat(): void
     {
         $client = static::createClient();
