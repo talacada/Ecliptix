@@ -39,6 +39,7 @@ class AppearanceOptionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('a')
             ->andWhere('a.race = :race')
             ->setParameter('race', $race)
+            ->orderBy('a.sort_order', 'ASC')
             ->getQuery()
             ->getResult();
     }
