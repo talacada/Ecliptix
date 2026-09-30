@@ -27,7 +27,7 @@ final class CharacterFactory extends PersistentObjectFactory
 
     protected function defaults(): array
     {
-        $race = RaceFactory::new();
+        $race = RaceFactory::randomOrCreate();
 
         return [
             'email' => self::faker()->unique()->safeEmail(),
@@ -35,11 +35,11 @@ final class CharacterFactory extends PersistentObjectFactory
             'passwordHash' => $this->passwordHasher->hashPassword(new Character(), 'password123'),
             'email_verified' => true,
             'race' => $race,
-            'hair' => AppearanceOptionFactory::new(['race' => $race, 'type' => AppearanceTypeEnum::hair]),
-            'eyes' => AppearanceOptionFactory::new(['race' => $race, 'type' => AppearanceTypeEnum::eyes]),
-            'mouth' => AppearanceOptionFactory::new(['race' => $race, 'type' => AppearanceTypeEnum::mouth]),
-            'nose' => AppearanceOptionFactory::new(['race' => $race, 'type' => AppearanceTypeEnum::nose]),
-            'ears' => AppearanceOptionFactory::new(['race' => $race, 'type' => AppearanceTypeEnum::ears]),
+            'hair' => AppearanceOptionFactory::randomOrCreate(['race' => $race, 'type' => AppearanceTypeEnum::hair]),
+            'eyes' => AppearanceOptionFactory::randomOrCreate(['race' => $race, 'type' => AppearanceTypeEnum::eyes]),
+            'mouth' => AppearanceOptionFactory::randomOrCreate(['race' => $race, 'type' => AppearanceTypeEnum::mouth]),
+            'nose' => AppearanceOptionFactory::randomOrCreate(['race' => $race, 'type' => AppearanceTypeEnum::nose]),
+            'ears' => AppearanceOptionFactory::randomOrCreate(['race' => $race, 'type' => AppearanceTypeEnum::ears]),
         ];
     }
 

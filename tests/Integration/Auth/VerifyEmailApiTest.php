@@ -12,7 +12,6 @@ use App\Factory\EmailVerificationTokenFactory;
 
 class VerifyEmailApiTest extends AbstractApiTestCase
 {
-    // TODO - testVerifyEmailSuccessfulActivatesCharacter - Overit, ze platny token aktivuje email_verified na true a nastavi used_at
     public function testVerifyEmailSuccessfulActivatesCharacter(): void
     {
         $character = CharacterFactory::new()->create();

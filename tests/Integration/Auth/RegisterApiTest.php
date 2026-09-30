@@ -119,7 +119,7 @@ class RegisterApiTest extends AbstractApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $data = $request->toArray(false);
         $this->assertArrayHasKey('detail', $data);
-        $this->assertSame('username already registered', $data['detail']);
+        $this->assertSame('Username already registered', $data['detail']);
     }
     public function testRegisterFailsWithNonExistentAppearanceOption(): void
     {

@@ -149,7 +149,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
 
         $client = static::createClient();
 
-        $data = $client->request('POST', '/api/auth/password-reset', [
+        $request = $client->request('POST', '/api/auth/password-reset', [
             'json' => [
                 'password' => 'short',
                 'token' => '8bea0ac7-27a4-484b-b89c-3c3f76ce05d5',
@@ -158,7 +158,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        $data = $data->toArray(false);
+        $data = $request->toArray(false);
         $this->assertArrayHasKey('description', $data);
         $this->assertSame('password: Password must be at least 8 characters long.', $data['description']);
     }
