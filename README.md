@@ -94,12 +94,6 @@ make bash
 php bin/console lexik:jwt:generate-keypair
 ```
 
-Set the passphrase in your `.env.local`:
-
-```env
-JWT_PASSPHRASE=your_passphrase_here
-```
-
 API requests authenticate via `Authorization: Bearer <token>`.
 
 ## Quality Checks

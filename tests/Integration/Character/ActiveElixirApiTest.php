@@ -11,11 +11,24 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ActiveElixirApiTest extends AbstractApiTestCase
 {
-
-    // TODO - testGetActiveElixirReturnsDetails - Overit, ze GET /api/character/elixir/{id} vrati platnost a bonus aktivniho elixir postavy
     public function testGetActiveElixirReturnsDetails(): void
     {
+        $character = CharacterFactory::createOne();
+        $elixir = ActiveElixirFactory::createOne([
+            'character' => $character,
+        ]);
 
+        $client = $this->createAuthenticatedClient($character);
+
+        $response = $client->request('GET', '/api/character/elixir/' . $elixir->getId());
+
+        $data = $response->toArray();
+        // This needs to check if stats and targeted stat is right, now its in name BAD!!!!
+        $this->assertArrayHasKey('remainingSeconds', $data);
+        $this->assertGreaterThanOrEqual(3500, $data['remainingSeconds']);
+
+        $this->assertArrayHasKey('name', $data);
+        $this->assertSame($elixir->getItemDefinition()->getName(), $data['name']);
     }
     public function testDeleteActiveElixirRemovesBuff(): void
     {
