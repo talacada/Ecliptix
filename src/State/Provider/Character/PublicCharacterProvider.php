@@ -11,6 +11,8 @@ use App\Repository\Character\CharacterRepository;
 use App\Repository\FriendRelationRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
+use Exception;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 /**
@@ -27,7 +29,7 @@ class PublicCharacterProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Character
     {
@@ -38,7 +40,7 @@ class PublicCharacterProvider implements ProviderInterface
             $searchedCharacter = $this->characterRepository->getCharacterById($id);
 
             if (!$searchedCharacter instanceof Character) {
-                throw new NotFoundResourceException('Character not found');
+                throw new NotFoundHttpException('Character not found');
             }
 
             $this->elixirCleanUp->removeExpired($searchedCharacter);
@@ -49,6 +51,6 @@ class PublicCharacterProvider implements ProviderInterface
 
             return $searchedCharacter;
         }
-        throw new \Exception("Missing parameter 'id' in uriVariables");
+        throw new Exception("Missing parameter 'id' in uriVariables");
     }
 }

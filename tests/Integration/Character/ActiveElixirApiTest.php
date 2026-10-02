@@ -23,7 +23,6 @@ class ActiveElixirApiTest extends AbstractApiTestCase
         $response = $client->request('GET', '/api/character/elixir/' . $elixir->getId());
 
         $data = $response->toArray();
-        // This needs to check if stats and targeted stat is right, now its in name BAD!!!!
         $this->assertArrayHasKey('remainingSeconds', $data);
         $this->assertGreaterThanOrEqual(3500, $data['remainingSeconds']);
 
