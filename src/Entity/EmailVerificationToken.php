@@ -30,7 +30,7 @@ class EmailVerificationToken
     private int $id;
 
     #[ORM\OneToOne(cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Character $character;
 
     #[ORM\Column(type: 'uuid')]

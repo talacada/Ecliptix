@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Character;
 
 use App\Entity\Appearance\AppearanceTypeEnum;
+use App\Enum\GameCostEnum;
 use App\Factory\AppearanceOptionFactory;
 use App\Factory\RaceFactory;
-use App\Repository\AppearanceOptionRepository;
 use App\Tests\Integration\AbstractApiTestCase;
 use App\Factory\CharacterFactory;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class CharacterApiTest extends AbstractApiTestCase
@@ -157,10 +156,71 @@ class CharacterApiTest extends AbstractApiTestCase
         $this->assertSame($data['eyes'], '/api/appearance_options/' . $eyes->getId());
         $this->assertSame($data['mouth'], '/api/appearance_options/' . $mouth->getId());
         $this->assertSame($data['nose'], '/api/appearance_options/' . $nose->getId());
-        $this->assertSame($data['ears'], '/api/appearance_options/' .$ears->getId());
-        $this->assertLessThan($oldDiamonds, $data['diamonds']);
-
+        $this->assertSame($data['ears'], '/api/appearance_options/' . $ears->getId());
+        $this->assertSame($oldDiamonds - GameCostEnum::CHANGE_APPEARANCE->getAmount(), $data['diamonds']);
     }
-    // TODO - testPatchMineCharacterFailsWithDuplicateUsername - Overit, ze zmena jmena na jiz obsazene vrati 422 Unprocessable Entity
-    // TODO - testDeleteMineCharacterDeletesUserAccount - Overit, ze DELETE /api/character smaze ucet prihlaseneho uzivatele
+    public function testPatchMineCharacterFailsWithDuplicateUsername(): void
+    {
+        $characterRareUsername = CharacterFactory::createOne([
+            'username' => 'SUPER_RARE_USERNAME'
+        ]);
+
+        $character = CharacterFactory::createOne([
+            'username' => 'normal',
+            'diamonds' => 10
+        ]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('PATCH', '/api/character',[
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'username' => $characterRareUsername->getUsername(),
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $response = $client->request('GET', '/api/character');
+
+        $data = $response->toArray(false);
+        $this->assertSame('normal', $data['username']);
+        $this->assertSame(10, $data['diamonds']);
+    }
+
+    public function testDeleteMineCharacterDeletesUserAccount(): void
+    {
+        $character = CharacterFactory::new()->withPassword('TestPassword123')->create();
+
+        $clientNotAuth = static::createClient();
+        $clientNotAuth->request('DELETE', '/api/character');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $client = static::createAuthenticatedClient($character);
+        $client->request('DELETE', '/api/character');
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+
+        $client->request('GET', '/api/character');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $request = $clientNotAuth->request('POST', '/api/auth/login', [
+            'json' => [
+                'email' => $character->getEmail(),
+                'password' => 'TestPassword123',
+            ],
+        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $data = $request->toArray(false);
+        $this->assertArrayHasKey('detail', $data);
+        $this->assertSame('Invalid credentials', $data['detail']);
+
+        $this->assertNull(CharacterFactory::repository()->first(['id' => $character->getId()]));
+    }
+
+    //TODO EmptyPatch wont take dia
+    //TODO GET /api/character/{id} without JWT
+    //TODO PATCH /api/character without JWT
 }
