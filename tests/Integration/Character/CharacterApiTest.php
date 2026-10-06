@@ -217,10 +217,61 @@ class CharacterApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('detail', $data);
         $this->assertSame('Invalid credentials', $data['detail']);
 
-        $this->assertNull(CharacterFactory::repository()->first(['id' => $character->getId()]));
+        $this->assertNull(CharacterFactory::repository()->find($character->getId()));
     }
 
-    //TODO EmptyPatch wont take dia
-    //TODO GET /api/character/{id} without JWT
-    //TODO PATCH /api/character without JWT
+    public function testEmptyPatchWontConsumeDiamonds(): void
+    {
+        $character = CharacterFactory::createOne([
+            'diamonds' => 10
+        ]);
+        $diamonds = $character->getDiamonds();
+
+        $client = static::createAuthenticatedClient($character);
+
+        $response = $client->request('PATCH', '/api/character',[
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = $response->toArray(false);
+        $this->assertSame($diamonds, $data['diamonds']);
+    }
+
+    public function testCantAccessPatchWithoutAuth(): void
+    {
+        $character = CharacterFactory::createOne();
+
+        $client = static::createClient();
+
+        $client->request('PATCH', '/api/character',[
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'username' => 'test',
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testCantAccessGetWithoutAuth(): void
+    {
+        $character = CharacterFactory::createOne();
+
+        $client = static::createClient();
+
+        $client->request('GET', '/api/character/' . $character->getId());
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+    }
+
+    //TODO patch nedostatek dia
+    //TODO patch se stejnymi hodnotami username => username
+    //TODO castecny patch upravit jenom hair
 }

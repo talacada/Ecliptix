@@ -11,6 +11,7 @@ use App\Enum\CurrencyEnum;
 use App\Enum\GameCostEnum;
 use App\Service\Auth\AppearanceValidationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 /**
  * @implements ProcessorInterface<Character, Character>
@@ -24,7 +25,7 @@ class UpdateCharacterProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Character
     {
@@ -41,7 +42,7 @@ class UpdateCharacterProcessor implements ProcessorInterface
             && $prevEntity['ears'] === $character->getEars()
             && $prevEntity['username'] === $character->getUsername()
         ) {
-            throw new \Exception('Nothing changed');
+            return $character;
         }
 
         $this->appearanceValidationService->verifiesAppearance(
