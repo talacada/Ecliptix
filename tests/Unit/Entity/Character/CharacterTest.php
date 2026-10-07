@@ -13,6 +13,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class CharacterTest extends TestCase
 {
@@ -58,7 +59,7 @@ class CharacterTest extends TestCase
         $character = new Character();
         $character->setGold(111);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(UnprocessableEntityHttpException::class);
         $this->expectExceptionMessage('Not enough gold');
 
         $character->subtractGold(112);
@@ -86,7 +87,7 @@ class CharacterTest extends TestCase
         $character = new Character();
         $character->setDiamonds(10);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(UnprocessableEntityHttpException::class);
         $this->expectExceptionMessage('Not enough diamonds');
 
         $character->subtractDiamonds(11);

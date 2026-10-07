@@ -31,6 +31,7 @@ use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use LogicException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -439,7 +440,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractGold(int $amount): void
     {
         if ($amount > $this->gold) {
-            throw new InvalidArgumentException('Not enough gold');
+            throw new UnprocessableEntityHttpException('Not enough gold');
         }
         $this->gold -= $amount;
     }
@@ -447,7 +448,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractDiamonds(int $amount): void
     {
         if ($amount > $this->diamonds) {
-            throw new InvalidArgumentException('Not enough diamonds');
+            throw new UnprocessableEntityHttpException('Not enough diamonds');
         }
         $this->diamonds -= $amount;
     }

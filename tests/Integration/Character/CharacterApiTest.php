@@ -271,7 +271,112 @@ class CharacterApiTest extends AbstractApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
 
-    //TODO patch nedostatek dia
-    //TODO patch se stejnymi hodnotami username => username
-    //TODO castecny patch upravit jenom hair
+    public function testPatchWontWorkWithoutDiamonds(): void
+    {
+        $character = CharacterFactory::createOne([
+            'diamonds' => GameCostEnum::CHANGE_APPEARANCE->getAmount() - 1
+        ]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $response = $client->request('PATCH', '/api/character',[
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'username' => 'iWantNewName',
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $data = $response->toArray(false);
+        $this->assertArrayHasKey('detail', $data);
+        $this->assertSame('Not enough diamonds', $data['detail']);
+
+    }
+
+    public function testPatchWithSameValuesThatCharacterAlreadyHad(): void
+    {
+        $character = CharacterFactory::createOne([
+            'username' => 'MyNormalName',
+            'diamonds' => 100,
+        ]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $response = $client->request('PATCH', '/api/character',[
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'username' => $character->getUsername(),
+                'race' => '/api/races/' . $character->getRace()->getId(),
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = $response->toArray(false);
+        $this->assertSame('MyNormalName', $data['username']);
+        $this->assertSame(100, $data['diamonds']);
+
+    }
+
+    public function testPartiallyChangeAppearance(): void
+    {
+        $character = CharacterFactory::createOne([
+            'username' => 'MyNormalName',
+            'diamonds' => 100,
+        ]);
+
+        $hair = AppearanceOptionFactory::createOne([
+            'race' => $character->getRace(),
+            'type' => AppearanceTypeEnum::hair
+        ]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $response = $client->request('PATCH', '/api/character',[
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'hair' => '/api/appearance_options/' . $hair->getId(),
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $data = $response->toArray(false);
+        $this->assertArrayHasKey('hair', $data);
+        $this->assertSame('/api/appearance_options/' . $hair->getId(), $data['hair']);
+    }
+
+    public function testPartiallyChangeAppearanceWithBadRace(): void
+    {
+        $character = CharacterFactory::createOne([
+            'username' => 'MyNormalName',
+            'diamonds' => 100,
+        ]);
+
+        $hair = AppearanceOptionFactory::createOne([
+            'race' => RaceFactory::createOne(),
+            'type' => AppearanceTypeEnum::hair
+        ]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $response = $client->request('PATCH', '/api/character',[
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'hair' => '/api/appearance_options/' . $hair->getId(),
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $data = $response->toArray(false);
+        $this->assertArrayHasKey('detail', $data);
+        $this->assertSame('Invalid hair_id', $data['detail']);
+    }
+
 }
