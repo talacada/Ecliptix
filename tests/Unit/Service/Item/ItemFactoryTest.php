@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Service\Item;
 use App\Entity\Item\ItemDefinition;
 use App\Entity\Shop\ShopOffer;
 use App\Entity\Shop\ShopRotation;
-use App\Service\Item\ItemFactory;
+use App\Factory\ItemFactory;
 use PHPUnit\Framework\TestCase;
 
 class ItemFactoryTest extends TestCase
