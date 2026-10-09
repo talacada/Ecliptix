@@ -20,7 +20,6 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
-    // TODO - testGetInventoryReturnsAllUnequippedAndEquippedItems - Overit, ze GET /api/character/inventory vrati obsah batohu i slotu postavy
     public function testGetInventoryReturnsAllUnequippedAndEquippedItems(): void
     {
         $equippedItem = CharacterInventoryFactory::createOne([
@@ -40,8 +39,24 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        $data = $response->toArray(false);
-        //TODO continue here
+
+        $this->assertJsonContains([
+            'totalItems' => 2,
+            'member' => [
+                [
+                    'container' => InventoryContainerEnum::Equipped->value,
+                    'item' => [
+                        'name' => $equippedItem->getItem()->getDefinition()->getName(),
+                    ],
+                ],
+                [
+                    'container' => InventoryContainerEnum::Backpack->value,
+                    'item' => [
+                        'name' => $inventoryItem->getItem()->getDefinition()->getName(),
+                    ]
+                ],
+            ],
+        ]);
     }
     // TODO - testGetSingleInventorySlotReturnsItemDetails - Overit GET /api/character/inventory/{id} pro konkretni slot
     // TODO - testPatchInventoryEquipsItemToValidSlot - Overit presun predmetu z batohu do odpovidajiciho slotu vybavy
