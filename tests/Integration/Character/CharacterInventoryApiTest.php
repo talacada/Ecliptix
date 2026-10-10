@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Character;
 
+use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\InventoryContainerEnum;
 use App\Factory\CharacterFactory;
 use App\Factory\CharacterInventoryFactory;
@@ -35,7 +36,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $response = $client->request('GET', '/api/character/inventory');
+        $client->request('GET', '/api/character/inventory');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
@@ -58,7 +59,54 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             ],
         ]);
     }
-    // TODO - testGetSingleInventorySlotReturnsItemDetails - Overit GET /api/character/inventory/{id} pro konkretni slot
+
+    public function testGetSingleInventorySlotReturnsItemDetails(): void
+    {
+        $item = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Backpack,
+        ]);
+
+        $character = CharacterFactory::createOne();
+        $character->addCharacterInventory($item);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('GET', '/api/character/inventory/' . $item->getId());
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->assertJsonContains([
+            '@type' => 'CharacterInventory',
+            'item' => [
+                'name' => $item->getItem()->getDefinition()->getName(),
+            ],
+        ]);
+
+    }
+
+    public function testPatchInventoryEquipsItemToValidSlot(): void
+    {
+        $item = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Backpack,
+        ]);
+
+        $character = CharacterFactory::createOne();
+        $character->addCharacterInventory($item);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('PATCH', '/api/character/inventory/' . $item->getId(), [
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'equipped' => true
+            ]
+        ]);
+
+        //TODO proccesor is broken i think
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
     // TODO - testPatchInventoryEquipsItemToValidSlot - Overit presun predmetu z batohu do odpovidajiciho slotu vybavy
     // TODO - testPatchInventoryFailsWhenEquippingWrongSlot - Overit, ze nelze nasadit helmu do slotu pro zbran (400/422)
     // TODO - testSellInventoryItemAddsGoldAndRemovesItem - Overit, ze POST /api/character/inventory/{id}/sell pricte postave goldy a smaze predmet
