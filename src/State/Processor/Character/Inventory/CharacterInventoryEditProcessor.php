@@ -45,15 +45,13 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
         }
 
         $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);
-
-        if (!is_numeric($originalData['position'])) {
-            throw new NotFoundHttpException('Invalid inventory ID.');
-        }
         $wasPosition = (int) $originalData['position'];
 
-        //if (!$originalData['container'] instanceof InventoryContainerEnum) {
-        //    throw new NotFoundHttpException('Invalid inventory.');
-        //}
+        dd($originalData, $data);
+        if (!$originalData['container'] instanceof InventoryContainerEnum) {
+            throw new NotFoundHttpException('Invalid inventory.');
+        }
+
         $wasContainer = $originalData['container'];
 
         // User must send [equipped = true, position = 0]
