@@ -6,8 +6,12 @@ namespace App\Tests\Integration\Character;
 
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\InventoryContainerEnum;
+use App\Entity\Item\ItemDefinition;
+use App\Entity\Item\ItemSlotEnum;
 use App\Factory\CharacterFactory;
 use App\Factory\CharacterInventoryFactory;
+use App\Factory\ItemDefinitionFactory;
+use App\Factory\ItemFactory;
 use App\Tests\Integration\AbstractApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -84,31 +88,97 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
     }
 
-    public function testPatchInventoryEquipsItemToValidSlot(): void
+    public function testPatchInventoryEquipsItem(): void
     {
-        $item = CharacterInventoryFactory::createOne([
+        $inventory = CharacterInventoryFactory::createOne([
             'container' => InventoryContainerEnum::Backpack,
+            'position' => '2'
         ]);
 
-        $character = CharacterFactory::createOne();
-        $character->addCharacterInventory($item);
+        $character = CharacterFactory::createOne([
+            'backpackCapacity' => 8
+        ]);
+
+        $character->addCharacterInventory($inventory);
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('PATCH', '/api/character/inventory/' . $item->getId(), [
+        $client->request('GET', '/api/character/inventory/' . $inventory->getId());
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertJsonContains([
+            '@type' => 'CharacterInventory',
+            'container' => InventoryContainerEnum::Backpack->value,
+            'position' => 2,
+        ]);
+
+        $client->request('PATCH', '/api/character/inventory/' . $inventory->getId(), [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
-                'equipped' => true
+                'container' => 'equipped',
             ]
         ]);
 
-        //TODO proccesor is broken i think
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertJsonContains([
+            '@type' => 'CharacterInventory',
+            'container' => 'equipped',
+            'position' => 0,
+        ]);
     }
-    // TODO - testPatchInventoryEquipsItemToValidSlot - Overit presun predmetu z batohu do odpovidajiciho slotu vybavy
-    // TODO - testPatchInventoryFailsWhenEquippingWrongSlot - Overit, ze nelze nasadit helmu do slotu pro zbran (400/422)
+
+    public function testPatchReequipSameSlotItemsHotSwapsThem(): void
+    {
+        $character = CharacterFactory::createOne();
+
+        $inventoryUnequipped = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Backpack,
+            'position' => '3',
+            'item' => ItemFactory::createOne([
+                'definition' => ItemDefinitionFactory::createOne([
+                    'desiredSlot' => ItemSlotEnum::Helmet
+                ])
+            ]),
+        ]);
+        $inventoryEquipped = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Equipped,
+            'item' => ItemFactory::createOne([
+                'definition' => ItemDefinitionFactory::createOne([
+                    'desiredSlot' => ItemSlotEnum::Helmet
+                ])
+            ]),
+        ]);
+
+        $character->addCharacterInventory($inventoryEquipped);
+        $character->addCharacterInventory($inventoryUnequipped);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('PATCH', '/api/character/inventory/' . $inventoryUnequipped->getId(), [
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'json' => [
+                'container' => 'equipped',
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertJsonContains([
+            'container' => InventoryContainerEnum::Equipped->value,
+        ]);
+
+        $client->request('GET', '/api/character/inventory/' . $inventoryEquipped->getId());
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        // New position of unequipped item is swapped with old position
+        $this->assertJsonContains([
+            'container' => InventoryContainerEnum::Backpack->value,
+            'position' => 3,
+        ]);
+    }
     // TODO - testSellInventoryItemAddsGoldAndRemovesItem - Overit, ze POST /api/character/inventory/{id}/sell pricte postave goldy a smaze predmet
     // TODO - testUseElixirInventoryItemAppliesActiveElixir - Overit, ze POST /api/character/inventory/{id}/use spotrebuje elixir a aktivuje buff
     // TODO - testCannotAccessOrManipulateAnotherCharactersInventory - Overit autorizacni barieru: nelze manipulovat s inventarem cizi postavy (403/404)
