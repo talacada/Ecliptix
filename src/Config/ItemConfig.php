@@ -54,5 +54,7 @@ final class ItemConfig
     /** Final movement of price by this percentage DOWN*/
     public const int BONUS_STAT_VARIANCE_PERCENT = 20;
 
+    /** Multiplier applied to base gold price when selling an item back to shop/system. */
+    public const float SELL_PRICE_MULTIPLIER = 0.75;
 
 }
