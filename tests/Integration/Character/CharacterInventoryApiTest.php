@@ -260,6 +260,74 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         ]);
     }
 
-    // TODO - testUseElixirInventoryItemAppliesActiveElixir - Overit, ze POST /api/character/inventory/{id}/use spotrebuje elixir a aktivuje buff
-    // TODO - testCannotAccessOrManipulateAnotherCharactersInventory - Overit autorizacni barieru: nelze manipulovat s inventarem cizi postavy (403/404)
+    public function testUseElixirInventoryItemAppliesActiveElixir()
+    {
+        $character = CharacterFactory::createOne();
+
+        $elixir = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Backpack,
+            'quantity' => 3,
+            'item' => ItemFactory::createOne([
+                'definition' => ElixirDefinitionFactory::createOne()
+            ]),
+        ]);
+
+        $character->addCharacterInventory($elixir);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/use');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $this->assertJsonContains([
+            '@type' => 'ActiveElixir',
+        ]);
+
+        $response = $client->request('GET', '/api/character');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->assertJsonContains([
+            'activeElixirs' => [
+                [
+                    '@type' => 'ActiveElixir',
+                    'name' => $elixir->getItem()->getDefinition()->getName(),
+                    'percentageBonus' => $elixir->getItem()->getDefinition()->getPercentageBonus(),
+                ]
+            ]
+        ]);
+    }
+
+    public function testCannotAccessOrManipulateAnotherCharactersInventory() {
+        $character = CharacterFactory::createOne();
+        $charater2 = CharacterFactory::createOne();
+
+        $elixir = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Backpack,
+            'quantity' => 3,
+            'item' => ItemFactory::createOne([
+                'definition' => ElixirDefinitionFactory::createOne()
+            ]),
+        ]);
+
+        $character->addCharacterInventory($elixir);
+
+        $client = static::createClient();
+
+        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/sell');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $client = static::createAuthenticatedClient($charater2);
+
+        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/sell');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+
+    }
+
+    public function testCantUseNonElixirItems()
+    {
+
+    }
 }

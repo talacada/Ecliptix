@@ -10,7 +10,10 @@ use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Character\CharacterInventory;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * @implements ProviderInterface<CharacterInventory>
@@ -26,7 +29,7 @@ class CharacterInventoryProvider implements ProviderInterface
     /**
      * @return CharacterInventory[]|CharacterInventory
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CharacterInventory|array
     {
@@ -44,7 +47,7 @@ class CharacterInventoryProvider implements ProviderInterface
             }
 
             if ($inventorySlot->getCharacter() !== $character) {
-                throw new \Exception('Inventory slot does not belong to the logged-in character.');
+                throw new UnauthorizedHttpException('Not authorized to do this operation.');
             }
 
             $dto = new ItemViewDTO();
