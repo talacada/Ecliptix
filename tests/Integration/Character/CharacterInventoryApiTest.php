@@ -328,6 +328,36 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
     public function testCantUseNonElixirItems()
     {
+        $character = CharacterFactory::createOne();
 
+        $item = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Backpack,
+            'quantity' => 3,
+            'item' => ItemFactory::createOne([
+                'definition' => ItemDefinitionFactory::createOne()
+            ]),
+        ]);
+
+        $character->addCharacterInventory($item);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/character/inventory/' . $item->getId() . '/use');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        $this->assertJsonContains([
+            'detail' => 'Cant activate this',
+        ]);
+
+        $client->request('GET', '/api/character');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->assertJsonContains([
+            'characterInventories' => [
+                "/api/character/inventory/" . $item->getId()
+            ]
+        ]);
     }
 }

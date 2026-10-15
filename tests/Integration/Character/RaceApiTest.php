@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Dictionary;
+namespace App\Tests\Integration\Character;
 
 use App\Tests\Integration\AbstractApiTestCase;
 

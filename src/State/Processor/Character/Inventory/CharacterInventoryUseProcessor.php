@@ -12,7 +12,10 @@ use App\Entity\Item\ElixirDefinition;
 use App\Repository\Character\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
+use DateMalformedStringException;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -29,8 +32,8 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws \DateMalformedStringException
-     * @throws \Exception
+     * @throws DateMalformedStringException
+     * @throws Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ActiveElixir
     {
@@ -38,7 +41,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         $definition = $data->getItem()->getDefinition();
 
         if (!$definition instanceof ElixirDefinition) {
-            throw new \Exception('Can use activate only elixirs');
+            throw new BadRequestHttpException('Cant activate this');
         }
 
         if ($data->getCharacter() !== $character) {
@@ -50,7 +53,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);
 
         if (null === $existingSameElixir && count($character->getActiveElixirs()) >= 3) {
-            throw new \Exception('Cant have more than 3 elixirs activated');
+            throw new Exception('Cant have more than 3 elixirs activated');
         }
 
         if (null !== $existingSameElixir) {
