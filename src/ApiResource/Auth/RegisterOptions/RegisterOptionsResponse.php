@@ -6,11 +6,12 @@ namespace App\ApiResource\Auth\RegisterOptions;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\State\Provider\Auth\RegisterOptionsProvider;
 
 #[ApiResource(
     operations: [
-        new Get(
+        new GetCollection(
             uriTemplate: '/auth/register/options',
             provider: RegisterOptionsProvider::class,
         ),

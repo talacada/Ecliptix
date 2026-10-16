@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Character;
 
 use App\Config\ItemConfig;
-use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\InventoryContainerEnum;
-use App\Entity\Item\ItemDefinition;
 use App\Entity\Item\ItemSlotEnum;
 use App\Factory\CharacterFactory;
 use App\Factory\CharacterInventoryFactory;

@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource(
     operations: [
         new Get(),
-        new GetCollection(),
     ],
 )]
 class Race

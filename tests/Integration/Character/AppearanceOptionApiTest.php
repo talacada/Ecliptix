@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AppearanceOptionApiTest extends AbstractApiTestCase
 {
-
-    // TODO - testGetAppearanceOptionsCollection - Overit, ze GET /api/appearance_options vrati vsechny moznosti vzhledu
     public function testGetAppearanceOptionsCollection()
     {
         $raceOne = RaceFactory::createOne();
@@ -36,11 +34,11 @@ class AppearanceOptionApiTest extends AbstractApiTestCase
             "type" => AppearanceTypeEnum::hair,
             "sort_order" => 2,
         ]);
-        $appearanceTwo = AppearanceOptionFactory::createOne([
+        AppearanceOptionFactory::createOne([
             "race" => $raceTwo,
             'type' => AppearanceTypeEnum::mouth,
         ]);
-        $appearanceThree = AppearanceOptionFactory::createMany(7, [
+        AppearanceOptionFactory::createMany(7, [
             "race" => $raceThree,
             'type' => AppearanceTypeEnum::eyes
         ]);
@@ -68,11 +66,5 @@ class AppearanceOptionApiTest extends AbstractApiTestCase
 
         $this->assertSame($raceThree->getName(), $data['races'][2]['name']);
         $this->assertCount(7, $data['races'][2]['appearance']['eyes']);
-    }
-
-    // TODO - testGetSingleAppearanceOption - Overit, ze GET /api/appearance_options/{id} vrati konkretni detail moznosti vzhledu
-    public function testGetAppearanceOptionsItem()
-    {
-
     }
 }
