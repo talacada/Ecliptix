@@ -19,22 +19,84 @@ class FriendsApiTest extends AbstractApiTestCase
         $characterFriendTwo = CharacterFactory::createOne();
         $characterFriendThree = CharacterFactory::createOne();
 
-        $characterUs->addFriend($characterFriendOne);
-        $characterUs->addFriend($characterFriendTwo);
-        $characterUs->addFriend($characterFriendThree);
-
         $client = static::createAuthenticatedClient($characterUs);
+
+        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
+            'json' => [
+                'container' => 'equipped',
+            ]
+        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $client->request('POST', '/api/friends/' . $characterFriendTwo->getId(), [
+            'json' => [
+                'container' => 'equipped',
+            ]
+        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $client->request('POST', '/api/friends/' . $characterFriendThree->getId(), [
+            'json' => [
+                'container' => 'equipped',
+            ]
+        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $this->assertJsonContains([
+            '@type' => 'FriendRelation',
+            'character' => '/api/character/' . $characterUs->getId(),
+            'friend' => '/api/character/' . $characterFriendThree->getId(),
+        ]);
 
         $client->request('GET', '/api/friends');
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $this->assertJsonContains([
-            'data' => []
+            'totalItems' => 3,
+            'member' => [
+                [
+                    'friend' => '/api/character/' . $characterFriendOne->getId(),
+                ],
+                [
+                    'friend' => '/api/character/' . $characterFriendTwo->getId(),
+                ],
+                [
+                    'friend' => '/api/character/' . $characterFriendThree->getId(),
+                ],
+
+            ]
         ]);
 
     }
-    // TODO - testGetFriendsListReturnsCharactersFriends - Overit, ze GET /api/friends vrati seznam pratel prihlasene postavy
+
+    public function testAddFriendSuccessfulCreatesRelation(): void
+    {
+        $characterUs = CharacterFactory::createOne();
+        $characterFriendOne = CharacterFactory::createOne();
+
+        $client = static::createAuthenticatedClient($characterUs);
+
+        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
+            'json' => [
+                'container' => 'equipped',
+            ]
+        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $client->request('GET', '/api/friends');
+
+
+        $this->assertJsonContains([
+            'totalItems' => 1,
+            'member' => [
+                [
+                    'friend' => '/api/character/' . $characterFriendOne->getId(),
+                ],
+            ]
+        ]);
+
+    }
+
     // TODO - testAddFriendSuccessfulCreatesRelation - Overit, ze POST /api/friends/{id} prida druhou postavu do pratel
     // TODO - testAddFriendFailsWhenAddingSelf - Overit, ze nelze pridat do pratel sam sebe (400/422)
     // TODO - testAddFriendFailsWhenAlreadyFriends - Overit zamezeni duplicitniho pratelstvi (400/422)
