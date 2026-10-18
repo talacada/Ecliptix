@@ -13,6 +13,7 @@ use App\Repository\FriendRelationRepository;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @implements ProcessorInterface<Character, FriendRelation>
@@ -45,12 +46,12 @@ class FriendsAddProcessor implements ProcessorInterface
         }
 
         if ($followed === $character) {
-            throw new Exception('You cannot add yourself.');
+            throw new BadRequestHttpException('You cannot add yourself.');
         }
 
         $searchedRelation = $this->friendRelationRepository->findRelation($character, $followed);
         if ($searchedRelation) {
-            return $searchedRelation;
+            throw new BadRequestHttpException('You are already friends');
         }
 
         $newRelation = new FriendRelation();

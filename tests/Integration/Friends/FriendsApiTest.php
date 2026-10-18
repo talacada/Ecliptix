@@ -77,9 +77,7 @@ class FriendsApiTest extends AbstractApiTestCase
         $client = static::createAuthenticatedClient($characterUs);
 
         $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
-            'json' => [
-                'container' => 'equipped',
-            ]
+            'json' => []
         ]);
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
@@ -97,9 +95,46 @@ class FriendsApiTest extends AbstractApiTestCase
 
     }
 
-    // TODO - testAddFriendSuccessfulCreatesRelation - Overit, ze POST /api/friends/{id} prida druhou postavu do pratel
-    // TODO - testAddFriendFailsWhenAddingSelf - Overit, ze nelze pridat do pratel sam sebe (400/422)
-    // TODO - testAddFriendFailsWhenAlreadyFriends - Overit zamezeni duplicitniho pratelstvi (400/422)
+    public function testAddFriendFailsWhenAddingSelf(): void
+    {
+        $characterUs = CharacterFactory::createOne();
+
+        $client = static::createAuthenticatedClient($characterUs);
+
+        $client->request('POST', '/api/friends/' . $characterUs->getId(), [
+            'json' => []
+        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        $this->assertJsonContains([
+            'detail' => 'You cannot add yourself.'
+        ]);
+    }
+
+    public function testAddFriendFailsWhenAlreadyFriends(): void
+    {
+        $characterUs = CharacterFactory::createOne();
+        $characterFriendOne = CharacterFactory::createOne();
+
+        $client = static::createAuthenticatedClient($characterUs);
+
+        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        $this->assertJsonContains([
+            'detail' => 'You are already friends'
+        ]);
+
+    }
     // TODO - testRemoveFriendDeletesRelation - Overit, ze DELETE /api/friends/{id} odstrani vazbu pratelstvi
     // TODO - testFriendsEndpointsRequireAuthentication - Overit 401 Unauthorized bez tokenu
 }
