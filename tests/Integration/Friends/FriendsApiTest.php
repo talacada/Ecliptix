@@ -82,7 +82,7 @@ class FriendsApiTest extends AbstractApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $client->request('GET', '/api/friends');
-
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $this->assertJsonContains([
             'totalItems' => 1,
@@ -135,6 +135,45 @@ class FriendsApiTest extends AbstractApiTestCase
         ]);
 
     }
-    // TODO - testRemoveFriendDeletesRelation - Overit, ze DELETE /api/friends/{id} odstrani vazbu pratelstvi
-    // TODO - testFriendsEndpointsRequireAuthentication - Overit 401 Unauthorized bez tokenu
+
+    public function testRemoveFriendDeletesRelation(): void
+    {
+        $characterUs = CharacterFactory::createOne();
+        $characterFriendOne = CharacterFactory::createOne();
+
+        $client = static::createAuthenticatedClient($characterUs);
+
+        $response = $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $data = $response->toArray(false);
+        $this->assertArrayHasKey('id', $data);
+        $relationId = $data['id'];
+
+        $client->request('DELETE', '/api/friends/' . $relationId);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+    }
+
+    public function testFriendsEndpointsRequireAuthentication(): void
+    {
+        CharacterFactory::createOne();
+        $characterFriendOne = CharacterFactory::createOne();
+
+        $client = static::createClient();
+
+        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
+            'json' => []
+        ]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $client->request('GET', '/api/friends');
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+
+        $client->request('DELETE', '/api/friends/' . 1);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+    }
 }
