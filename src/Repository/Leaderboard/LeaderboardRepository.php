@@ -35,11 +35,8 @@ class LeaderboardRepository extends ServiceEntityRepository
     /**
      * @return Character[]
      */
-    public function getLeaderboardAroundRank(int $rank, int $limit): array
+    public function getLeaderboardSlice(int $offset, int $limit): array
     {
-        $half = (int) floor($limit / 2);
-        $offset = max(0, $rank - $half - 1);
-
         /** @var Character[] $result */
         $result = $this->createQueryBuilder('c')
             ->orderBy('c.prestigePoints', 'DESC')
