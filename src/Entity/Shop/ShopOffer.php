@@ -49,7 +49,7 @@ class ShopOffer
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ItemDefinition $ItemDefinition;
+    private ItemDefinition $itemDefinition;
 
     #[ORM\Column]
     private ?int $bonusDamage = null;
@@ -63,7 +63,7 @@ class ShopOffer
     public function __construct(ShopRotation $rotation, ItemDefinition $ItemDefinition)
     {
         $this->rotation = $rotation;
-        $this->ItemDefinition = $ItemDefinition;
+        $this->itemDefinition = $ItemDefinition;
     }
 
     #[Groups(ShopRotation::READ_GROUP)]
@@ -71,7 +71,7 @@ class ShopOffer
     public function getViewItem(): ItemViewDTO
     {
         $dto = new ItemViewDTO();
-        $dto->buildDtoOnlyWithBonusStats($this->ItemDefinition, $this->bonusDamage ?? 0, $this->bonusCrit ?? 0, $this->bonusHealth ?? 0);
+        $dto->buildDtoOnlyWithBonusStats($this->itemDefinition, $this->bonusDamage ?? 0, $this->bonusCrit ?? 0, $this->bonusHealth ?? 0);
 
         return $dto;
     }
@@ -119,12 +119,12 @@ class ShopOffer
 
     public function getItemDefinition(): ItemDefinition
     {
-        return $this->ItemDefinition;
+        return $this->itemDefinition;
     }
 
-    public function setItemDefinition(ItemDefinition $ItemDefinition): static
+    public function setItemDefinition(ItemDefinition $itemDefinition): static
     {
-        $this->ItemDefinition = $ItemDefinition;
+        $this->itemDefinition = $itemDefinition;
 
         return $this;
     }
