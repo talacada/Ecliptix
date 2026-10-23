@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Shop;
 
+use App\Entity\Item\InventoryContainerEnum;
 use App\Factory\CharacterFactory;
+use App\Factory\CharacterInventoryFactory;
 use App\Factory\ShopOfferFactory;
 use App\Factory\ShopRotationFactory;
 use App\Service\Shop\RotationGenerator;
 use App\Tests\Integration\AbstractApiTestCase;
+use DateTimeImmutable;
+use Symfony\Component\HttpFoundation\Response;
 
 class ShopOfferBuyApiTest extends AbstractApiTestCase
 {
@@ -17,29 +21,110 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
     {
 
     }
-    // TODO - testBuyOfferFailsWhenInsufficientFunds - Overit selhani nakupu pri nedostatku penez (400/422)
+
     public function testBuyOfferFailsWhenInsufficientFunds(): void
     {
-        $character = CharacterFactory::createOne();
-        $rotation = ShopRotationFactory::createOne();
-        $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
+        $character = CharacterFactory::createOne([
+            'gold' => 1,
+            'diamonds' => 1
+        ]);
+        $rotation = ShopRotationFactory::createOne(['character' => $character]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 100]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        $this->assertJsonContains([
+            'detail' => 'Not enough gold',
+        ]);
+    }
+
+    public function testBuyOfferFailsWhenBackpackFull(): void
+    {
+        $character = CharacterFactory::createOne([
+            'gold' => 10,
+            'backpackCapacity' => 2,
+        ]);
+
+        $rotation = ShopRotationFactory::createOne(['character' => $character]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 1]);
+
+        $characterInventorySlot1 = CharacterInventoryFactory::createOne(['container' => InventoryContainerEnum::Backpack, 'character' => $character]);
+        $characterInventorySlot2 = CharacterInventoryFactory::createOne(['container' => InventoryContainerEnum::Backpack, 'character' => $character]);
+
+        $character->addCharacterInventory($characterInventorySlot1);
+        $character->addCharacterInventory($characterInventorySlot2);
 
 
         $client = static::createAuthenticatedClient($character);
 
+        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
+            'json' => []
+        ]);
 
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        $this->assertJsonContains([
+            'detail' => 'Not enough backpack space',
+        ]);
 
     }
-    // TODO - testBuyOfferFailsWhenBackpackFull - Overit selhani nakupu, pokud postava nema misto v batohu
-    public function testBuyOfferFailsWhenBackpackFull(): void
+    public function testBuyOfferFailsWhenRotationExpired(): void
     {
+        $character = CharacterFactory::createOne();
+        $rotation = ShopRotationFactory::createOne([
+            'character' => $character,
+            'validFrom' => new DateTimeImmutable('yesterday - 2 days'),
+            'validUntil' => new DateTimeImmutable('yesterday'),
+            ]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
 
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        $this->assertJsonContains([
+            'detail' => 'Rotation not available',
+        ]);
     }
-    // TODO - testBuyOfferFailsWhenOfferExpiredOrAlreadyBought - Overit, ze nelze koupit jiz koupenou nebo expirovanou nabidku
-    public function testBuyOfferFailsWhenOfferExpiredOrAlreadyBought(): void
+
+
+    public function testBuyOfferFailsWhenOfferAlreadyBought(): void
     {
+        $character = CharacterFactory::createOne();
+        $rotation = ShopRotationFactory::createOne([ 'character' => $character]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
 
+        $offerId = $offer->getId();
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/shop/offer/' . $offerId , [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $client->request('POST', '/api/shop/offer/' . $offerId , [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+
+        $this->assertJsonContains([
+            'detail' => 'Shop offer not found',
+        ]);
     }
+
     // TODO - testCannotBuyOfferFromAnotherCharactersRotation - Overit bezpecnostni barieru: nelze koupit nabidku z cizi rotace (403/404)
     public function testCannotBuyOfferFromAnotherCharactersRotation(): void
     {

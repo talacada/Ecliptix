@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\Shop\ShopRotation;
 use App\Entity\Shop\ShopRotationEnum;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
@@ -14,12 +15,15 @@ class ShopRotationFactory extends PersistentObjectFactory
         return ShopRotation::class;
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     protected function defaults(): array
     {
         return [
-            'validFrom' => new DateTimeImmutable('now - 1hours'),
-            'validUntil' => new DateTimeImmutable('now + 1hours'),
-            'character' => CharacterFactory::createOne(),
+            'validFrom' => new DateTimeImmutable('today'),
+            'validUntil' => new DateTimeImmutable('tomorrow'),
+            'character' => CharacterFactory::new(),
             'rotationType' => ShopRotationEnum::Daily,
         ];
     }
