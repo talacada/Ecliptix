@@ -19,7 +19,22 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
     // TODO - testBuyOfferSuccessfulDeductsGoldAndAddsItemToBackpack - Overit nakup: odecteni zlata, vznik Item v batohu a oznaceni nabidky jako koupene
     public function testBuyOfferSuccessfulDeductsGoldAndAddsItemToBackpack(): void
     {
+        $character = CharacterFactory::createOne([
+            'gold' => 100,
+            'diamonds' => 100
+        ]);
+        $rotation = ShopRotationFactory::createOne(['character' => $character]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 90, 'diamondsPrice' => 80]);
 
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $this->assertJsonContains();
     }
 
     public function testBuyOfferFailsWhenInsufficientFunds(): void
@@ -125,14 +140,36 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
         ]);
     }
 
-    // TODO - testCannotBuyOfferFromAnotherCharactersRotation - Overit bezpecnostni barieru: nelze koupit nabidku z cizi rotace (403/404)
     public function testCannotBuyOfferFromAnotherCharactersRotation(): void
     {
+        $character = CharacterFactory::createOne();
+        $characterEnemy = CharacterFactory::createOne();
 
+        $rotation = ShopRotationFactory::createOne([ 'character' => $characterEnemy]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
-    // TODO - testBuyOfferRequiresAuthentication - Overit 401 Unauthorized bez prihlaseni
+
     public function testBuyOfferRequiresAuthentication(): void
     {
+        $character = CharacterFactory::createOne();
 
+        $rotation = ShopRotationFactory::createOne([ 'character' => $character]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
+
+        $client = static::createClient();
+
+        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
+            'json' => []
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
 }
