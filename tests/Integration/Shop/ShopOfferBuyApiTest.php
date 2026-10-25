@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Shop;
 
 use App\Entity\Item\InventoryContainerEnum;
+use App\Entity\Item\ItemSlotEnum;
 use App\Factory\CharacterFactory;
 use App\Factory\CharacterInventoryFactory;
 use App\Factory\ShopOfferFactory;
@@ -24,7 +25,11 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
             'diamonds' => 100
         ]);
         $rotation = ShopRotationFactory::createOne(['character' => $character]);
-        $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 90, 'diamondsPrice' => 80]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 90, 'diamondPrice' => 80]);
+
+        $itemDamage = $offer->getBonusDamage() + $offer->getItemDefinition()->getBaseDamage();
+        $itemHealth = $offer->getBonusHealth() + $offer->getItemDefinition()->getBaseHealth();
+        $itemCrit = $offer->getBonusCrit() + $offer->getItemDefinition()->getBaseCrit();
 
         $client = static::createAuthenticatedClient($character);
 
@@ -34,7 +39,47 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $this->assertJsonContains();
+        $this->assertJsonContains([
+            'name' => $offer->getItemDefinition()->getName(),
+            'damage' => $itemDamage,
+            'health' => $itemHealth,
+            'crit' => $itemCrit,
+            'requiredLevel' => $offer->getItemDefinition()->getRequiredLevel(),
+            'slot' => $offer->getItemDefinition()->getDesiredSlot()->value,
+        ]);
+
+
+        $response = $client->request('GET', '/api/character');
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->assertJsonContains([
+            'gold' => 10,
+            'diamonds' => 20
+        ]);
+
+        $data = $response->toArray(false);
+        $this->assertArrayHasKey('characterInventories', $data);
+        $this->assertCount(1, $data['characterInventories']);
+
+        $itemUri = $data['characterInventories'][0];
+
+        $client->request('GET', $itemUri);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->assertJsonContains([
+            'quantity' => 1,
+            'container' => InventoryContainerEnum::Backpack->value,
+            'item' => [
+                'name' => $offer->getItemDefinition()->getName(),
+                'damage' => $itemDamage,
+                'health' => $itemHealth,
+                'crit' => $itemCrit,
+                'requiredLevel' => $offer->getItemDefinition()->getRequiredLevel(),
+                'slot' => $offer->getItemDefinition()->getDesiredSlot()->value,
+            ]
+        ]);
     }
 
     public function testBuyOfferFailsWhenInsufficientFunds(): void
