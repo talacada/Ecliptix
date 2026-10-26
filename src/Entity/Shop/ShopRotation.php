@@ -22,11 +22,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(
-            uriTemplate: 'rotation',
+            uriTemplate: '/rotation',
             provider: ShopRotationProvider::class,
         ),
     ],
-    routePrefix: 'shop/',
+    routePrefix: 'shop',
     normalizationContext: ['groups' => [self::READ_GROUP, ItemViewDTO::READ_GROUP]],
     security: 'is_granted("ROLE_USER")',
 )]
