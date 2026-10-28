@@ -41,7 +41,7 @@ class UpdateCharacterProcessor implements ProcessorInterface
             && $prevEntity['ears'] === $character->getEars()
             && $prevEntity['username'] === $character->getUsername()
         ) {
-            throw new \Exception('Nothing changed');
+            return $character;
         }
 
         $this->appearanceValidationService->verifiesAppearance(

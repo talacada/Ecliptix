@@ -12,7 +12,7 @@ use App\Repository\Character\CharacterRepository;
 use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Security\LoggedInCharacter;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProviderInterface<LeaderboardResponse>
@@ -43,24 +43,27 @@ class LeaderboardProvider implements ProviderInterface
             $searchedCharacter = $this->characterRepository->getCharacterByUserName($searchedName);
 
             if (null === $searchedCharacter) {
-                throw new ResourceNotFoundException("Character with name {$searchedName} not found");
+                throw new NotFoundHttpException("Character with name {$searchedName} not found");
             }
             $characterRank = $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
         } elseif (0 !== $searchedRank) {
             if ($this->leaderboardRepository->getLastRank() < $searchedRank) {
-                throw new ResourceNotFoundException("Rank {$searchedRank} not found");
+                throw new NotFoundHttpException("Rank {$searchedRank} not found");
             }
             $characterRank = $searchedRank;
         } else {
             $characterRank = $this->leaderboardRepository->findRankOfCharacter($character);
         }
 
-        $selectedCharacters = $this->leaderboardRepository->getLeaderboardAroundRank($characterRank, self::PAGE_LIMIT);
         $totalItems = $this->leaderboardRepository->getLastRank();
-        $entries = [];
-
         $half = (int) floor(self::PAGE_LIMIT / 2);
-        $startRank = max(1, $characterRank - $half);
+        $maxOffset = max(0, $totalItems - self::PAGE_LIMIT);
+        $offset = max(0, min($maxOffset, $characterRank - $half - 1));
+
+        $selectedCharacters = $this->leaderboardRepository->getLeaderboardSlice($offset, self::PAGE_LIMIT);
+
+        $entries = [];
+        $startRank = $offset + 1;
         $endRank = $startRank + count($selectedCharacters) - 1;
 
         foreach ($selectedCharacters as $index => $selectedCharacter) {

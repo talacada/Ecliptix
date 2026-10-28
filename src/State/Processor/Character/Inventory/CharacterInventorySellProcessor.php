@@ -6,6 +6,7 @@ namespace App\State\Processor\Character\Inventory;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Config\ItemConfig;
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
 use App\Security\LoggedInCharacter;
@@ -34,7 +35,7 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         }
 
         $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();
-        $sellPrice = (int) ($defaultGoldBuyPrice * 0.75);
+        $sellPrice = (int) ($defaultGoldBuyPrice * ItemConfig::SELL_PRICE_MULTIPLIER);
 
         $isElixir = $data->getItem()->getDefinition() instanceof ElixirDefinition;
 

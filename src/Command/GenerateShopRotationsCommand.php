@@ -30,7 +30,7 @@ class GenerateShopRotationsCommand extends Command
 
         foreach ($characters as $character) {
             try {
-                $this->generator->generate($character);
+                $this->generator->generateDaily($character);
                 ++$success;
             } catch (\Throwable $e) {
                 ++$failed;

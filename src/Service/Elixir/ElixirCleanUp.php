@@ -17,12 +17,17 @@ class ElixirCleanUp
     public function removeExpired(Character $character): void
     {
         $now = new \DateTime();
-        foreach ($character->getActiveElixirs() as $elixir) {
+        $hasRemovedExpired = false;
+
+        foreach ($character->getActiveElixirs()->toArray() as $elixir) {
             if ($elixir->getExpiresAt() < $now) {
-                $this->entityManager->remove($elixir);
+                $character->removeActiveElixir($elixir);
+                $hasRemovedExpired = true;
             }
         }
 
-        $this->entityManager->flush();
+        if ($hasRemovedExpired) {
+            $this->entityManager->flush();
+        }
     }
 }

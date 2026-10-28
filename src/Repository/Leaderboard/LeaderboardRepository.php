@@ -23,9 +23,9 @@ class LeaderboardRepository extends ServiceEntityRepository
         $countAhead = $this->createQueryBuilder('c')
             ->select('COUNT(c.id)')
             ->where('c.prestigePoints > :pp')
-            ->orWhere('c.prestigePoints = :pp AND c.id < :id')
+            ->orWhere('c.prestigePoints = :pp AND c.username < :username')
             ->setParameter('pp', $searchedCharacter->getPrestigePoints())
-            ->setParameter('id', $searchedCharacter->getId())
+            ->setParameter('username', $searchedCharacter->getUsername())
             ->getQuery()
             ->getSingleScalarResult();
 
@@ -35,15 +35,12 @@ class LeaderboardRepository extends ServiceEntityRepository
     /**
      * @return Character[]
      */
-    public function getLeaderboardAroundRank(int $rank, int $limit): array
+    public function getLeaderboardSlice(int $offset, int $limit): array
     {
-        $half = (int) floor($limit / 2);
-        $offset = max(0, $rank - $half - 1);
-
         /** @var Character[] $result */
         $result = $this->createQueryBuilder('c')
             ->orderBy('c.prestigePoints', 'DESC')
-            ->addOrderBy('c.id', 'ASC')
+            ->addOrderBy('c.username', 'ASC')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()

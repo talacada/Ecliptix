@@ -11,7 +11,7 @@ use App\Repository\Character\CharacterRepository;
 use App\Repository\FriendRelationRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProviderInterface<Character>
@@ -38,7 +38,7 @@ class PublicCharacterProvider implements ProviderInterface
             $searchedCharacter = $this->characterRepository->getCharacterById($id);
 
             if (!$searchedCharacter instanceof Character) {
-                throw new NotFoundResourceException('Character not found');
+                throw new NotFoundHttpException('Character not found');
             }
 
             $this->elixirCleanUp->removeExpired($searchedCharacter);

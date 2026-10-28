@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   cs:
-    name: PHP-CS-Fixer
+    name: PHP CS
     runs-on: ubuntu-latest
 
     steps:
@@ -72,3 +72,81 @@ jobs:
           restore-keys: stan-cache-${{ hashFiles('composer.lock') }}-
 
       - run: make stan
+
+  unit:
+    name: PHPUnit (Unit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - uses: actions/cache@v4
+        id: composer-cache
+        with:
+          path: |
+            vendor/
+            ~/.composer/cache/
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - run: composer install --no-progress --no-interaction --no-scripts
+
+      - run: php bin/phpunit --testsuite=unit
+
+  integration:
+    name: PHPUnit (Integration)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: app_test
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: DBpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: test
+      DATABASE_URL: "postgresql://app:DBpassword@127.0.0.1:5432/app_test?serverVersion=16&charset=utf8"
+      JWT_PASSPHRASE: this_is_password_that_generates_keys
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, intl, zip
+          tools: composer:v2
+
+      - uses: actions/cache@v4
+        id: composer-cache
+        with:
+          path: |
+            vendor/
+            ~/.composer/cache/
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - run: composer install --no-progress --no-interaction --no-scripts
+
+      - name: Generate JWT keys
+        run: |
+          mkdir -p config/jwt
+          php bin/console lexik:jwt:generate-keypair --skip-if-exists
+
+      - name: Run Integration Tests
+        run: php bin/phpunit --testsuite=integration
+

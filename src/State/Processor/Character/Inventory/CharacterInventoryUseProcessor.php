@@ -13,6 +13,7 @@ use App\Repository\Character\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -38,7 +39,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         $definition = $data->getItem()->getDefinition();
 
         if (!$definition instanceof ElixirDefinition) {
-            throw new \Exception('Can use activate only elixirs');
+            throw new BadRequestHttpException('Cant activate this');
         }
 
         if ($data->getCharacter() !== $character) {

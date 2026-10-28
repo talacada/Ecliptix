@@ -13,6 +13,7 @@ use App\ApiResource\Auth\ChangePasswordInput;
 use App\ApiResource\Auth\LoginInput;
 use App\ApiResource\Auth\LoginOutput;
 use App\ApiResource\Auth\RegisterInput;
+use App\Config\CharacterConfig;
 use App\Entity\AppearanceOption;
 use App\Entity\Race;
 use App\Entity\Shop\ShopRotation;
@@ -27,6 +28,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -101,10 +103,10 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_GROUP, self::UPDATE_GROUP, self::READ_PUBLIC_GROUP])]
     #[Assert\NotBlank(groups: [self::UPDATE_GROUP])]
     #[Assert\Length(min: 4, max: 20, groups: [self::UPDATE_GROUP])]
-    private string $username;
+    private string $username = '';
 
     #[ORM\Column(length: 255, unique: true)]
-    private string $email;
+    private string $email = '';
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP])]
@@ -161,7 +163,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[ORM\Column]
     #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
-    private int $prestigePoints = 0;
+    private int $prestigePoints;
 
     /**
      * @var Collection<int, FriendRelation>
@@ -209,18 +211,18 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function __construct()
     {
+        $this->gold = CharacterConfig::INITIAL_GOLD;
+        $this->diamonds = CharacterConfig::INITIAL_DIAMONDS;
+        $this->level = CharacterConfig::INITIAL_LEVEL;
+        $this->experience = CharacterConfig::INITIAL_EXPERIENCE;
+        $this->damage = CharacterConfig::INITIAL_DAMAGE;
+        $this->health = CharacterConfig::INITIAL_HEALTH;
+        $this->backpackCapacity = CharacterConfig::INITIAL_BACKPACK_CAPACITY;
+        $this->prestigePoints = CharacterConfig::INITIAL_PRESTIGE_POINTS;
         $this->shopRotations = new ArrayCollection();
-        $this->gold = 10000000;
-        $this->diamonds = 10000000;
-        $this->level = 1;
-        $this->experience = 0;
-        $this->damage = 1;
-        $this->health = 100;
         $this->characterInventories = new ArrayCollection();
         $this->activeElixirs = new ArrayCollection();
         $this->friendsCollection = new ArrayCollection();
-        $this->backpackCapacity = 4;
-        $this->prestigePoints = 0;
         $this->email_verified = false;
     }
 
@@ -435,7 +437,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractGold(int $amount): void
     {
         if ($amount > $this->gold) {
-            throw new \InvalidArgumentException('Not enough gold');
+            throw new UnprocessableEntityHttpException('Not enough gold');
         }
         $this->gold -= $amount;
     }
@@ -443,7 +445,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractDiamonds(int $amount): void
     {
         if ($amount > $this->diamonds) {
-            throw new \InvalidArgumentException('Not enough diamonds');
+            throw new UnprocessableEntityHttpException('Not enough diamonds');
         }
         $this->diamonds -= $amount;
     }
@@ -451,6 +453,11 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function addGold(int $amount): void
     {
         $this->gold += $amount;
+    }
+
+    public function addDiamonds(int $amount): void
+    {
+        $this->diamonds += $amount;
     }
 
     /**
@@ -474,7 +481,6 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function removeActiveElixir(ActiveElixir $activeElixir): static
     {
         if ($this->activeElixirs->removeElement($activeElixir)) {
-            // set the owning side to null (unless already changed)
             if ($activeElixir->getCharacter() === $this) {
                 $activeElixir->setCharacter(null);
             }

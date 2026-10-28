@@ -12,9 +12,10 @@ use App\Entity\Shop\ShopOffer;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Inventory\InventoryManager;
-use App\Service\Item\ItemFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 /**
  * @implements ProcessorInterface<ShopOffer, ItemViewDTO>
@@ -24,7 +25,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private CharacterInventoryRepository $characterInventoryRepository,
-        private ItemFactory $itemFactory,
+        private \App\Factory\ItemFactory $itemFactory,
         private InventoryManager $inventoryManager,
         private EntityManagerInterface $entityManager,
     ) {
@@ -44,24 +45,24 @@ class ShopOfferBuyProcessor implements ProcessorInterface
         }
 
         if ($rotation->getValidUntil() < new \DateTime() || $rotation->getValidFrom() > new \DateTime()) {
-            throw new \Exception('Rotation not available');
+            throw new BadRequestHttpException('Rotation not available');
         }
 
         if ($data->getGoldPrice() > $character->getGold()) {
-            throw new \Exception('Not enough gold');
+            throw new UnprocessableEntityHttpException('Not enough gold');
         }
 
         if ($data->getDiamondPrice() > $character->getDiamonds()) {
-            throw new \Exception('Not enough diamonds');
+            throw new UnprocessableEntityHttpException('Not enough diamonds');
         }
 
         $isElixir = $data->getItemDefinition() instanceof ElixirDefinition;
 
         if (!$isElixir && $character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
-            throw new \Exception('Not enough backpack space');
+            throw new BadRequestHttpException('Not enough backpack space');
         }
 
-        $item = $this->itemFactory->createFromDefinitionAndOffer($data->getItemDefinition(), $data);
+        $item = $this->itemFactory->createFromDefinitionAndOffer($data);
 
         $inventory = $this->inventoryManager->addToBackpack($character, $item);
 

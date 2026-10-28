@@ -18,7 +18,7 @@ class PasswordResetToken
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Character $character;
 
     #[ORM\Column(type: 'uuid')]
