@@ -14,9 +14,9 @@ class LeaderboardApiTest extends AbstractApiTestCase
     {
         CharacterFactory::createOne(['prestigePoints' => 90, 'username' => 'bbbb']);
         CharacterFactory::createOne(['prestigePoints' => 90, 'username' => 'aaaa']);
-        CharacterFactory::createOne(['prestigePoints' => 30,]);
-        CharacterFactory::createOne(['prestigePoints' => 29,]);
-        CharacterFactory::createOne(['prestigePoints' => 28,]);
+        CharacterFactory::createOne(['prestigePoints' => 30]);
+        CharacterFactory::createOne(['prestigePoints' => 29]);
+        CharacterFactory::createOne(['prestigePoints' => 28]);
         $character = CharacterFactory::createOne(['prestigePoints' => 100]);
 
         $client = static::createAuthenticatedClient($character);
@@ -40,7 +40,7 @@ class LeaderboardApiTest extends AbstractApiTestCase
         $prevRank = null;
         $prevName = null;
         foreach ($data['items'] as $item) {
-            if ($prevPP != null) {
+            if (null != $prevPP) {
                 $this->assertLessThanOrEqual($prevPP, $item['character']['prestigePoints']);
                 $this->assertGreaterThanOrEqual($prevRank, $item['rank']);
 
@@ -56,7 +56,7 @@ class LeaderboardApiTest extends AbstractApiTestCase
 
     public function testGetLeaderboardFiltersByName(): void
     {
-        CharacterFactory::createMany(40, fn(int $i) => [
+        CharacterFactory::createMany(40, fn (int $i) => [
             'prestigePoints' => 100 + $i,
         ]);
 
@@ -65,7 +65,7 @@ class LeaderboardApiTest extends AbstractApiTestCase
             'prestigePoints' => 90,
         ]);
 
-        CharacterFactory::createMany(40, fn(int $i) => [
+        CharacterFactory::createMany(40, fn (int $i) => [
             'prestigePoints' => 10 + $i,
         ]);
 
@@ -92,7 +92,7 @@ class LeaderboardApiTest extends AbstractApiTestCase
 
     public function testGetLeaderboardFindsRankPosition(): void
     {
-        CharacterFactory::createMany(40, fn(int $i) => [
+        CharacterFactory::createMany(40, fn (int $i) => [
             'prestigePoints' => 100 + $i,
         ]);
 
@@ -101,7 +101,7 @@ class LeaderboardApiTest extends AbstractApiTestCase
             'prestigePoints' => 90,
         ]);
 
-        CharacterFactory::createMany(40, fn(int $i) => [
+        CharacterFactory::createMany(40, fn (int $i) => [
             'prestigePoints' => 10 + $i,
         ]);
 

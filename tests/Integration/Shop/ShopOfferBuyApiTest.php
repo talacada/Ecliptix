@@ -10,7 +10,6 @@ use App\Factory\CharacterInventoryFactory;
 use App\Factory\ShopOfferFactory;
 use App\Factory\ShopRotationFactory;
 use App\Tests\Integration\AbstractApiTestCase;
-use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -31,7 +30,7 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
     {
         $character = CharacterFactory::createOne([
             'gold' => 100,
-            'diamonds' => 100
+            'diamonds' => 100,
         ]);
         $rotation = ShopRotationFactory::createOne(['character' => $character]);
         $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 90, 'diamondPrice' => 80]);
@@ -42,8 +41,8 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offer->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -57,14 +56,13 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
             'slot' => $offer->getItemDefinition()->getDesiredSlot()->value,
         ]);
 
-
         $response = $client->request('GET', '/api/character');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $this->assertJsonContains([
             'gold' => 10,
-            'diamonds' => 20
+            'diamonds' => 20,
         ]);
 
         $data = $response->toArray(false);
@@ -87,7 +85,7 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
                 'crit' => $itemCrit,
                 'requiredLevel' => $offer->getItemDefinition()->getRequiredLevel(),
                 'slot' => $offer->getItemDefinition()->getDesiredSlot()->value,
-            ]
+            ],
         ]);
     }
 
@@ -95,15 +93,15 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
     {
         $character = CharacterFactory::createOne([
             'gold' => 1,
-            'diamonds' => 1
+            'diamonds' => 1,
         ]);
         $rotation = ShopRotationFactory::createOne(['character' => $character]);
         $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 100]);
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offer->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -129,11 +127,10 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
         $character->addCharacterInventory($characterInventorySlot1);
         $character->addCharacterInventory($characterInventorySlot2);
 
-
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offer->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -141,22 +138,22 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
         $this->assertJsonContains([
             'detail' => 'Not enough backpack space',
         ]);
-
     }
+
     public function testBuyOfferFailsWhenRotationExpired(): void
     {
         $character = CharacterFactory::createOne();
         $rotation = ShopRotationFactory::createOne([
             'character' => $character,
-            'validFrom' => new DateTimeImmutable('yesterday - 2 days'),
-            'validUntil' => new DateTimeImmutable('yesterday'),
-            ]);
+            'validFrom' => new \DateTimeImmutable('yesterday - 2 days'),
+            'validUntil' => new \DateTimeImmutable('yesterday'),
+        ]);
         $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offer->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -166,25 +163,24 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
         ]);
     }
 
-
     public function testBuyOfferFailsWhenOfferAlreadyBought(): void
     {
         $character = CharacterFactory::createOne();
-        $rotation = ShopRotationFactory::createOne([ 'character' => $character]);
+        $rotation = ShopRotationFactory::createOne(['character' => $character]);
         $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
 
         $offerId = $offer->getId();
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/shop/offer/' . $offerId , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offerId, [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $client->request('POST', '/api/shop/offer/' . $offerId , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offerId, [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -199,13 +195,13 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
         $character = CharacterFactory::createOne();
         $characterEnemy = CharacterFactory::createOne();
 
-        $rotation = ShopRotationFactory::createOne([ 'character' => $characterEnemy]);
+        $rotation = ShopRotationFactory::createOne(['character' => $characterEnemy]);
         $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offer->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -215,13 +211,13 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
     {
         $character = CharacterFactory::createOne();
 
-        $rotation = ShopRotationFactory::createOne([ 'character' => $character]);
+        $rotation = ShopRotationFactory::createOne(['character' => $character]);
         $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
 
         $client = static::createClient();
 
-        $client->request('POST', '/api/shop/offer/' . $offer->getId() , [
-            'json' => []
+        $client->request('POST', '/api/shop/offer/'.$offer->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);

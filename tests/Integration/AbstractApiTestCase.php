@@ -16,15 +16,12 @@ abstract class AbstractApiTestCase extends ApiTestCase
 
     protected static ?bool $alwaysBootKernel = false;
 
-    /**
-     * @param Character $character
-     * @return Client
-     */
     protected function createAuthenticatedClient(Character $character): Client
     {
         /** @var JWTTokenManagerInterface $jwtManager */
         $jwtManager = static::getContainer()->get(JWTTokenManagerInterface::class);
         $token = $jwtManager->create($character);
+
         return static::createClient([], ['auth_bearer' => $token]);
     }
 }

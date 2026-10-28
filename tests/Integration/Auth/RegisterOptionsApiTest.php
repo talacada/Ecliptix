@@ -52,7 +52,6 @@ class RegisterOptionsApiTest extends AbstractApiTestCase
             ],
         ]);
 
-
         $this->assertCount(1, $data['races'][0]['appearance']['eyes']);
         $this->assertSame($eyes->getId(), $data['races'][0]['appearance']['eyes'][0]['id']);
         $this->assertCount(1, $data['races'][0]['appearance']['hair']);
@@ -71,7 +70,6 @@ class RegisterOptionsApiTest extends AbstractApiTestCase
         $this->assertCount(3, $data['races'][1]['appearance']['ears']);
         $this->assertGreaterThanOrEqual($data['races'][1]['appearance']['ears'][0]['sortOrder'], $data['races'][1]['appearance']['ears'][1]['sortOrder']);
         $this->assertGreaterThanOrEqual($data['races'][1]['appearance']['ears'][1]['sortOrder'], $data['races'][1]['appearance']['ears'][2]['sortOrder']);
-
     }
 
     public function testRegisterOptionsHasOnlyGet(): void
@@ -89,7 +87,5 @@ class RegisterOptionsApiTest extends AbstractApiTestCase
 
         $client->request('PATCH', '/api/auth/register/options');
         $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
-
-
     }
 }

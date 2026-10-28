@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Item;
 
 use App\Config\ItemConfig;
@@ -51,7 +53,6 @@ class ItemStatCalculator
 
         return [$goldPrice, $diamondPrice];
     }
-
 
     /**
      * Roll bonus stats for an item based on its definition.

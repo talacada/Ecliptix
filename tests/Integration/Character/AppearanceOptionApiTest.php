@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Dictionary;
 
 use App\Entity\Appearance\AppearanceTypeEnum;
-use App\Entity\AppearanceOption;
 use App\Factory\AppearanceOptionFactory;
 use App\Factory\RaceFactory;
 use App\Tests\Integration\AbstractApiTestCase;
@@ -20,27 +19,27 @@ class AppearanceOptionApiTest extends AbstractApiTestCase
         $raceThree = RaceFactory::createOne();
 
         $appearanceOneThree = AppearanceOptionFactory::createOne([
-            "race" => $raceOne,
-            "type" => AppearanceTypeEnum::hair,
-            "sort_order" => 3,
+            'race' => $raceOne,
+            'type' => AppearanceTypeEnum::hair,
+            'sort_order' => 3,
         ]);
         $appearanceOneOne = AppearanceOptionFactory::createOne([
-            "race" => $raceOne,
-            "type" => AppearanceTypeEnum::hair,
-            "sort_order" => 1,
+            'race' => $raceOne,
+            'type' => AppearanceTypeEnum::hair,
+            'sort_order' => 1,
         ]);
         $appearanceOneTwo = AppearanceOptionFactory::createOne([
-            "race" => $raceOne,
-            "type" => AppearanceTypeEnum::hair,
-            "sort_order" => 2,
+            'race' => $raceOne,
+            'type' => AppearanceTypeEnum::hair,
+            'sort_order' => 2,
         ]);
         AppearanceOptionFactory::createOne([
-            "race" => $raceTwo,
+            'race' => $raceTwo,
             'type' => AppearanceTypeEnum::mouth,
         ]);
         AppearanceOptionFactory::createMany(7, [
-            "race" => $raceThree,
-            'type' => AppearanceTypeEnum::eyes
+            'race' => $raceThree,
+            'type' => AppearanceTypeEnum::eyes,
         ]);
 
         $client = self::createClient();
@@ -50,7 +49,7 @@ class AppearanceOptionApiTest extends AbstractApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $data = $response->toArray(false);
-        $this->assertArrayHasKey("races", $data);
+        $this->assertArrayHasKey('races', $data);
         $this->assertCount(3, $data['races']);
 
         $this->assertSame($raceOne->getName(), $data['races'][0]['name']);
@@ -59,7 +58,6 @@ class AppearanceOptionApiTest extends AbstractApiTestCase
         $this->assertSame($appearanceOneThree->getSortOrder(), $data['races'][0]['appearance']['hair'][2]['sortOrder']);
         $this->assertSame($appearanceOneTwo->getLabel(), $data['races'][0]['appearance']['hair'][1]['label']);
         $this->assertSame($appearanceOneOne->getLabel(), $data['races'][0]['appearance']['hair'][0]['label']);
-
 
         $this->assertSame($raceTwo->getName(), $data['races'][1]['name']);
         $this->assertCount(1, $data['races'][1]['appearance']['mouth']);

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Auth;
 
 use App\Factory\CharacterFactory;
-use App\Tests\Integration\AbstractApiTestCase;
-use DateTimeImmutable;
-use Symfony\Component\HttpFoundation\Response;
 use App\Factory\EmailVerificationTokenFactory;
+use App\Tests\Integration\AbstractApiTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class VerifyEmailApiTest extends AbstractApiTestCase
 {
@@ -53,14 +52,14 @@ class VerifyEmailApiTest extends AbstractApiTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-
     }
+
     public function testVerifyEmailFailsWithExpiredToken(): void
     {
         $character = CharacterFactory::new()->create();
         $token = EmailVerificationTokenFactory::createOne([
             'character' => $character,
-            'expires_at' => new DateTimeImmutable('- 1hours'),
+            'expires_at' => new \DateTimeImmutable('- 1hours'),
         ]);
 
         $client = static::createClient();
@@ -77,12 +76,13 @@ class VerifyEmailApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('detail', $data);
         $this->assertSame('Invalid or expired token', $data['detail']);
     }
+
     public function testVerifyEmailFailsWithAlreadyUsedToken(): void
     {
         $character = CharacterFactory::new()->create();
         $token = EmailVerificationTokenFactory::createOne([
             'character' => $character,
-            'used_at' => new DateTimeImmutable('-1 hour'),
+            'used_at' => new \DateTimeImmutable('-1 hour'),
         ]);
 
         $client = static::createClient();
@@ -99,6 +99,7 @@ class VerifyEmailApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('detail', $data);
         $this->assertSame('Invalid or expired token', $data['detail']);
     }
+
     public function testVerifyEmailFailsWithInvalidTokenFormat(): void
     {
         $client = static::createClient();

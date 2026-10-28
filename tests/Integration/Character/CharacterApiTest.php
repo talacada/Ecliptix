@@ -7,14 +7,13 @@ namespace App\Tests\Integration\Character;
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Enum\GameCostEnum;
 use App\Factory\AppearanceOptionFactory;
+use App\Factory\CharacterFactory;
 use App\Factory\RaceFactory;
 use App\Tests\Integration\AbstractApiTestCase;
-use App\Factory\CharacterFactory;
 use Symfony\Component\HttpFoundation\Response;
 
 class CharacterApiTest extends AbstractApiTestCase
 {
-
     public function testGetMineCharacterRequiresAuthentication(): void
     {
         $client = static::createClient();
@@ -48,7 +47,7 @@ class CharacterApiTest extends AbstractApiTestCase
         $characterUs = CharacterFactory::createOne();
 
         $client = static::createAuthenticatedClient($characterUs);
-        $request = $client->request('GET', '/api/character/' . $characterEnemy->getId());
+        $request = $client->request('GET', '/api/character/'.$characterEnemy->getId());
 
         // This and more are public info
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -69,7 +68,6 @@ class CharacterApiTest extends AbstractApiTestCase
         $this->assertArrayNotHasKey('backpackCapacity', $data);
         $this->assertArrayNotHasKey('friendsCollection', $data);
         $this->assertArrayNotHasKey('email_verified', $data);
-
     }
 
     public function testGetPublicCharacterReturns404ForNonExistentId(): void
@@ -81,14 +79,14 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         $this->assertJsonContains([
-            'detail' => "Character not found",
+            'detail' => 'Character not found',
         ]);
     }
 
     public function testPatchMineCharacterUpdatesUsernameAndAppearance(): void
     {
         $character = CharacterFactory::createOne([
-            'diamonds' => 10
+            'diamonds' => 10,
         ]);
 
         $client = static::createAuthenticatedClient($character);
@@ -99,14 +97,13 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $data = $response->toArray(false);
         $this->assertSame($data['username'], $character->getUsername());
-        $this->assertSame($data['race'], '/api/races/' . $character->getRace()->getId());
-        $this->assertSame($data['hair'], '/api/appearance_options/' . $character->getHair()->getId());
-        $this->assertSame($data['eyes'], '/api/appearance_options/' . $character->getEyes()->getId());
-        $this->assertSame($data['mouth'], '/api/appearance_options/' . $character->getMouth()->getId());
-        $this->assertSame($data['nose'], '/api/appearance_options/' . $character->getNose()->getId());
-        $this->assertSame($data['ears'], '/api/appearance_options/' . $character->getEars()->getId());
+        $this->assertSame($data['race'], '/api/races/'.$character->getRace()->getId());
+        $this->assertSame($data['hair'], '/api/appearance_options/'.$character->getHair()->getId());
+        $this->assertSame($data['eyes'], '/api/appearance_options/'.$character->getEyes()->getId());
+        $this->assertSame($data['mouth'], '/api/appearance_options/'.$character->getMouth()->getId());
+        $this->assertSame($data['nose'], '/api/appearance_options/'.$character->getNose()->getId());
+        $this->assertSame($data['ears'], '/api/appearance_options/'.$character->getEars()->getId());
         $this->assertSame($data['diamonds'], $character->getDiamonds());
-
 
         $oldDiamonds = $character->getDiamonds();
         $username = 'newUsername';
@@ -132,53 +129,54 @@ class CharacterApiTest extends AbstractApiTestCase
             'type' => AppearanceTypeEnum::ears,
         ]);
 
-        $response = $client->request('PATCH', '/api/character',[
+        $response = $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
                 'username' => $username,
-                'race' => '/api/races/' . $race->getId(),
-                'hair' => '/api/appearance_options/' . $hair->getId(),
-                'eyes' => '/api/appearance_options/' . $eyes->getId(),
-                'mouth' => '/api/appearance_options/' . $mouth->getId(),
-                'nose' => '/api/appearance_options/' . $nose->getId(),
-                'ears' => '/api/appearance_options/' . $ears->getId(),
-            ]
+                'race' => '/api/races/'.$race->getId(),
+                'hair' => '/api/appearance_options/'.$hair->getId(),
+                'eyes' => '/api/appearance_options/'.$eyes->getId(),
+                'mouth' => '/api/appearance_options/'.$mouth->getId(),
+                'nose' => '/api/appearance_options/'.$nose->getId(),
+                'ears' => '/api/appearance_options/'.$ears->getId(),
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $data = $response->toArray(false);
         $this->assertSame($data['username'], $username);
-        $this->assertSame($data['race'], '/api/races/' . $race->getId());
-        $this->assertSame($data['hair'], '/api/appearance_options/' . $hair->getId());
-        $this->assertSame($data['eyes'], '/api/appearance_options/' . $eyes->getId());
-        $this->assertSame($data['mouth'], '/api/appearance_options/' . $mouth->getId());
-        $this->assertSame($data['nose'], '/api/appearance_options/' . $nose->getId());
-        $this->assertSame($data['ears'], '/api/appearance_options/' . $ears->getId());
+        $this->assertSame($data['race'], '/api/races/'.$race->getId());
+        $this->assertSame($data['hair'], '/api/appearance_options/'.$hair->getId());
+        $this->assertSame($data['eyes'], '/api/appearance_options/'.$eyes->getId());
+        $this->assertSame($data['mouth'], '/api/appearance_options/'.$mouth->getId());
+        $this->assertSame($data['nose'], '/api/appearance_options/'.$nose->getId());
+        $this->assertSame($data['ears'], '/api/appearance_options/'.$ears->getId());
         $this->assertSame($oldDiamonds - GameCostEnum::CHANGE_APPEARANCE->getAmount(), $data['diamonds']);
     }
+
     public function testPatchMineCharacterFailsWithDuplicateUsername(): void
     {
         $characterRareUsername = CharacterFactory::createOne([
-            'username' => 'SUPER_RARE_USERNAME'
+            'username' => 'SUPER_RARE_USERNAME',
         ]);
 
         $character = CharacterFactory::createOne([
             'username' => 'normal',
-            'diamonds' => 10
+            'diamonds' => 10,
         ]);
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('PATCH', '/api/character',[
+        $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
                 'username' => $characterRareUsername->getUsername(),
-            ]
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -223,18 +221,18 @@ class CharacterApiTest extends AbstractApiTestCase
     public function testEmptyPatchWontConsumeDiamonds(): void
     {
         $character = CharacterFactory::createOne([
-            'diamonds' => 10
+            'diamonds' => 10,
         ]);
         $diamonds = $character->getDiamonds();
 
         $client = static::createAuthenticatedClient($character);
 
-        $response = $client->request('PATCH', '/api/character',[
+        $response = $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
-            ]
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -248,13 +246,13 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $client = static::createClient();
 
-        $client->request('PATCH', '/api/character',[
+        $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
                 'username' => 'test',
-            ]
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
@@ -266,7 +264,7 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $client = static::createClient();
 
-        $client->request('GET', '/api/character/' . $character->getId());
+        $client->request('GET', '/api/character/'.$character->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
@@ -274,25 +272,24 @@ class CharacterApiTest extends AbstractApiTestCase
     public function testPatchWontWorkWithoutDiamonds(): void
     {
         $character = CharacterFactory::createOne([
-            'diamonds' => GameCostEnum::CHANGE_APPEARANCE->getAmount() - 1
+            'diamonds' => GameCostEnum::CHANGE_APPEARANCE->getAmount() - 1,
         ]);
 
         $client = static::createAuthenticatedClient($character);
 
-        $response = $client->request('PATCH', '/api/character',[
+        $response = $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
                 'username' => 'iWantNewName',
-            ]
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $data = $response->toArray(false);
         $this->assertArrayHasKey('detail', $data);
         $this->assertSame('Not enough diamonds', $data['detail']);
-
     }
 
     public function testPatchWithSameValuesThatCharacterAlreadyHad(): void
@@ -304,21 +301,20 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $response = $client->request('PATCH', '/api/character',[
+        $response = $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
                 'username' => $character->getUsername(),
-                'race' => '/api/races/' . $character->getRace()->getId(),
-            ]
+                'race' => '/api/races/'.$character->getRace()->getId(),
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $data = $response->toArray(false);
         $this->assertSame('MyNormalName', $data['username']);
         $this->assertSame(100, $data['diamonds']);
-
     }
 
     public function testPartiallyChangeAppearance(): void
@@ -330,24 +326,24 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $hair = AppearanceOptionFactory::createOne([
             'race' => $character->getRace(),
-            'type' => AppearanceTypeEnum::hair
+            'type' => AppearanceTypeEnum::hair,
         ]);
 
         $client = static::createAuthenticatedClient($character);
 
-        $response = $client->request('PATCH', '/api/character',[
+        $response = $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
-                'hair' => '/api/appearance_options/' . $hair->getId(),
-            ]
+                'hair' => '/api/appearance_options/'.$hair->getId(),
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $data = $response->toArray(false);
         $this->assertArrayHasKey('hair', $data);
-        $this->assertSame('/api/appearance_options/' . $hair->getId(), $data['hair']);
+        $this->assertSame('/api/appearance_options/'.$hair->getId(), $data['hair']);
     }
 
     public function testPartiallyChangeAppearanceWithBadRace(): void
@@ -359,18 +355,18 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $hair = AppearanceOptionFactory::createOne([
             'race' => RaceFactory::createOne(),
-            'type' => AppearanceTypeEnum::hair
+            'type' => AppearanceTypeEnum::hair,
         ]);
 
         $client = static::createAuthenticatedClient($character);
 
-        $response = $client->request('PATCH', '/api/character',[
+        $response = $client->request('PATCH', '/api/character', [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
-                'hair' => '/api/appearance_options/' . $hair->getId(),
-            ]
+                'hair' => '/api/appearance_options/'.$hair->getId(),
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -378,5 +374,4 @@ class CharacterApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('detail', $data);
         $this->assertSame('Invalid hair_id', $data['detail']);
     }
-
 }

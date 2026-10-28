@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Service\Item;
 
 use App\Config\ItemConfig;
@@ -20,7 +22,7 @@ class ItemStatCalculatorTest extends TestCase
         ItemSlotEnum $slot,
         ItemRarityEnum $rarity,
         int $level,
-        array $expectedStats
+        array $expectedStats,
     ): void {
         $stats = ItemStatCalculator::calculateStats($slot, $rarity, $level);
 
@@ -175,5 +177,4 @@ class ItemStatCalculatorTest extends TestCase
             [380, 65],
         ];
     }
-
 }

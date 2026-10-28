@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Service\Auth;
 
 use App\Entity\Character\Character;
 use App\Service\Auth\EmailVerificationService;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -15,13 +14,15 @@ use Symfony\Component\Uid\Uuid;
 class EmailVerificationServiceTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
+
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
+
     public function testCreateToken(): void
     {
-        $character =  new Character();
+        $character = new Character();
 
         $tokenService = new EmailVerificationService($this->entityManager);
 
@@ -37,7 +38,7 @@ class EmailVerificationServiceTest extends TestCase
 
         $this->assertTrue(Uuid::isValid((string) $token->getToken()));
         $this->assertSame($token->getCharacter(), $character);
-        $this->assertEqualsWithDelta(new DateTimeImmutable('+24 hours'), $token->getExpiresAt(), 2);
+        $this->assertEqualsWithDelta(new \DateTimeImmutable('+24 hours'), $token->getExpiresAt(), 2);
         $this->assertNull($token->getUsedAt());
     }
 }

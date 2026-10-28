@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory;
 
 use App\Entity\Item\Item;
@@ -11,7 +13,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 class ItemFactory extends PersistentObjectFactory
 {
-
     public function createFromDefinitionAndOffer(ShopOffer $offer): Item
     {
         $item = new Item();

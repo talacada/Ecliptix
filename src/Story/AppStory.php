@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Story;
 
-use DateMalformedStringException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Random\RandomException;
@@ -22,7 +21,7 @@ final class AppStory extends Story
 
     /**
      * @throws OptimisticLockException
-     * @throws DateMalformedStringException
+     * @throws \DateMalformedStringException
      * @throws RandomException
      * @throws ORMException
      */

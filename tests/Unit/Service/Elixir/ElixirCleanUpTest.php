@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Tests\Unit\Service\Elixir;
+declare(strict_types=1);
 
+namespace App\Tests\Unit\Service\Elixir;
 
 use App\Entity\Character\ActiveElixir;
 use App\Entity\Character\Character;
 use App\Service\Elixir\ElixirCleanUp;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -19,18 +19,19 @@ class ElixirCleanUpTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
     }
+
     public function testRemoveExpiredRemovesExpiredElixirsAndKeepsActiveOnes(): void
     {
         $character = new Character();
 
         $oldElixir = new ActiveElixir();
-        $oldElixir->setExpiresAt(new DateTimeImmutable("yesterday"));
+        $oldElixir->setExpiresAt(new \DateTimeImmutable('yesterday'));
 
         $activeElixirInMinutes = new ActiveElixir();
-        $activeElixirInMinutes->setExpiresAt(new DateTimeImmutable("now + 20 minutes"));
+        $activeElixirInMinutes->setExpiresAt(new \DateTimeImmutable('now + 20 minutes'));
 
         $activeElixirExpiresTomorrow = new ActiveElixir();
-        $activeElixirExpiresTomorrow->setExpiresAt(new DateTimeImmutable("tomorrow"));
+        $activeElixirExpiresTomorrow->setExpiresAt(new \DateTimeImmutable('tomorrow'));
 
         $character->addActiveElixir($oldElixir);
         $character->addActiveElixir($activeElixirInMinutes);
@@ -41,7 +42,6 @@ class ElixirCleanUpTest extends TestCase
         $this->entityManager
             ->expects($this->exactly(1))
             ->method('flush');
-
 
         $cleanUp = new ElixirCleanUp($this->entityManager);
         $cleanUp->removeExpired($character);

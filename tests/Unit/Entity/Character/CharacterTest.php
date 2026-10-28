@@ -9,9 +9,6 @@ use App\Entity\Character\ActiveElixir;
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
 use App\Tests\Helper\EntityHelper;
-use DateTimeImmutable;
-use InvalidArgumentException;
-use LogicException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -36,14 +33,14 @@ class CharacterTest extends TestCase
     {
         $character = new Character();
         $character->addGold(50);
-        $this->assertSame( CharacterConfig::INITIAL_GOLD + 50, $character->getGold());
+        $this->assertSame(CharacterConfig::INITIAL_GOLD + 50, $character->getGold());
     }
 
     public function testSetGold(): void
     {
         $character = new Character();
         $character->setGold(777);
-        $this->assertSame( 777, $character->getGold());
+        $this->assertSame(777, $character->getGold());
     }
 
     public function testSubtractGoldValidAmount(): void
@@ -51,7 +48,7 @@ class CharacterTest extends TestCase
         $character = new Character();
         $character->setGold(111);
         $character->subtractGold(12);
-        $this->assertSame( 99, $character->getGold());
+        $this->assertSame(99, $character->getGold());
     }
 
     public function testSubtractGoldThrowsExceptionWhenInsufficientGold(): void
@@ -70,7 +67,7 @@ class CharacterTest extends TestCase
         $character = new Character();
         $character->setDiamonds(222);
 
-        $this->assertSame( 222, $character->getDiamonds());
+        $this->assertSame(222, $character->getDiamonds());
     }
 
     public function testAddDiamonds(): void
@@ -79,7 +76,7 @@ class CharacterTest extends TestCase
         $character->setDiamonds(10);
         $character->addDiamonds(222);
 
-        $this->assertSame( 232, $character->getDiamonds());
+        $this->assertSame(232, $character->getDiamonds());
     }
 
     public function testSubtractDiamondsThrowsExceptionWhenInsufficientDiamonds(): void
@@ -110,14 +107,14 @@ class CharacterTest extends TestCase
         $character->setDiamonds(222);
         $character->subtractDiamonds(10);
 
-        $this->assertSame( 212, $character->getDiamonds());
+        $this->assertSame(212, $character->getDiamonds());
     }
 
     public function testGetUserIdentifierThrowsExceptionWhenEmailIsEmpty(): void
     {
         $character = new Character();
 
-        $this->expectException(LogicException::class);
+        $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('User email cant be empty.');
 
         $character->getUserIdentifier();
@@ -128,18 +125,18 @@ class CharacterTest extends TestCase
         $character = new Character();
 
         $rotationInRange = new ShopRotation();
-        $rotationInRange->setValidFrom(new DateTimeImmutable('today'));
-        $rotationInRange->setValidUntil(new DateTimeImmutable('tomorrow'));
+        $rotationInRange->setValidFrom(new \DateTimeImmutable('today'));
+        $rotationInRange->setValidUntil(new \DateTimeImmutable('tomorrow'));
         EntityHelper::setId($rotationInRange, 10);
 
         $rotationOld = new ShopRotation();
-        $rotationOld->setValidFrom(new DateTimeImmutable('01-01-2026'));
-        $rotationOld->setValidUntil(new DateTimeImmutable('05-01-2026'));
+        $rotationOld->setValidFrom(new \DateTimeImmutable('01-01-2026'));
+        $rotationOld->setValidUntil(new \DateTimeImmutable('05-01-2026'));
         EntityHelper::setId($rotationOld, 33);
 
         $rotationFuture = new ShopRotation();
-        $rotationFuture->setValidFrom(new DateTimeImmutable('02-02-2040'));
-        $rotationFuture->setValidUntil(new DateTimeImmutable('05-02-2040'));
+        $rotationFuture->setValidFrom(new \DateTimeImmutable('02-02-2040'));
+        $rotationFuture->setValidUntil(new \DateTimeImmutable('05-02-2040'));
         EntityHelper::setId($rotationFuture, 25);
 
         $character->addShopRotation($rotationOld);
@@ -151,7 +148,8 @@ class CharacterTest extends TestCase
         $this->assertTrue($rotations->contains($rotationInRange));
     }
 
-    public function testAddActiveElixir(): void {
+    public function testAddActiveElixir(): void
+    {
         $character = new Character();
         $elixir = new ActiveElixir();
 

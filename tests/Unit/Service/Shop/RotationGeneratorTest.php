@@ -7,14 +7,12 @@ namespace App\Tests\Unit\Service\Shop;
 use App\Config\ItemConfig;
 use App\Entity\Character\Character;
 use App\Entity\Item\ElixirDefinition;
-use App\Entity\Item\Item;
 use App\Entity\Item\ItemDefinition;
 use App\Entity\Shop\ShopRotation;
 use App\Entity\Shop\ShopRotationEnum;
 use App\Repository\Item\ItemDefinitionRepository;
 use App\Repository\Shop\ShopRotationRepository;
 use App\Service\Shop\RotationGenerator;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,6 +30,7 @@ class RotationGeneratorTest extends TestCase
         $this->shopRotationRepository = $this->createMock(ShopRotationRepository::class);
         $this->itemDefinitionRepository = $this->createMock(ItemDefinitionRepository::class);
     }
+
     public function testGenerateDailyRotationCleansUpOldExpiredRotations(): void
     {
         $character = new Character();
@@ -80,10 +79,9 @@ class RotationGeneratorTest extends TestCase
         $rotation = $generator->generateDaily($character);
 
         $this->assertSame(ShopRotationEnum::Daily, $rotation->getRotationType());
-        $this->assertEquals(new DateTimeImmutable('midnight'), $rotation->getValidFrom());
-        $this->assertEquals(new DateTimeImmutable('tomorrow'), $rotation->getValidUntil());
+        $this->assertEquals(new \DateTimeImmutable('midnight'), $rotation->getValidFrom());
+        $this->assertEquals(new \DateTimeImmutable('tomorrow'), $rotation->getValidUntil());
         $this->assertSame($character, $rotation->getCharacter());
-
     }
 
     public function testGenerateCreatesExactQuotaOfOffers(): void
@@ -123,15 +121,14 @@ class RotationGeneratorTest extends TestCase
             $this->assertSame($rotation, $offer->getRotation());
 
             if ($offer->getItemDefinition() instanceof ElixirDefinition) {
-                $elixirCount++;
+                ++$elixirCount;
             } elseif ($offer->getItemDefinition() instanceof ItemDefinition) {
-                $equipmentCount++;
+                ++$equipmentCount;
             }
         }
 
         $this->assertSame(2, $elixirCount);
         $this->assertSame(8, $equipmentCount);
-
     }
 
     #[DataProvider('providePriceAndStats')]
@@ -142,8 +139,7 @@ class RotationGeneratorTest extends TestCase
         int $baseDamage,
         int $baseCrit,
         int $baseHealth,
-    ): void
-    {
+    ): void {
         $character = new Character();
         $character->setLevel($characterLevel);
 
@@ -206,7 +202,7 @@ class RotationGeneratorTest extends TestCase
                 $this->assertSame(0, $offer->getBonusDamage());
                 $this->assertSame(0, $offer->getBonusCrit());
                 $this->assertSame(0, $offer->getBonusHealth());
-            }else {
+            } else {
                 $this->assertGreaterThanOrEqual($diamondPriceMinimum, $offer->getDiamondPrice());
                 $this->assertLessThanOrEqual($diamondPriceMaximum, $offer->getDiamondPrice());
 

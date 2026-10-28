@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory;
 
 use App\Entity\PasswordResetToken;
-use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
@@ -22,7 +23,7 @@ final class PasswordResetTokenFactory extends PersistentObjectFactory
         return [
             'character' => CharacterFactory::new(),
             'token' => Uuid::v4(),
-            'expires_at' => new DateTimeImmutable('+1 hour'),
+            'expires_at' => new \DateTimeImmutable('+1 hour'),
             'used_at' => null,
         ];
     }

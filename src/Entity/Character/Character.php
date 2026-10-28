@@ -24,12 +24,9 @@ use App\State\Processor\Auth\RegisterProcessor;
 use App\State\Processor\Character\UpdateCharacterProcessor;
 use App\State\Provider\Character\MineCharacterProvider;
 use App\State\Provider\Character\PublicCharacterProvider;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
-use LogicException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -336,7 +333,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function getShopRotations(): Collection
     {
         $allRotations = $this->shopRotations;
-        $now = new DateTimeImmutable();
+        $now = new \DateTimeImmutable();
 
         $showRotation = new ArrayCollection();
 
@@ -394,7 +391,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function getUserIdentifier(): string
     {
         if ('' === $this->email) {
-            throw new LogicException('User email cant be empty.');
+            throw new \LogicException('User email cant be empty.');
         }
 
         return $this->email;

@@ -11,7 +11,6 @@ use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, null>
@@ -25,14 +24,14 @@ class CharacterInventorySellProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): null
     {
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getCharacter() !== $character) {
-            throw new Exception('Inventory slot does not belong to the logged-in character.');
+            throw new \Exception('Inventory slot does not belong to the logged-in character.');
         }
 
         $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();

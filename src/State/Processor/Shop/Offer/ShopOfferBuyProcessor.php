@@ -12,10 +12,7 @@ use App\Entity\Shop\ShopOffer;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Inventory\InventoryManager;
-use App\Service\Item\ItemFactory;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -35,7 +32,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ItemViewDTO
     {
@@ -47,7 +44,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new NotFoundHttpException('Rotation not found');
         }
 
-        if ($rotation->getValidUntil() < new DateTime() || $rotation->getValidFrom() > new DateTime()) {
+        if ($rotation->getValidUntil() < new \DateTime() || $rotation->getValidFrom() > new \DateTime()) {
             throw new BadRequestHttpException('Rotation not available');
         }
 

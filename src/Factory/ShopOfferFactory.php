@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory;
 
 use App\Entity\Shop\ShopOffer;
-use App\Entity\Shop\ShopRotation;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**

@@ -11,7 +11,6 @@ use App\Entity\Item\ItemDefinition;
 use App\Repository\Character\ActiveElixirRepository;
 use App\State\Processor\Character\Elixir\ActiveElixirRemoveProcessor;
 use App\State\Provider\Character\Elixir\ActiveElixirProvider;
-use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -53,7 +52,7 @@ class ActiveElixir
     private ItemDefinition $itemDefinition;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private DateTimeImmutable $expiresAt;
+    private \DateTimeImmutable $expiresAt;
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[SerializedName('name')]
@@ -80,7 +79,7 @@ class ActiveElixir
     #[SerializedName('remainingSeconds')]
     public function getRemainingSeconds(): int
     {
-        return $this->expiresAt->getTimestamp() - new DateTimeImmutable()->getTimestamp();
+        return $this->expiresAt->getTimestamp() - new \DateTimeImmutable()->getTimestamp();
     }
 
     public function getId(): ?int
@@ -112,12 +111,12 @@ class ActiveElixir
         return $this;
     }
 
-    public function getExpiresAt(): DateTimeImmutable
+    public function getExpiresAt(): \DateTimeImmutable
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(DateTimeImmutable $expiresAt): static
+    public function setExpiresAt(\DateTimeImmutable $expiresAt): static
     {
         $this->expiresAt = $expiresAt;
 

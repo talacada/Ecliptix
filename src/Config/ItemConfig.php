@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Config;
 
 final class ItemConfig
@@ -56,5 +58,4 @@ final class ItemConfig
 
     /** Multiplier applied to base gold price when selling an item back to shop/system. */
     public const float SELL_PRICE_MULTIPLIER = 0.75;
-
 }

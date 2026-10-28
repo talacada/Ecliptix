@@ -43,7 +43,6 @@ final class CharacterFactory extends PersistentObjectFactory
         ];
     }
 
-
     public function withPassword(string $plainPassword): self
     {
         return $this->with([

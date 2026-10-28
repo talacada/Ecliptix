@@ -10,7 +10,6 @@ use App\Entity\Race;
 use App\Repository\AppearanceOptionRepository;
 use App\Repository\RaceRepository;
 use App\Service\Auth\AppearanceValidationService;
-use ArgumentCountError;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -94,12 +93,11 @@ class AppearanceValidationServiceTest extends TestCase
         $this->service->verifiesAppearance(1, 1, 2, 3, 4, 5);
     }
 
-    #[DataProvider("AppearanceOptionsDataProvider")]
+    #[DataProvider('AppearanceOptionsDataProvider')]
     public function testVerifiesAppearanceThrowsWhenAppearanceNotFound(
         string $errorMessage,
-        AppearanceTypeEnum $failingType
-    ): void
-    {
+        AppearanceTypeEnum $failingType,
+    ): void {
         $race = new Race();
 
         $this->raceRepository
@@ -116,8 +114,9 @@ class AppearanceValidationServiceTest extends TestCase
                     if ($type === $failingType) {
                         return null;
                     }
+
                     return new AppearanceOption();
-                }
+                },
             );
 
         $this->expectException(UnprocessableEntityHttpException::class);

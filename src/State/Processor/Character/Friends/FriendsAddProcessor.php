@@ -12,7 +12,6 @@ use App\Repository\Character\CharacterRepository;
 use App\Repository\FriendRelationRepository;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
@@ -29,20 +28,20 @@ class FriendsAddProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): FriendRelation
     {
         $character = $this->loggedInCharacter->getCharacter();
 
         if (!isset($uriVariables['id']) || !is_numeric($uriVariables['id'])) {
-            throw new Exception('Invalid ID provided.');
+            throw new \Exception('Invalid ID provided.');
         }
 
         $followed = $this->characterRepository->getCharacterById((int) $uriVariables['id']);
 
         if (!$followed) {
-            throw new Exception('Character not found.');
+            throw new \Exception('Character not found.');
         }
 
         if ($followed === $character) {

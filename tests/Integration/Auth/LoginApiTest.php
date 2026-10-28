@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Auth;
 
-use App\Tests\Integration\AbstractApiTestCase;
 use App\Factory\CharacterFactory;
+use App\Tests\Integration\AbstractApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -15,7 +15,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class LoginApiTest extends AbstractApiTestCase
 {
-
     /**
      * @throws RedirectionExceptionInterface
      * @throws DecodingExceptionInterface
@@ -69,7 +68,7 @@ class LoginApiTest extends AbstractApiTestCase
     {
         CharacterFactory::new()->with([
             'email_verified' => false,
-            'email' => 'unverified@ecliptix.com'
+            'email' => 'unverified@ecliptix.com',
         ])->create();
 
         $client = static::createClient();
@@ -125,7 +124,7 @@ class LoginApiTest extends AbstractApiTestCase
             ],
         ]);
 
-         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $data = $data->toArray(false);
         $this->assertArrayHasKey('description', $data);

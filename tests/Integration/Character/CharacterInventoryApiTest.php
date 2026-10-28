@@ -30,6 +30,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
+
     public function testGetInventoryReturnsAllUnequippedAndEquippedItems(): void
     {
         $equippedItem = CharacterInventoryFactory::createOne([
@@ -49,7 +50,6 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-
         $this->assertJsonContains([
             'totalItems' => 2,
             'member' => [
@@ -63,7 +63,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                     'container' => InventoryContainerEnum::Backpack->value,
                     'item' => [
                         'name' => $inventoryItem->getItem()->getDefinition()->getName(),
-                    ]
+                    ],
                 ],
             ],
         ]);
@@ -87,7 +87,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('GET', '/api/character/inventory/' . $item->getId());
+        $client->request('GET', '/api/character/inventory/'.$item->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
@@ -97,25 +97,24 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                 'name' => $item->getItem()->getDefinition()->getName(),
             ],
         ]);
-
     }
 
     public function testPatchInventoryEquipsItem(): void
     {
         $inventory = CharacterInventoryFactory::createOne([
             'container' => InventoryContainerEnum::Backpack,
-            'position' => '2'
+            'position' => '2',
         ]);
 
         $character = CharacterFactory::createOne([
-            'backpackCapacity' => 8
+            'backpackCapacity' => 8,
         ]);
 
         $character->addCharacterInventory($inventory);
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('GET', '/api/character/inventory/' . $inventory->getId());
+        $client->request('GET', '/api/character/inventory/'.$inventory->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
@@ -124,13 +123,13 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'position' => 2,
         ]);
 
-        $client->request('PATCH', '/api/character/inventory/' . $inventory->getId(), [
+        $client->request('PATCH', '/api/character/inventory/'.$inventory->getId(), [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
                 'container' => 'equipped',
-            ]
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -150,16 +149,16 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'position' => '3',
             'item' => ItemFactory::createOne([
                 'definition' => ItemDefinitionFactory::createOne([
-                    'desiredSlot' => ItemSlotEnum::Helmet
-                ])
+                    'desiredSlot' => ItemSlotEnum::Helmet,
+                ]),
             ]),
         ]);
         $inventoryEquipped = CharacterInventoryFactory::createOne([
             'container' => InventoryContainerEnum::Equipped,
             'item' => ItemFactory::createOne([
                 'definition' => ItemDefinitionFactory::createOne([
-                    'desiredSlot' => ItemSlotEnum::Helmet
-                ])
+                    'desiredSlot' => ItemSlotEnum::Helmet,
+                ]),
             ]),
         ]);
 
@@ -168,13 +167,13 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('PATCH', '/api/character/inventory/' . $inventoryUnequipped->getId(), [
+        $client->request('PATCH', '/api/character/inventory/'.$inventoryUnequipped->getId(), [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json',
             ],
             'json' => [
                 'container' => 'equipped',
-            ]
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -182,7 +181,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'container' => InventoryContainerEnum::Equipped->value,
         ]);
 
-        $client->request('GET', '/api/character/inventory/' . $inventoryEquipped->getId());
+        $client->request('GET', '/api/character/inventory/'.$inventoryEquipped->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         // New position of unequipped item is swapped with old position
@@ -191,10 +190,11 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'position' => 3,
         ]);
     }
+
     public function testSellInventoryItemAddsGoldAndRemovesItem(): void
     {
         $character = CharacterFactory::createOne([
-            'gold' => 10
+            'gold' => 10,
         ]);
 
         $inventoryUnequipped = CharacterInventoryFactory::createOne([
@@ -202,8 +202,8 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'position' => '3',
             'item' => ItemFactory::createOne([
                 'definition' => ItemDefinitionFactory::createOne([
-                    'desiredSlot' => ItemSlotEnum::Helmet
-                ])
+                    'desiredSlot' => ItemSlotEnum::Helmet,
+                ]),
             ]),
         ]);
 
@@ -211,8 +211,8 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'container' => InventoryContainerEnum::Equipped,
             'item' => ItemFactory::createOne([
                 'definition' => ItemDefinitionFactory::createOne([
-                    'desiredSlot' => ItemSlotEnum::Helmet
-                ])
+                    'desiredSlot' => ItemSlotEnum::Helmet,
+                ]),
             ]),
         ]);
 
@@ -220,7 +220,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'container' => InventoryContainerEnum::Backpack,
             'quantity' => 3,
             'item' => ItemFactory::createOne([
-                'definition' => ElixirDefinitionFactory::createOne()
+                'definition' => ElixirDefinitionFactory::createOne(),
             ]),
         ]);
 
@@ -230,43 +230,43 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        //SELL 1
-        $client->request('POST', '/api/character/inventory/' . $inventoryEquipped->getId() . '/sell');
+        // SELL 1
+        $client->request('POST', '/api/character/inventory/'.$inventoryEquipped->getId().'/sell');
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $response = $client->request('GET', '/api/character');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
-            'gold' => intval(10 + $inventoryEquipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_PRICE_MULTIPLIER)
+            'gold' => intval(10 + $inventoryEquipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_PRICE_MULTIPLIER),
         ]);
         $data = $response->toArray(false);
         $this->assertCount(2, $data['characterInventories']);
         $gold = $data['gold'];
 
-        //SELL 2
-        $client->request('POST', '/api/character/inventory/' . $inventoryUnequipped->getId() . '/sell');
+        // SELL 2
+        $client->request('POST', '/api/character/inventory/'.$inventoryUnequipped->getId().'/sell');
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $response = $client->request('GET', '/api/character');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
-            'gold' => intval($gold + $inventoryUnequipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_PRICE_MULTIPLIER)
+            'gold' => intval($gold + $inventoryUnequipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_PRICE_MULTIPLIER),
         ]);
         $data = $response->toArray(false);
         $this->assertCount(1, $data['characterInventories']);
         $gold = $data['gold'];
 
-        //SELL 3
-        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/sell');
+        // SELL 3
+        $client->request('POST', '/api/character/inventory/'.$elixir->getId().'/sell');
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $client->request('GET', '/api/character/inventory/' . $elixir->getId());
+        $client->request('GET', '/api/character/inventory/'.$elixir->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
-            'quantity' => 2
+            'quantity' => 2,
         ]);
     }
 
@@ -278,7 +278,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'container' => InventoryContainerEnum::Backpack,
             'quantity' => 3,
             'item' => ItemFactory::createOne([
-                'definition' => ElixirDefinitionFactory::createOne()
+                'definition' => ElixirDefinitionFactory::createOne(),
             ]),
         ]);
 
@@ -286,7 +286,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/use');
+        $client->request('POST', '/api/character/inventory/'.$elixir->getId().'/use');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
@@ -304,12 +304,13 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                     '@type' => 'ActiveElixir',
                     'name' => $elixir->getItem()->getDefinition()->getName(),
                     'percentageBonus' => $elixir->getItem()->getDefinition()->getPercentageBonus(),
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
-    public function testCannotAccessOrManipulateAnotherCharactersInventory():void {
+    public function testCannotAccessOrManipulateAnotherCharactersInventory(): void
+    {
         $character = CharacterFactory::createOne();
         $charater2 = CharacterFactory::createOne();
 
@@ -317,7 +318,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'container' => InventoryContainerEnum::Backpack,
             'quantity' => 3,
             'item' => ItemFactory::createOne([
-                'definition' => ElixirDefinitionFactory::createOne()
+                'definition' => ElixirDefinitionFactory::createOne(),
             ]),
         ]);
 
@@ -325,15 +326,13 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createClient();
 
-        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/sell');
+        $client->request('POST', '/api/character/inventory/'.$elixir->getId().'/sell');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
 
         $client = static::createAuthenticatedClient($charater2);
 
-        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/sell');
+        $client->request('POST', '/api/character/inventory/'.$elixir->getId().'/sell');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
-
-
     }
 
     public function testCantUseNonElixirItems(): void
@@ -344,7 +343,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'container' => InventoryContainerEnum::Backpack,
             'quantity' => 3,
             'item' => ItemFactory::createOne([
-                'definition' => ItemDefinitionFactory::createOne()
+                'definition' => ItemDefinitionFactory::createOne(),
             ]),
         ]);
 
@@ -352,7 +351,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/character/inventory/' . $item->getId() . '/use');
+        $client->request('POST', '/api/character/inventory/'.$item->getId().'/use');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
 
@@ -366,8 +365,8 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $this->assertJsonContains([
             'characterInventories' => [
-                "/api/character/inventory/" . $item->getId()
-            ]
+                '/api/character/inventory/'.$item->getId(),
+            ],
         ]);
     }
 }

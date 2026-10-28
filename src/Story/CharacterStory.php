@@ -20,15 +20,12 @@ use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Repository\RaceRepository;
 use App\Service\Item\ItemStatCalculator;
 use App\Service\Shop\RotationGenerator;
-use DateMalformedStringException;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Random\RandomException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-use function assert;
 use function Zenstruck\Foundry\faker;
 
 final class CharacterStory
@@ -49,14 +46,14 @@ final class CharacterStory
 
     /**
      * @throws OptimisticLockException
-     * @throws DateMalformedStringException
+     * @throws \DateMalformedStringException
      * @throws RandomException
      * @throws ORMException
      */
     public function generate(): void
     {
         $races = $this->raceRepository->getAllRaces();
-        if ($races === []) {
+        if ([] === $races) {
             return;
         }
 
@@ -118,13 +115,14 @@ final class CharacterStory
         $this->entityManager->clear();
 
         $defaultChar = $this->entityManager->find(Character::class, $defaultChar->getId());
-        assert($defaultChar instanceof Character);
+        \assert($defaultChar instanceof Character);
         $this->rotationGenerator->generateDaily($defaultChar);
     }
 
     /**
-     * @param int[] $raceIds
+     * @param int[]                            $raceIds
      * @param array<int, array<string, int[]>> $optionsByRace
+     *
      * @throws ORMException
      */
     private function createCharacter(string $email, string $password, string $username, array $raceIds, array $optionsByRace): Character
@@ -145,8 +143,9 @@ final class CharacterStory
     }
 
     /**
-     * @param int[] $raceIds
+     * @param int[]                            $raceIds
      * @param array<int, array<string, int[]>> $optionsByRace
+     *
      * @throws ORMException
      */
     private function setRandomAppearance(Character $character, array $raceIds, array $optionsByRace): Character
@@ -167,12 +166,12 @@ final class CharacterStory
         $nose = $this->entityManager->getReference(AppearanceOption::class, $noseId);
         $ears = $this->entityManager->getReference(AppearanceOption::class, $earsId);
 
-        assert($race instanceof Race);
-        assert($hair instanceof AppearanceOption);
-        assert($eyes instanceof AppearanceOption);
-        assert($mouth instanceof AppearanceOption);
-        assert($nose instanceof AppearanceOption);
-        assert($ears instanceof AppearanceOption);
+        \assert($race instanceof Race);
+        \assert($hair instanceof AppearanceOption);
+        \assert($eyes instanceof AppearanceOption);
+        \assert($mouth instanceof AppearanceOption);
+        \assert($nose instanceof AppearanceOption);
+        \assert($ears instanceof AppearanceOption);
 
         $character->setRace($race);
         $character->setHair($hair);
@@ -185,7 +184,7 @@ final class CharacterStory
     }
 
     /**
-     * @throws DateMalformedStringException
+     * @throws \DateMalformedStringException
      */
     private function equipCharacter(Character $character): void
     {
@@ -246,7 +245,7 @@ final class CharacterStory
             $active->setCharacter($character);
             $active->setItemDefinition($elixirDef);
             $active->setExpiresAt(
-                new DateTimeImmutable()->modify('+'.$elixirDef->getDurationSeconds().' seconds'),
+                new \DateTimeImmutable()->modify('+'.$elixirDef->getDurationSeconds().' seconds'),
             );
             $this->entityManager->persist($active);
         }
@@ -267,4 +266,3 @@ final class CharacterStory
         return $item;
     }
 }
-

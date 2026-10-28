@@ -13,10 +13,8 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-
 class FriendsApiTest extends AbstractApiTestCase
 {
-
     /**
      * @throws RedirectionExceptionInterface
      * @throws DecodingExceptionInterface
@@ -33,52 +31,49 @@ class FriendsApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($characterUs);
 
-        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
+        $client->request('POST', '/api/friends/'.$characterFriendOne->getId(), [
             'json' => [
                 'container' => 'equipped',
-            ]
+            ],
         ]);
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $client->request('POST', '/api/friends/' . $characterFriendTwo->getId(), [
+        $client->request('POST', '/api/friends/'.$characterFriendTwo->getId(), [
             'json' => [
                 'container' => 'equipped',
-            ]
+            ],
         ]);
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $client->request('POST', '/api/friends/' . $characterFriendThree->getId(), [
+        $client->request('POST', '/api/friends/'.$characterFriendThree->getId(), [
             'json' => [
                 'container' => 'equipped',
-            ]
+            ],
         ]);
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $this->assertJsonContains([
             '@type' => 'FriendRelation',
-            'character' => '/api/character/' . $characterUs->getId(),
-            'friend' => '/api/character/' . $characterFriendThree->getId(),
+            'character' => '/api/character/'.$characterUs->getId(),
+            'friend' => '/api/character/'.$characterFriendThree->getId(),
         ]);
 
         $client->request('GET', '/api/friends');
-
 
         $this->assertJsonContains([
             'totalItems' => 3,
             'member' => [
                 [
-                    'friend' => '/api/character/' . $characterFriendOne->getId(),
+                    'friend' => '/api/character/'.$characterFriendOne->getId(),
                 ],
                 [
-                    'friend' => '/api/character/' . $characterFriendTwo->getId(),
+                    'friend' => '/api/character/'.$characterFriendTwo->getId(),
                 ],
                 [
-                    'friend' => '/api/character/' . $characterFriendThree->getId(),
+                    'friend' => '/api/character/'.$characterFriendThree->getId(),
                 ],
-
-            ]
+            ],
         ]);
-
     }
 
     public function testAddFriendSuccessfulCreatesRelation(): void
@@ -88,8 +83,8 @@ class FriendsApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($characterUs);
 
-        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
-            'json' => []
+        $client->request('POST', '/api/friends/'.$characterFriendOne->getId(), [
+            'json' => [],
         ]);
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
@@ -100,11 +95,10 @@ class FriendsApiTest extends AbstractApiTestCase
             'totalItems' => 1,
             'member' => [
                 [
-                    'friend' => '/api/character/' . $characterFriendOne->getId(),
+                    'friend' => '/api/character/'.$characterFriendOne->getId(),
                 ],
-            ]
+            ],
         ]);
-
     }
 
     public function testAddFriendFailsWhenAddingSelf(): void
@@ -113,13 +107,13 @@ class FriendsApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($characterUs);
 
-        $client->request('POST', '/api/friends/' . $characterUs->getId(), [
-            'json' => []
+        $client->request('POST', '/api/friends/'.$characterUs->getId(), [
+            'json' => [],
         ]);
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
 
         $this->assertJsonContains([
-            'detail' => 'You cannot add yourself.'
+            'detail' => 'You cannot add yourself.',
         ]);
     }
 
@@ -130,22 +124,21 @@ class FriendsApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($characterUs);
 
-        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
-            'json' => []
+        $client->request('POST', '/api/friends/'.$characterFriendOne->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
-            'json' => []
+        $client->request('POST', '/api/friends/'.$characterFriendOne->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
 
         $this->assertJsonContains([
-            'detail' => 'You are already friends'
+            'detail' => 'You are already friends',
         ]);
-
     }
 
     public function testRemoveFriendDeletesRelation(): void
@@ -155,8 +148,8 @@ class FriendsApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($characterUs);
 
-        $response = $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
-            'json' => []
+        $response = $client->request('POST', '/api/friends/'.$characterFriendOne->getId(), [
+            'json' => [],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -165,7 +158,7 @@ class FriendsApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('id', $data);
         $relationId = $data['id'];
 
-        $client->request('DELETE', '/api/friends/' . $relationId);
+        $client->request('DELETE', '/api/friends/'.$relationId);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
@@ -177,15 +170,15 @@ class FriendsApiTest extends AbstractApiTestCase
 
         $client = static::createClient();
 
-        $client->request('POST', '/api/friends/' . $characterFriendOne->getId(), [
-            'json' => []
+        $client->request('POST', '/api/friends/'.$characterFriendOne->getId(), [
+            'json' => [],
         ]);
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
 
         $client->request('GET', '/api/friends');
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
 
-        $client->request('DELETE', '/api/friends/' . 1);
+        $client->request('DELETE', '/api/friends/'. 1);
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }
 }

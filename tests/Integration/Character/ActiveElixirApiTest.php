@@ -20,7 +20,7 @@ class ActiveElixirApiTest extends AbstractApiTestCase
 
         $client = $this->createAuthenticatedClient($character);
 
-        $response = $client->request('GET', '/api/character/elixir/' . $elixir->getId());
+        $response = $client->request('GET', '/api/character/elixir/'.$elixir->getId());
 
         $data = $response->toArray();
         $this->assertArrayHasKey('remainingSeconds', $data);
@@ -29,6 +29,7 @@ class ActiveElixirApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('name', $data);
         $this->assertSame($elixir->getItemDefinition()->getName(), $data['name']);
     }
+
     public function testDeleteActiveElixirRemovesBuff(): void
     {
         $character = CharacterFactory::createOne();
@@ -46,7 +47,7 @@ class ActiveElixirApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('activeElixirs', $data);
         $this->assertNotEmpty($data['activeElixirs']);
 
-        $client->request('DELETE', '/api/character/elixir/' . $elixir->getId());
+        $client->request('DELETE', '/api/character/elixir/'.$elixir->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
@@ -57,8 +58,8 @@ class ActiveElixirApiTest extends AbstractApiTestCase
         $data = $response->toArray(false);
         $this->assertArrayHasKey('activeElixirs', $data);
         $this->assertEmpty($data['activeElixirs']);
-
     }
+
     public function testCannotDeleteAnotherCharactersActiveElixir(): void
     {
         $character = CharacterFactory::createOne();
@@ -70,15 +71,15 @@ class ActiveElixirApiTest extends AbstractApiTestCase
 
         $client = $this->createAuthenticatedClient($characterThief);
 
-        $response = $client->request('DELETE', '/api/character/elixir/' . $elixir->getId());
+        $response = $client->request('DELETE', '/api/character/elixir/'.$elixir->getId());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
         $data = $response->toArray(false);
         $this->assertArrayHasKey('description', $data);
         $this->assertSame('Not Found', $data['description']);
-
     }
+
     public function testActiveElixirEndpointsRequireAuthentication(): void
     {
         $client = static::createClient();
@@ -86,6 +87,5 @@ class ActiveElixirApiTest extends AbstractApiTestCase
         $client->request('GET', '/api/character/elixir/1');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
-
     }
 }

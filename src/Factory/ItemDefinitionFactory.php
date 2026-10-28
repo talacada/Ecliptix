@@ -49,6 +49,4 @@ final class ItemDefinitionFactory extends PersistentObjectFactory
             'description' => self::faker()->optional()->sentence(),
         ];
     }
-
-
 }

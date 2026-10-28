@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Auth;
 
-use App\Tests\Integration\AbstractApiTestCase;
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Factory\AppearanceOptionFactory;
 use App\Factory\CharacterFactory;
 use App\Factory\RaceFactory;
 use App\Repository\Character\CharacterRepository;
+use App\Tests\Integration\AbstractApiTestCase;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
@@ -17,7 +17,6 @@ use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 class RegisterApiTest extends AbstractApiTestCase
 {
-
     public function testRegisterSuccessfulCreatesCharacter(): void
     {
         $race = RaceFactory::createOne();
@@ -56,7 +55,6 @@ class RegisterApiTest extends AbstractApiTestCase
         $this->assertSame($mouth, $character->getMouth());
         $this->assertSame($nose, $character->getNose());
         $this->assertSame($ears, $character->getEars());
-
     }
 
     public function testRegisterFailsWhenEmailAlreadyExists(): void
@@ -122,6 +120,7 @@ class RegisterApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('detail', $data);
         $this->assertSame('Username already registered', $data['detail']);
     }
+
     public function testRegisterFailsWithNonExistentAppearanceOption(): void
     {
         $race = RaceFactory::createOne();
@@ -151,6 +150,7 @@ class RegisterApiTest extends AbstractApiTestCase
         $this->assertArrayHasKey('detail', $data);
         $this->assertSame('Invalid hair_id', $data['detail']);
     }
+
     public function testRegisterFailsWhenAppearanceOptionBelongsToDifferentRace(): void
     {
         $race = RaceFactory::createOne();

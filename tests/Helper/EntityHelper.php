@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Helper;
 
-use LogicException;
-use ReflectionClass;
-
 final class EntityHelper
 {
     /**
@@ -19,9 +16,9 @@ final class EntityHelper
 
     public static function setProperty(object $entity, string $propertyName, mixed $value): void
     {
-        $reflectionClass = new ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entity);
 
-        while ($reflectionClass !== false) {
+        while (false !== $reflectionClass) {
             if ($reflectionClass->hasProperty($propertyName)) {
                 $property = $reflectionClass->getProperty($propertyName);
                 $property->setValue($entity, $value);
@@ -32,10 +29,6 @@ final class EntityHelper
             $reflectionClass = $reflectionClass->getParentClass();
         }
 
-        throw new LogicException(sprintf(
-            'Property $%s does not exist on class %s or any of its parent classes.',
-            $propertyName,
-            $entity::class
-        ));
+        throw new \LogicException(sprintf('Property $%s does not exist on class %s or any of its parent classes.', $propertyName, $entity::class));
     }
 }

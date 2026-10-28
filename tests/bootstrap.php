@@ -17,5 +17,3 @@ if ($_SERVER['APP_DEBUG'] ?? false) {
 
 $_SERVER['KERNEL_CLASS'] = $_SERVER['KERNEL_CLASS'] ?? $_ENV['KERNEL_CLASS'] ?? 'App\Kernel';
 $_ENV['KERNEL_CLASS'] = $_SERVER['KERNEL_CLASS'];
-
-
