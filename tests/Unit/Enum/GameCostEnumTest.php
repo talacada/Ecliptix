@@ -18,6 +18,9 @@ class GameCostEnumTest extends TestCase
         $this->assertSame($expectedCurrency, $cost->getCurrency());
     }
 
+    /**
+     * @return iterable<string, array{GameCostEnum, int, CurrencyEnum}>
+     */
     public static function costDataProvider(): iterable
     {
         yield 'change appearance' => [

@@ -7,12 +7,24 @@ namespace App\Tests\Integration\Friends;
 use App\Factory\CharacterFactory;
 use App\Tests\Integration\AbstractApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 
 class FriendsApiTest extends AbstractApiTestCase
 {
 
-    public function testGetFriendsListReturnsCharactersFriends()
+    /**
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     */
+    public function testGetFriendsListReturnsCharactersFriends(): void
     {
         $characterUs = CharacterFactory::createOne();
         $characterFriendOne = CharacterFactory::createOne();

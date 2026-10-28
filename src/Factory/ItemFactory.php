@@ -6,6 +6,9 @@ use App\Entity\Item\Item;
 use App\Entity\Shop\ShopOffer;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+/**
+ * @extends PersistentObjectFactory<Item>
+ */
 class ItemFactory extends PersistentObjectFactory
 {
 

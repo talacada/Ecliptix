@@ -252,6 +252,10 @@ class RotationGeneratorTest extends TestCase
 
         $this->assertEmpty($rotation->getShopOffers());
     }
+
+    /**
+     * @return iterable<string, array{int, int, int, int, int, int}>
+     */
     public static function providePriceAndStats(): iterable
     {
         yield 'level 1 basic item' => [

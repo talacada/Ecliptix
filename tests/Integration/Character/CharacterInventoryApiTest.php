@@ -14,6 +14,11 @@ use App\Factory\ItemDefinitionFactory;
 use App\Factory\ItemFactory;
 use App\Tests\Integration\AbstractApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class CharacterInventoryApiTest extends AbstractApiTestCase
 {
@@ -64,6 +69,13 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         ]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function testGetSingleInventorySlotReturnsItemDetails(): void
     {
         $item = CharacterInventoryFactory::createOne([
@@ -258,7 +270,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         ]);
     }
 
-    public function testUseElixirInventoryItemAppliesActiveElixir()
+    public function testUseElixirInventoryItemAppliesActiveElixir(): void
     {
         $character = CharacterFactory::createOne();
 
@@ -297,7 +309,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         ]);
     }
 
-    public function testCannotAccessOrManipulateAnotherCharactersInventory() {
+    public function testCannotAccessOrManipulateAnotherCharactersInventory():void {
         $character = CharacterFactory::createOne();
         $charater2 = CharacterFactory::createOne();
 
@@ -324,7 +336,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
     }
 
-    public function testCantUseNonElixirItems()
+    public function testCantUseNonElixirItems(): void
     {
         $character = CharacterFactory::createOne();
 

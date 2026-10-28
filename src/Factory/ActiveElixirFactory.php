@@ -6,6 +6,9 @@ use App\Entity\Character\ActiveElixir;
 use DateTimeImmutable;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+/**
+ * @extends PersistentObjectFactory<ActiveElixir>
+ */
 class ActiveElixirFactory extends PersistentObjectFactory
 {
 

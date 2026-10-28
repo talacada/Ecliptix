@@ -5,19 +5,28 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Shop;
 
 use App\Entity\Item\InventoryContainerEnum;
-use App\Entity\Item\ItemSlotEnum;
 use App\Factory\CharacterFactory;
 use App\Factory\CharacterInventoryFactory;
 use App\Factory\ShopOfferFactory;
 use App\Factory\ShopRotationFactory;
-use App\Service\Shop\RotationGenerator;
 use App\Tests\Integration\AbstractApiTestCase;
 use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class ShopOfferBuyApiTest extends AbstractApiTestCase
 {
-    // TODO - testBuyOfferSuccessfulDeductsGoldAndAddsItemToBackpack - Overit nakup: odecteni zlata, vznik Item v batohu a oznaceni nabidky jako koupene
+    /**
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     public function testBuyOfferSuccessfulDeductsGoldAndAddsItemToBackpack(): void
     {
         $character = CharacterFactory::createOne([

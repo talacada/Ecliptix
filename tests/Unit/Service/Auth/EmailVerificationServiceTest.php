@@ -8,12 +8,13 @@ use App\Entity\Character\Character;
 use App\Service\Auth\EmailVerificationService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 
 class EmailVerificationServiceTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private EntityManagerInterface&MockObject $entityManager;
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);

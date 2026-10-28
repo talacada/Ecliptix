@@ -6,6 +6,9 @@ use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\InventoryContainerEnum;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+/**
+ * @extends PersistentObjectFactory<CharacterInventory>
+ */
 class CharacterInventoryFactory extends PersistentObjectFactory
 {
 

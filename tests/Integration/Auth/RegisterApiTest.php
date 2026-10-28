@@ -45,6 +45,7 @@ class RegisterApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
+        /** @var CharacterRepository $characterRepository */
         $characterRepository = static::getContainer()->get(CharacterRepository::class);
         $character = $characterRepository->findOneBy(['email' => 'newplayer@ecliptix.com']);
         $this->assertNotNull($character);

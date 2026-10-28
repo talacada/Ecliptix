@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AppearanceOptionApiTest extends AbstractApiTestCase
 {
-    public function testGetAppearanceOptionsCollection()
+    public function testGetAppearanceOptionsCollection(): void
     {
         $raceOne = RaceFactory::createOne();
         $raceTwo = RaceFactory::createOne();

@@ -8,6 +8,9 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+/**
+ * @extends PersistentObjectFactory<ShopRotation>
+ */
 class ShopRotationFactory extends PersistentObjectFactory
 {
     public static function class(): string
