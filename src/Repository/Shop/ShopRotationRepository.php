@@ -7,6 +7,7 @@ namespace App\Repository\Shop;
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
 use App\Entity\Shop\ShopRotationEnum;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -53,7 +54,7 @@ class ShopRotationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('shopRotation')
             ->andWhere('shopRotation.validUntil <= :now')
             ->andWhere('shopRotation.character = :character')
-            ->setParameter('now', new \DateTimeImmutable('today'))
+            ->setParameter('now', new DateTimeImmutable('today'))
             ->setParameter('character', $character)
             ->getQuery()
             ->getResult()
@@ -71,7 +72,7 @@ class ShopRotationRepository extends ServiceEntityRepository
             ->andWhere('shopRotation.validUntil > :now')
             ->andWhere('shopRotation.validFrom <= :now')
             ->setParameter('character', $character)
-            ->setParameter('now', new \DateTimeImmutable('today'))
+            ->setParameter('now', new DateTimeImmutable('today'))
             ->getQuery()
             ->getResult()
         ;
@@ -86,7 +87,7 @@ class ShopRotationRepository extends ServiceEntityRepository
             ->andWhere('shopRotation.validUntil > :now')
             ->andWhere('shopRotation.validFrom <= :now')
             ->setParameter('character', $character)
-            ->setParameter('now', new \DateTimeImmutable('today'))
+            ->setParameter('now', new DateTimeImmutable('today'))
             ->setParameter('type', ShopRotationEnum::Daily)
             ->getQuery()
             ->getSingleScalarResult() > 0;

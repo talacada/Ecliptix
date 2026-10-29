@@ -7,6 +7,7 @@ namespace App\Tests\Integration\Auth;
 use App\Factory\CharacterFactory;
 use App\Factory\PasswordResetTokenFactory;
 use App\Tests\Integration\AbstractApiTestCase;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
 
 class PasswordResetApiTest extends AbstractApiTestCase
@@ -102,7 +103,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
 
         $token = PasswordResetTokenFactory::createOne([
             'character' => $character,
-            'expires_at' => new \DateTimeImmutable('-1 hour'),
+            'expires_at' => new DateTimeImmutable('-1 hour'),
         ]);
 
         $client = static::createClient();
@@ -126,7 +127,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
 
         $token = PasswordResetTokenFactory::createOne([
             'character' => $character,
-            'used_at' => new \DateTimeImmutable('-1 hour'),
+            'used_at' => new DateTimeImmutable('-1 hour'),
         ]);
 
         $client = static::createClient();

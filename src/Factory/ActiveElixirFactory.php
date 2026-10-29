@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Factory;
 
 use App\Entity\Character\ActiveElixir;
+use DateTimeImmutable;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -17,7 +18,7 @@ class ActiveElixirFactory extends PersistentObjectFactory
         return [
             'character' => CharacterFactory::new(),
             'itemDefinition' => ItemDefinitionFactory::new(),
-            'expires_at' => new \DateTimeImmutable('+ 1hours'),
+            'expires_at' => new DateTimeImmutable('+ 1hours'),
         ];
     }
 

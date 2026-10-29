@@ -20,6 +20,8 @@ use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Repository\RaceRepository;
 use App\Service\Item\ItemStatCalculator;
 use App\Service\Shop\RotationGenerator;
+use DateMalformedStringException;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -46,7 +48,7 @@ final class CharacterStory
 
     /**
      * @throws OptimisticLockException
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws RandomException
      * @throws ORMException
      */
@@ -184,7 +186,7 @@ final class CharacterStory
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     private function equipCharacter(Character $character): void
     {
@@ -245,7 +247,7 @@ final class CharacterStory
             $active->setCharacter($character);
             $active->setItemDefinition($elixirDef);
             $active->setExpiresAt(
-                new \DateTimeImmutable()->modify('+'.$elixirDef->getDurationSeconds().' seconds'),
+                new DateTimeImmutable()->modify('+'.$elixirDef->getDurationSeconds().' seconds'),
             );
             $this->entityManager->persist($active);
         }

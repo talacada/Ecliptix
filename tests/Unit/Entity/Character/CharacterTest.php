@@ -9,6 +9,8 @@ use App\Entity\Character\ActiveElixir;
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
 use App\Tests\Helper\EntityHelper;
+use DateTimeImmutable;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -114,7 +116,7 @@ class CharacterTest extends TestCase
     {
         $character = new Character();
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('User email cant be empty.');
 
         $character->getUserIdentifier();
@@ -125,18 +127,18 @@ class CharacterTest extends TestCase
         $character = new Character();
 
         $rotationInRange = new ShopRotation();
-        $rotationInRange->setValidFrom(new \DateTimeImmutable('today'));
-        $rotationInRange->setValidUntil(new \DateTimeImmutable('tomorrow'));
+        $rotationInRange->setValidFrom(new DateTimeImmutable('today'));
+        $rotationInRange->setValidUntil(new DateTimeImmutable('tomorrow'));
         EntityHelper::setId($rotationInRange, 10);
 
         $rotationOld = new ShopRotation();
-        $rotationOld->setValidFrom(new \DateTimeImmutable('01-01-2026'));
-        $rotationOld->setValidUntil(new \DateTimeImmutable('05-01-2026'));
+        $rotationOld->setValidFrom(new DateTimeImmutable('01-01-2026'));
+        $rotationOld->setValidUntil(new DateTimeImmutable('05-01-2026'));
         EntityHelper::setId($rotationOld, 33);
 
         $rotationFuture = new ShopRotation();
-        $rotationFuture->setValidFrom(new \DateTimeImmutable('02-02-2040'));
-        $rotationFuture->setValidUntil(new \DateTimeImmutable('05-02-2040'));
+        $rotationFuture->setValidFrom(new DateTimeImmutable('02-02-2040'));
+        $rotationFuture->setValidUntil(new DateTimeImmutable('05-02-2040'));
         EntityHelper::setId($rotationFuture, 25);
 
         $character->addShopRotation($rotationOld);

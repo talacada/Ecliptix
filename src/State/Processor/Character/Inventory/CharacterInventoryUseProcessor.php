@@ -12,7 +12,10 @@ use App\Entity\Item\ElixirDefinition;
 use App\Repository\Character\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
+use DateMalformedStringException;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -30,8 +33,8 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws \DateMalformedStringException
-     * @throws \Exception
+     * @throws DateMalformedStringException
+     * @throws Exception
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ActiveElixir
     {
@@ -51,7 +54,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);
 
         if (null === $existingSameElixir && count($character->getActiveElixirs()) >= 3) {
-            throw new \Exception('Cant have more than 3 elixirs activated');
+            throw new Exception('Cant have more than 3 elixirs activated');
         }
 
         if (null !== $existingSameElixir) {
@@ -63,7 +66,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
             $activeElixir = new ActiveElixir();
             $activeElixir->setCharacter($character);
             $activeElixir->setItemDefinition($definition);
-            $activeElixir->setExpiresAt(new \DateTimeImmutable()->modify(
+            $activeElixir->setExpiresAt(new DateTimeImmutable()->modify(
                 '+'.$definition->getDurationSeconds().' seconds', ),
             );
             $this->entityManager->persist($activeElixir);

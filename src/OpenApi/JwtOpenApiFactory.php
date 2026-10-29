@@ -7,6 +7,7 @@ namespace App\OpenApi;
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\Model\SecurityScheme;
 use ApiPlatform\OpenApi\OpenApi;
+use ArrayObject;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 
 /* Custom OpenAPI factory - dekoruje originální api_platform.openapi.factory
@@ -26,7 +27,7 @@ readonly class JwtOpenApiFactory implements OpenApiFactoryInterface
         $openApi = ($this->decorated)($context);
 
         $components = $openApi->getComponents();
-        $securitySchemes = $components->getSecuritySchemes() ?? new \ArrayObject();
+        $securitySchemes = $components->getSecuritySchemes() ?? new ArrayObject();
 
         // Add JWT Bearer security scheme
         $securitySchemes['bearerAuth'] = new SecurityScheme(

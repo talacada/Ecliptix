@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Character\Character;
 use App\Entity\PasswordResetToken;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -36,7 +37,7 @@ class PasswordResetTokenRepository extends ServiceEntityRepository
             ->andWhere('p.used_at IS NULL')
             ->andWhere('p.expires_at >= :expires_at')
             ->setParameter('token', $token)
-            ->setParameter('expires_at', new \DateTimeImmutable('now'))
+            ->setParameter('expires_at', new DateTimeImmutable('now'))
             ->getQuery()
             ->getOneOrNullResult();
     }

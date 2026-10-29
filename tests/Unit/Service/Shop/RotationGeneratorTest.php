@@ -13,6 +13,7 @@ use App\Entity\Shop\ShopRotationEnum;
 use App\Repository\Item\ItemDefinitionRepository;
 use App\Repository\Shop\ShopRotationRepository;
 use App\Service\Shop\RotationGenerator;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -79,8 +80,8 @@ class RotationGeneratorTest extends TestCase
         $rotation = $generator->generateDaily($character);
 
         $this->assertSame(ShopRotationEnum::Daily, $rotation->getRotationType());
-        $this->assertEquals(new \DateTimeImmutable('midnight'), $rotation->getValidFrom());
-        $this->assertEquals(new \DateTimeImmutable('tomorrow'), $rotation->getValidUntil());
+        $this->assertEquals(new DateTimeImmutable('midnight'), $rotation->getValidFrom());
+        $this->assertEquals(new DateTimeImmutable('tomorrow'), $rotation->getValidUntil());
         $this->assertSame($character, $rotation->getCharacter());
     }
 
