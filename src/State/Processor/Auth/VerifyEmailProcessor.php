@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\EmailVerificationToken;
 use App\Repository\EmailVerificationTokenRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,7 +33,7 @@ class VerifyEmailProcessor implements ProcessorInterface
             throw new UnprocessableEntityHttpException('Invalid or expired token');
         }
 
-        $dbToken->setUsedAt(new \DateTimeImmutable('now'));
+        $dbToken->setUsedAt(new DateTimeImmutable('now'));
         $dbToken->getCharacter()->setEmailVerified(true);
 
         $this->entityManager->flush();

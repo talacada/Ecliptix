@@ -14,6 +14,7 @@ use App\Entity\Item\ItemSlotEnum;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Service\Inventory\InventoryManager;
 use App\Tests\Helper\EntityHelper;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -30,7 +31,7 @@ class InventoryManagerTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testIncreaseElixirStack(): void
     {
@@ -64,7 +65,7 @@ class InventoryManagerTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testAddingButNoBackpackSpace(): void
     {
@@ -89,14 +90,14 @@ class InventoryManagerTest extends TestCase
             ->with($character)
             ->willReturn([$characterInventory, $characterInventory, $characterInventory, $characterInventory]);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Not enough backpack space');
 
         $this->manager->addToBackpack($character, $item);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testSuccessfullyAddingItem(): void
     {
@@ -131,7 +132,7 @@ class InventoryManagerTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testSuccessfullyAddingFirstElixir(): void
     {
@@ -180,14 +181,14 @@ class InventoryManagerTest extends TestCase
             ->with($character)
             ->willReturn([1, 3, 2, 4]);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Not enough backpack space');
 
         $this->manager->getFirstAvailablePosition($character);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetFirstAvailablePosition(): void
     {
@@ -263,7 +264,7 @@ class InventoryManagerTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testAddToBackpackIncreasesElixirStackEvenWhenBackpackIsFull(): void
     {
@@ -297,7 +298,7 @@ class InventoryManagerTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetFirstAvailablePositionWhenBackpackIsEmpty(): void
     {

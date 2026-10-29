@@ -7,6 +7,7 @@ namespace App\Tests\Integration\Auth;
 use App\Factory\CharacterFactory;
 use App\Factory\EmailVerificationTokenFactory;
 use App\Tests\Integration\AbstractApiTestCase;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
 
 class VerifyEmailApiTest extends AbstractApiTestCase
@@ -59,7 +60,7 @@ class VerifyEmailApiTest extends AbstractApiTestCase
         $character = CharacterFactory::new()->create();
         $token = EmailVerificationTokenFactory::createOne([
             'character' => $character,
-            'expires_at' => new \DateTimeImmutable('- 1hours'),
+            'expires_at' => new DateTimeImmutable('- 1hours'),
         ]);
 
         $client = static::createClient();
@@ -82,7 +83,7 @@ class VerifyEmailApiTest extends AbstractApiTestCase
         $character = CharacterFactory::new()->create();
         $token = EmailVerificationTokenFactory::createOne([
             'character' => $character,
-            'used_at' => new \DateTimeImmutable('-1 hour'),
+            'used_at' => new DateTimeImmutable('-1 hour'),
         ]);
 
         $client = static::createClient();

@@ -13,6 +13,9 @@ return new PhpCsFixer\Config()
         'no_unused_imports' => true,
         'ordered_imports' => ['sort_algorithm' => 'alpha'],
         'trailing_comma_in_multiline' => ['elements' => ['arrays', 'arguments', 'parameters']],
+        'global_namespace_import' => [
+            'import_classes' => true,
+        ],
     ])
     ->setRiskyAllowed(true)
     ->setFinder($finder)

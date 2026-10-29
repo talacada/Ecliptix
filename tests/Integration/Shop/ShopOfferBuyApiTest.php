@@ -10,6 +10,7 @@ use App\Factory\CharacterInventoryFactory;
 use App\Factory\ShopOfferFactory;
 use App\Factory\ShopRotationFactory;
 use App\Tests\Integration\AbstractApiTestCase;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -145,8 +146,8 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
         $character = CharacterFactory::createOne();
         $rotation = ShopRotationFactory::createOne([
             'character' => $character,
-            'validFrom' => new \DateTimeImmutable('yesterday - 2 days'),
-            'validUntil' => new \DateTimeImmutable('yesterday'),
+            'validFrom' => new DateTimeImmutable('yesterday - 2 days'),
+            'validUntil' => new DateTimeImmutable('yesterday'),
         ]);
         $offer = ShopOfferFactory::createOne(['rotation' => $rotation]);
 

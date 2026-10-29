@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Post;
 use App\Entity\Character\Character;
 use App\Repository\EmailVerificationTokenRepository;
 use App\State\Processor\Auth\VerifyEmailProcessor;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -36,10 +37,10 @@ class EmailVerificationToken
     private Uuid $token;
 
     #[ORM\Column]
-    private \DateTimeImmutable $expires_at;
+    private DateTimeImmutable $expires_at;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $used_at = null;
+    private ?DateTimeImmutable $used_at = null;
 
     public function getId(): int
     {
@@ -70,24 +71,24 @@ class EmailVerificationToken
         return $this;
     }
 
-    public function getExpiresAt(): \DateTimeImmutable
+    public function getExpiresAt(): DateTimeImmutable
     {
         return $this->expires_at;
     }
 
-    public function setExpiresAt(\DateTimeImmutable $expires_at): static
+    public function setExpiresAt(DateTimeImmutable $expires_at): static
     {
         $this->expires_at = $expires_at;
 
         return $this;
     }
 
-    public function getUsedAt(): ?\DateTimeImmutable
+    public function getUsedAt(): ?DateTimeImmutable
     {
         return $this->used_at;
     }
 
-    public function setUsedAt(?\DateTimeImmutable $used_at): static
+    public function setUsedAt(?DateTimeImmutable $used_at): static
     {
         $this->used_at = $used_at;
 

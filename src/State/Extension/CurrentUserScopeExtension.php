@@ -11,6 +11,8 @@ use ApiPlatform\Metadata\Operation;
 use App\Attribute\CurrentUserScope;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\QueryBuilder;
+use ReflectionClass;
+use ReflectionException;
 
 final class CurrentUserScopeExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
@@ -22,7 +24,7 @@ final class CurrentUserScopeExtension implements QueryCollectionExtensionInterfa
     // Apply extension to COLLECTION
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
@@ -32,7 +34,7 @@ final class CurrentUserScopeExtension implements QueryCollectionExtensionInterfa
     // Apply extension to SINGLE ITEM
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?Operation $operation = null, array $context = []): void
     {
@@ -40,7 +42,7 @@ final class CurrentUserScopeExtension implements QueryCollectionExtensionInterfa
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function applyScope(QueryBuilder $queryBuilder, string $resourceClass): void
     {
@@ -48,7 +50,7 @@ final class CurrentUserScopeExtension implements QueryCollectionExtensionInterfa
             return;
         }
 
-        $reflection = new \ReflectionClass($resourceClass);
+        $reflection = new ReflectionClass($resourceClass);
         $attributes = $reflection->getAttributes(CurrentUserScope::class);
 
         if (0 === count($attributes)) {

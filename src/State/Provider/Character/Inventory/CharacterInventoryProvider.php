@@ -10,6 +10,7 @@ use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Character\CharacterInventory;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
+use Exception;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -27,7 +28,7 @@ class CharacterInventoryProvider implements ProviderInterface
     /**
      * @return CharacterInventory[]|CharacterInventory
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CharacterInventory|array
     {
