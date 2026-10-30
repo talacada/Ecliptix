@@ -44,11 +44,11 @@ class ChangePasswordApiTest extends AbstractApiTestCase
             ],
         ]);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $data = $response->toArray(false);
         $this->assertArrayHasKey('description', $data);
-        $this->assertSame('Old password is incorrect', $data['description']);
+        $this->assertSame('Password is incorrect', $data['description']);
     }
 
     public function testChangePasswordFailsWhenNewPasswordSameAsOld(): void

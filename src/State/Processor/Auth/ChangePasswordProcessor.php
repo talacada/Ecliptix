@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\ChangePasswordInput;
 use App\Entity\Character\Character;
+use App\Exception\Auth\InvalidPasswordException;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -30,7 +31,7 @@ class ChangePasswordProcessor implements ProcessorInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         if (!$this->passwordHasher->isPasswordValid($character, $data->getOldPassword())) {
-            throw new BadRequestHttpException('Old password is incorrect');
+            throw new InvalidPasswordException();
         }
 
         $character->setPasswordHash(
