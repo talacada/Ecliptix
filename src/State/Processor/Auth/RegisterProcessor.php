@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\Auth\RegisterInput;
 use App\Entity\Character\Character;
+use App\Exception\Auth\EmailAlreadyRegisteredException;
+use App\Exception\Auth\UsernameAlreadyTakenException;
 use App\Repository\Character\CharacterRepository;
 use App\Service\Auth\AppearanceValidationService;
 use App\Service\Auth\EmailVerificationService;
@@ -52,11 +54,11 @@ readonly class RegisterProcessor implements ProcessorInterface
         array $context = [],
     ): Response {
         if (null !== $this->characterRepository->findOneBy(['email' => $data->getEmail()])) {
-            throw new UnprocessableEntityHttpException('Email already registered');
+            throw new EmailAlreadyRegisteredException($data->getEmail());
         }
 
         if (null !== $this->characterRepository->findOneBy(['username' => $data->getUsername()])) {
-            throw new UnprocessableEntityHttpException('Username already registered');
+            throw new UsernameAlreadyTakenException($data->getUsername());
         }
 
         $appearanceOptions = $this->appearanceValidationService->verifiesAppearance(
