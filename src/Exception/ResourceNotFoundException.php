@@ -12,7 +12,7 @@ class ResourceNotFoundException extends DomainException
     private readonly string $resourceName;
 
     /**
-     * @param class-string|string $resource Např. ActiveElixir::class nebo Character::class
+     * @param class-string|string $resource
      */
     public function __construct(
         string $resource = 'Resource',
@@ -20,7 +20,7 @@ class ResourceNotFoundException extends DomainException
         string $message = '',
     ) {
         $this->resourceName = class_exists($resource)
-            ? (new ReflectionClass($resource))->getShortName()
+            ? new ReflectionClass($resource)->getShortName()
             : $resource;
 
         if ('' === $message) {
