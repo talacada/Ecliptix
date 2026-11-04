@@ -79,7 +79,7 @@ class CharacterApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         $this->assertJsonContains([
-            'detail' => 'Character not found',
+            'detail' => 'Character with ID "1111" not found.',
         ]);
     }
 

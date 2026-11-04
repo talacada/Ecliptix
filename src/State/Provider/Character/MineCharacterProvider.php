@@ -21,8 +21,6 @@ class MineCharacterProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Character
     {
-        $character = $this->loggedInCharacter->getCharacter();
-
-        return $character;
+        return $this->loggedInCharacter->getCharacter();
     }
 }

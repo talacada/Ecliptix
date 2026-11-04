@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\Leaderboard\LeaderboardEntry;
 use App\ApiResource\Leaderboard\LeaderboardResponse;
+use App\Entity\Character\Character;
+use App\Exception\ResourceNotFoundException;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Security\LoggedInCharacter;
@@ -43,11 +45,12 @@ class LeaderboardProvider implements ProviderInterface
             $searchedCharacter = $this->characterRepository->getCharacterByUserName($searchedName);
 
             if (null === $searchedCharacter) {
-                throw new NotFoundHttpException("Character with name {$searchedName} not found");
+                throw new ResourceNotFoundException(Character::class, $searchedName);
             }
             $characterRank = $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
         } elseif (0 !== $searchedRank) {
             if ($this->leaderboardRepository->getLastRank() < $searchedRank) {
+                //TODO next
                 throw new NotFoundHttpException("Rank {$searchedRank} not found");
             }
             $characterRank = $searchedRank;
