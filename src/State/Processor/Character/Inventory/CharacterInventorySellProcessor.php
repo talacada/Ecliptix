@@ -33,7 +33,7 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getCharacter() !== $character) {
-            throw new ResourceNotFoundException();
+            throw new ResourceNotFoundException(CharacterInventory::class);
         }
 
         $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();

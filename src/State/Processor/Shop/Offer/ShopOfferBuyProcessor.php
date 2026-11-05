@@ -57,11 +57,11 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new ShopRotationNotAvailableException();
         }
 
-        if ($data->getGoldPrice() >= $character->getGold()) {
+        if ($data->getGoldPrice() > $character->getGold()) {
             throw new InsufficientGoldException($data->getGoldPrice(), $character->getGold());
         }
 
-        if ($data->getDiamondPrice() >= $character->getDiamonds()) {
+        if ($data->getDiamondPrice() > $character->getDiamonds()) {
             throw new InsufficientDiamondsException($data->getDiamondPrice(), $character->getDiamonds());
         }
 

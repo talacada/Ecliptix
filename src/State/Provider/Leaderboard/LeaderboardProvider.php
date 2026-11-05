@@ -45,13 +45,12 @@ class LeaderboardProvider implements ProviderInterface
             $searchedCharacter = $this->characterRepository->getCharacterByUserName($searchedName);
 
             if (null === $searchedCharacter) {
-                throw new ResourceNotFoundException(Character::class, $searchedName);
+                throw new ResourceNotFoundException(Character::class, $searchedName, sprintf('Character with username "%s" not found.', $searchedName));
             }
             $characterRank = $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
         } elseif (0 !== $searchedRank) {
             if ($this->leaderboardRepository->getLastRank() < $searchedRank) {
-                //TODO next
-                throw new NotFoundHttpException("Rank {$searchedRank} not found");
+                throw new ResourceNotFoundException('Rank', $searchedRank, "Rank {$searchedRank} not found.");
             }
             $characterRank = $searchedRank;
         } else {
