@@ -12,8 +12,14 @@ use Symfony\Component\HttpKernel\Attribute\WithHttpStatus;
 #[WithHttpStatus(Response::HTTP_BAD_REQUEST)]
 class ItemCantBeActivatedException extends DomainException
 {
-    public function __construct(string $message = 'This item cannot be activated', ?ItemDefinition $itemDefinition = null)
-    {
+    public function __construct(
+        string $message = 'This item cannot be activated',
+        private readonly ?ItemDefinition $itemDefinition = null,
+    ) {
         parent::__construct($message);
+    }
+    public function getItemDefinition(): ?ItemDefinition
+    {
+        return $this->itemDefinition;
     }
 }

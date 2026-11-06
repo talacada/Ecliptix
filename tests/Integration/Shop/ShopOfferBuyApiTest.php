@@ -187,7 +187,7 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
         $this->assertJsonContains([
-            'detail' => 'Shop offer not found',
+            'detail' => 'ShopOffer with ID "' . $offerId .  '" not found.',
         ]);
     }
 

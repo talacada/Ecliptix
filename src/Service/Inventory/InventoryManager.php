@@ -10,6 +10,7 @@ use App\Entity\Item\ElixirDefinition;
 use App\Entity\Item\InventoryContainerEnum;
 use App\Entity\Item\Item;
 use App\Entity\Item\ItemSlotEnum;
+use App\Exception\Inventory\BackpackFullException;
 use App\Repository\Character\CharacterInventoryRepository;
 use Exception;
 
@@ -20,9 +21,6 @@ class InventoryManager
     ) {
     }
 
-    /**
-     * @throws Exception
-     */
     public function addToBackpack(Character $character, Item $item): CharacterInventory
     {
         $definition = $item->getDefinition();
@@ -38,7 +36,7 @@ class InventoryManager
         }
 
         if ($character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
-            throw new Exception('Not enough backpack space');
+            throw new BackpackFullException();
         }
 
         $characterInventory = new CharacterInventory();
@@ -50,9 +48,6 @@ class InventoryManager
         return $characterInventory;
     }
 
-    /**
-     * @throws Exception
-     */
     public function getFirstAvailablePosition(Character $character): int
     {
         $capacity = $character->getBackpackCapacity();
@@ -67,7 +62,7 @@ class InventoryManager
         }
 
         if (0 === $firstAvailablePosition) {
-            throw new Exception('Not enough backpack space');
+            throw new BackpackFullException();
         }
 
         return $firstAvailablePosition;

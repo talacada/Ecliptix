@@ -49,7 +49,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         }
 
         if ($data->getCharacter() !== $character) {
-            throw new ResourceNotFoundException();
+            throw new ResourceNotFoundException(CharacterInventory::class);
         }
 
         $this->elixirCleanUp->removeExpired($character);

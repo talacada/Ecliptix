@@ -8,6 +8,8 @@ use App\Config\CharacterConfig;
 use App\Entity\Character\ActiveElixir;
 use App\Entity\Character\Character;
 use App\Entity\Shop\ShopRotation;
+use App\Exception\Character\InsufficientDiamondsException;
+use App\Exception\Character\InsufficientGoldException;
 use App\Tests\Helper\EntityHelper;
 use DateTimeImmutable;
 use LogicException;
@@ -58,7 +60,7 @@ class CharacterTest extends TestCase
         $character = new Character();
         $character->setGold(111);
 
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InsufficientGoldException::class);
         $this->expectExceptionMessage('Not enough gold');
 
         $character->subtractGold(112);
@@ -86,7 +88,7 @@ class CharacterTest extends TestCase
         $character = new Character();
         $character->setDiamonds(10);
 
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InsufficientDiamondsException::class);
         $this->expectExceptionMessage('Not enough diamonds');
 
         $character->subtractDiamonds(11);
