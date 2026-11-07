@@ -286,7 +286,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $client = static::createAuthenticatedClient($character);
 
-        $client->request('POST', '/api/character/inventory/' . $elixir->getId() . '/use');
+        $client->request('POST', '/api/character/inventory/'.$elixir->getId().'/use');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 

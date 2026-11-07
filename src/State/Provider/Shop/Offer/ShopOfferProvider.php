@@ -9,7 +9,6 @@ use ApiPlatform\State\ProviderInterface;
 use App\Entity\Shop\ShopOffer;
 use App\Exception\ResourceNotFoundException;
 use App\Repository\Shop\ShopOfferRepository;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProviderInterface<ShopOffer>

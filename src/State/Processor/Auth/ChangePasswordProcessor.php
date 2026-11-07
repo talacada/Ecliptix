@@ -11,7 +11,6 @@ use App\Entity\Character\Character;
 use App\Exception\Auth\InvalidPasswordException;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**

@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Attribute\WithHttpStatus;
 class CharacterNotFoundException extends DomainException
 {
     public function __construct(
-        private readonly int|null $identifier = null,
+        private readonly ?int $identifier = null,
         string $message = 'Character not found',
     ) {
         parent::__construct($message);

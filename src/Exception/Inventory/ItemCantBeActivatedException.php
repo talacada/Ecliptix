@@ -18,6 +18,7 @@ class ItemCantBeActivatedException extends DomainException
     ) {
         parent::__construct($message);
     }
+
     public function getItemDefinition(): ?ItemDefinition
     {
         return $this->itemDefinition;

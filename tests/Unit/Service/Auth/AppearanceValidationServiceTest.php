@@ -14,7 +14,6 @@ use App\Service\Auth\AppearanceValidationService;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class AppearanceValidationServiceTest extends TestCase
 {

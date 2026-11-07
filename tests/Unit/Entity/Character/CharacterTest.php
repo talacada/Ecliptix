@@ -14,7 +14,6 @@ use App\Tests\Helper\EntityHelper;
 use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class CharacterTest extends TestCase
 {

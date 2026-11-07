@@ -11,13 +11,11 @@ use App\Entity\Character\FriendRelation;
 use App\Exception\Character\CharacterNotFoundException;
 use App\Exception\Friend\AlreadyFriendsException;
 use App\Exception\Friend\CannotFriendSelfException;
-use App\Exception\ResourceNotFoundException;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\FriendRelationRepository;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @implements ProcessorInterface<Character, FriendRelation>

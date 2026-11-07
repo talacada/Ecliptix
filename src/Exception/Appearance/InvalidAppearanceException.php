@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exception\Appearance;
 
 use App\Exception\DomainException;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\WithHttpStatus;
 
 class InvalidAppearanceException extends DomainException
 {
@@ -12,7 +12,7 @@ class InvalidAppearanceException extends DomainException
         private readonly string $name,
         string $message = 'Invalid ',
     ) {
-        parent::__construct($message . $name);
+        parent::__construct($message.$name);
     }
 
     public function getName(): string

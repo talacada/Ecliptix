@@ -10,7 +10,6 @@ use App\Entity\Race;
 use App\Exception\Appearance\InvalidAppearanceException;
 use App\Repository\AppearanceOptionRepository;
 use App\Repository\RaceRepository;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class AppearanceValidationService
 {

@@ -12,7 +12,6 @@ use App\Entity\Item\Item;
 use App\Entity\Item\ItemSlotEnum;
 use App\Exception\Inventory\BackpackFullException;
 use App\Repository\Character\CharacterInventoryRepository;
-use Exception;
 
 class InventoryManager
 {

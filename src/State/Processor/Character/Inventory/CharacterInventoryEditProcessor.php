@@ -18,7 +18,6 @@ use App\Security\LoggedInCharacter;
 use App\Service\Inventory\InventoryManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, CharacterInventory>
@@ -96,8 +95,7 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
                         $itemToMove->setPosition($wasPosition);
                         $itemToMove->setContainer($wasContainer);
                     } else {
-                        throw new ItemSlotMismatchException($data->getItem()->getDefinition()->getDesiredSlot(), $itemToMove->getItem()->getDefinition()->getDesiredSlot(),
-                        );
+                        throw new ItemSlotMismatchException($data->getItem()->getDefinition()->getDesiredSlot(), $itemToMove->getItem()->getDefinition()->getDesiredSlot());
                     }
                 }
             }

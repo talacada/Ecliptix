@@ -10,7 +10,6 @@ use App\Entity\Character\ActiveElixir;
 use App\Exception\ResourceNotFoundException;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProcessorInterface<ActiveElixir, null>

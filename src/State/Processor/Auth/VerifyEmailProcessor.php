@@ -13,8 +13,6 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
-use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 
 /**
  * @implements ProcessorInterface<EmailVerificationToken, JsonResponse>

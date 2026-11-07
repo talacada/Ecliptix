@@ -12,8 +12,6 @@ use App\Exception\ResourceNotFoundException;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * @implements ProviderInterface<CharacterInventory>
@@ -42,7 +40,7 @@ class CharacterInventoryProvider implements ProviderInterface
             }
             $inventorySlot = $this->characterInventoryRepository->getInventoryById((int) $rawId);
 
-            if ($inventorySlot === null) {
+            if (null === $inventorySlot) {
                 throw new ResourceNotFoundException(CharacterInventory::class, intval($rawId));
             }
 

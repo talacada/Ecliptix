@@ -14,7 +14,6 @@ use App\Repository\Character\CharacterRepository;
 use App\Repository\Leaderboard\LeaderboardRepository;
 use App\Security\LoggedInCharacter;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProviderInterface<LeaderboardResponse>
