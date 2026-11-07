@@ -7,13 +7,13 @@ namespace App\Tests\Unit\Service\Auth;
 use App\Entity\Appearance\AppearanceTypeEnum;
 use App\Entity\AppearanceOption;
 use App\Entity\Race;
+use App\Exception\Appearance\InvalidAppearanceException;
 use App\Repository\AppearanceOptionRepository;
 use App\Repository\RaceRepository;
 use App\Service\Auth\AppearanceValidationService;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class AppearanceValidationServiceTest extends TestCase
 {
@@ -87,7 +87,7 @@ class AppearanceValidationServiceTest extends TestCase
             ->expects($this->never())
             ->method($this->anything());
 
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InvalidAppearanceException::class);
         $this->expectExceptionMessage('Invalid race_id');
 
         $this->service->verifiesAppearance(1, 1, 2, 3, 4, 5);
@@ -119,7 +119,7 @@ class AppearanceValidationServiceTest extends TestCase
                 },
             );
 
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InvalidAppearanceException::class);
         $this->expectExceptionMessage($errorMessage);
 
         $this->service->verifiesAppearance(

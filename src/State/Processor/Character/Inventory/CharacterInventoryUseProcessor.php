@@ -9,6 +9,9 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Character\ActiveElixir;
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
+use App\Exception\Inventory\ItemCantBeActivatedException;
+use App\Exception\Inventory\MaxActiveElixirsReachedException;
+use App\Exception\ResourceNotFoundException;
 use App\Repository\Character\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
@@ -16,8 +19,6 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, ActiveElixir>
@@ -42,11 +43,11 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         $definition = $data->getItem()->getDefinition();
 
         if (!$definition instanceof ElixirDefinition) {
-            throw new BadRequestHttpException('Cant activate this');
+            throw new ItemCantBeActivatedException(itemDefinition: $definition);
         }
 
         if ($data->getCharacter() !== $character) {
-            throw new NotFoundHttpException('Not found');
+            throw new ResourceNotFoundException(CharacterInventory::class);
         }
 
         $this->elixirCleanUp->removeExpired($character);
@@ -54,7 +55,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);
 
         if (null === $existingSameElixir && count($character->getActiveElixirs()) >= 3) {
-            throw new Exception('Cant have more than 3 elixirs activated');
+            throw new MaxActiveElixirsReachedException();
         }
 
         if (null !== $existingSameElixir) {

@@ -7,10 +7,10 @@ namespace App\State\Provider\Character\Elixir;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Character\ActiveElixir;
+use App\Exception\ResourceNotFoundException;
 use App\Repository\Character\ActiveElixirRepository;
 use App\Security\LoggedInCharacter;
 use App\Service\Elixir\ElixirCleanUp;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProviderInterface<ActiveElixir>
@@ -33,16 +33,16 @@ class ActiveElixirProvider implements ProviderInterface
         $rawId = $uriVariables['id'];
 
         if (!is_numeric($rawId)) {
-            throw new NotFoundHttpException('Invalid inventory ID.');
+            throw new ResourceNotFoundException(ActiveElixir::class, $rawId);
         }
 
         $elixir = $this->activeElixirRepository->findOneById((int) $rawId);
 
         if (!$elixir) {
-            throw new NotFoundHttpException('Not Found');
+            throw new ResourceNotFoundException(ActiveElixir::class, intval($rawId));
         }
         if ($elixir->getCharacter() !== $character) {
-            throw new NotFoundHttpException('Not Found');
+            throw new ResourceNotFoundException(ActiveElixir::class, intval($rawId));
         }
 
         return $elixir;

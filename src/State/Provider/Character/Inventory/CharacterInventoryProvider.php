@@ -8,11 +8,10 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\Item\ItemViewDTO;
 use App\Entity\Character\CharacterInventory;
+use App\Exception\ResourceNotFoundException;
 use App\Repository\Character\CharacterInventoryRepository;
 use App\Security\LoggedInCharacter;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * @implements ProviderInterface<CharacterInventory>
@@ -37,16 +36,16 @@ class CharacterInventoryProvider implements ProviderInterface
         if (isset($uriVariables['inventoryId'])) {
             $rawId = $uriVariables['inventoryId'];
             if (!is_numeric($rawId)) {
-                throw new NotFoundHttpException('Invalid inventory ID.');
+                throw new ResourceNotFoundException(CharacterInventory::class, $rawId);
             }
             $inventorySlot = $this->characterInventoryRepository->getInventoryById((int) $rawId);
 
             if (null === $inventorySlot) {
-                throw new NotFoundHttpException('Inventory slot not found.');
+                throw new ResourceNotFoundException(CharacterInventory::class, intval($rawId));
             }
 
             if ($inventorySlot->getCharacter() !== $character) {
-                throw new UnauthorizedHttpException('Not authorized to do this operation.');
+                throw new ResourceNotFoundException(CharacterInventory::class, intval($rawId));
             }
 
             $dto = new ItemViewDTO();

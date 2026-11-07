@@ -8,12 +8,14 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Character\Character;
 use App\Entity\Character\FriendRelation;
+use App\Exception\Character\CharacterNotFoundException;
+use App\Exception\Friend\AlreadyFriendsException;
+use App\Exception\Friend\CannotFriendSelfException;
 use App\Repository\Character\CharacterRepository;
 use App\Repository\FriendRelationRepository;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @implements ProcessorInterface<Character, FriendRelation>
@@ -36,22 +38,22 @@ class FriendsAddProcessor implements ProcessorInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         if (!isset($uriVariables['id']) || !is_numeric($uriVariables['id'])) {
-            throw new Exception('Invalid ID provided.');
+            throw new CharacterNotFoundException($uriVariables['id']);
         }
 
         $followed = $this->characterRepository->getCharacterById((int) $uriVariables['id']);
 
         if (!$followed) {
-            throw new Exception('Character not found.');
+            throw new CharacterNotFoundException(intval($uriVariables['id']));
         }
 
         if ($followed === $character) {
-            throw new BadRequestHttpException('You cannot add yourself.');
+            throw new CannotFriendSelfException();
         }
 
         $searchedRelation = $this->friendRelationRepository->findRelation($character, $followed);
         if ($searchedRelation) {
-            throw new BadRequestHttpException('You are already friends');
+            throw new AlreadyFriendsException();
         }
 
         $newRelation = new FriendRelation();

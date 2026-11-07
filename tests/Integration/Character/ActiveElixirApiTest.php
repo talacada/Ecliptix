@@ -77,7 +77,7 @@ class ActiveElixirApiTest extends AbstractApiTestCase
 
         $data = $response->toArray(false);
         $this->assertArrayHasKey('description', $data);
-        $this->assertSame('Not Found', $data['description']);
+        $this->assertSame('ActiveElixir with ID "'.$elixir->getId().'" not found.', $data['description']);
     }
 
     public function testActiveElixirEndpointsRequireAuthentication(): void

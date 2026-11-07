@@ -9,6 +9,7 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Config\ItemConfig;
 use App\Entity\Character\CharacterInventory;
 use App\Entity\Item\ElixirDefinition;
+use App\Exception\ResourceNotFoundException;
 use App\Security\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -32,7 +33,7 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getCharacter() !== $character) {
-            throw new Exception('Inventory slot does not belong to the logged-in character.');
+            throw new ResourceNotFoundException(CharacterInventory::class);
         }
 
         $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();
