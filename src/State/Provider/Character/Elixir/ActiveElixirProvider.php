@@ -40,10 +40,10 @@ class ActiveElixirProvider implements ProviderInterface
         $elixir = $this->activeElixirRepository->findOneById((int) $rawId);
 
         if (!$elixir) {
-            throw new ResourceNotFoundException(ActiveElixir::class, $rawId);
+            throw new ResourceNotFoundException(ActiveElixir::class, intval($rawId));
         }
         if ($elixir->getCharacter() !== $character) {
-            throw new ResourceNotFoundException(ActiveElixir::class, $rawId);
+            throw new ResourceNotFoundException(ActiveElixir::class, intval($rawId));
         }
 
         return $elixir;

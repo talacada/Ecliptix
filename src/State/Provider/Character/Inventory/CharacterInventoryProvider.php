@@ -43,11 +43,11 @@ class CharacterInventoryProvider implements ProviderInterface
             $inventorySlot = $this->characterInventoryRepository->getInventoryById((int) $rawId);
 
             if ($inventorySlot === null) {
-                throw new ResourceNotFoundException(CharacterInventory::class, $rawId);
+                throw new ResourceNotFoundException(CharacterInventory::class, intval($rawId));
             }
 
             if ($inventorySlot->getCharacter() !== $character) {
-                throw new ResourceNotFoundException(CharacterInventory::class, $rawId);
+                throw new ResourceNotFoundException(CharacterInventory::class, intval($rawId));
             }
 
             $dto = new ItemViewDTO();

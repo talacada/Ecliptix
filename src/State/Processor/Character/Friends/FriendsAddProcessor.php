@@ -46,7 +46,7 @@ class FriendsAddProcessor implements ProcessorInterface
         $followed = $this->characterRepository->getCharacterById((int) $uriVariables['id']);
 
         if (!$followed) {
-            throw new CharacterNotFoundException($uriVariables['id']);
+            throw new CharacterNotFoundException(intval($uriVariables['id']));
         }
 
         if ($followed === $character) {
