@@ -8,7 +8,7 @@ Ecliptix — Symfony 8 + API Platform, browser RPG (inspired by Shakes & Fidget)
 make build                     # build and start
 make test                      # all tests
 docker compose exec --user $(id -u):$(id -g) app php bin/phpunit --filter=testName
-docker compose exec --user $(id -u):$(id -g) app php bin/phpunit tests/SomeTest.php
+docker compose exec --user $(id -u):$(id -g) app php bin/phpunit src/Character/Inventory/CharacterInventoryApiTest.php
 make migration && make migrate # migrations: generate + run
 make bash                      # shell inside container
 make cc                        # cache:clear
@@ -20,11 +20,11 @@ make cc                        # cache:clear
 HTTP Request → ApiResource/Input DTO → Processor (validation, business logic) → Entity → Persistence → Normalization (Groups) → HTTP Response
 ```
 
-- `src/Entity/` — Doctrine entities with `#[ApiResource]`
-- `src/State/Processor/` — processors for input DTOs and business logic
-- `src/State/Provider/` — custom providers
-- `src/ApiResource/` — input DTOs for custom operations
-- `src/Repository/` — Doctrine repositories
+- `src/Character/` groups the core character, appearance, elixirs, friends and inventory into separate feature directories.
+- `src/Auth/`, `src/Item/`, `src/Leaderboard/` and `src/Shop/` group classes by feature.
+- `src/Infrastructure/Api/` contains API Platform extensions and OpenAPI configuration. `src/Economy/` contains currencies and game costs used across features.
+- Entities, repositories, DTOs, providers, processors, factories and concrete tests share the directory of their feature.
+- PHPUnit finds `*UnitTest.php` and `*ApiTest.php` under `src/`. The bootstrap and shared test utilities live in `tests/`.
 
 ### Key Entities
 
@@ -41,7 +41,8 @@ HTTP Request → ApiResource/Input DTO → Processor (validation, business logic
 ## Conventions
 
 - **Serialization**: `#[Groups(['entity:read', 'entity:write'])]`, static constants `READ_GROUP` / `WRITE_GROUP`
-- **Naming**: `src/State/Processor/[Operation]Processor.php`, `src/ApiResource/[Operation]Input.php`, `[Entity]Repository.php`
+- Feature directories use class names such as `CharacterInventoryEditProcessor`, `RegisterInput` and `ShopOfferRepository`.
+- Pass the fully qualified class name when generating an entity, for example with `php bin/console make:entity '\App\Character\Inventory\ExampleEntity'`. Move the generated repository alongside the entity and update its namespace and the entity's repository reference.
 - **Defaults**: constructor defaults (`$this->gold = 0`), `ArrayCollection` for One-to-Many
 
 ## Docker

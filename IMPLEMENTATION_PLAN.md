@@ -77,17 +77,23 @@ Use the following destination map for the remaining files. A move keeps the exis
 | Directory | Files |
 | --- | --- |
 | `src/Leaderboard/` | `LeaderboardEntry.php`, `LeaderboardResponse.php`, `LeaderboardProvider.php`, `LeaderboardRepository.php`, `LeaderboardApiTest.php` |
-| `src/Shop/` | `ShopOffer.php`, `ShopOfferFactory.php`, `ShopOfferRepository.php`, `ShopOfferProvider.php`, `ShopOfferBuyProcessor.php`, `ShopOfferBuyApiTest.php`, `ShopRotation.php`, `ShopRotationEnum.php`, `ShopRotationFactory.php`, `ShopRotationRepository.php`, `ShopRotationProvider.php`, `ShopRotationApiTest.php`, `RotationGenerator.php`, `RotationGeneratorUnitTest.php`, `GenerateShopRotationsCommand.php` |
-| `src/Item/` | `Item.php`, `ItemDefinition.php`, `ElixirDefinition.php`, `ElixirTypeEnum.php`, `ItemRarityEnum.php`, `ItemSlotEnum.php`, `ItemConfig.php`, `ItemFactory.php`, `ItemDefinitionFactory.php`, `ElixirDefinitionFactory.php`, `ItemRepository.php`, `ItemDefinitionRepository.php`, `ItemStatCalculator.php`, `ItemViewDTO.php`, `ItemFactoryUnitTest.php`, `ItemStatCalculatorUnitTest.php` |
-| `src/Auth/` | `LoginInput.php`, `LoginOutput.php`, `LoginProcessor.php`, `LoginApiTest.php`, `ChangePasswordInput.php`, `ChangePasswordProcessor.php`, `ChangePasswordApiTest.php` |
+| `src/Shop/Offer/` | `ShopOffer.php`, `ShopOfferFactory.php`, `ShopOfferRepository.php`, `ShopOfferProvider.php`, `ShopOfferBuyProcessor.php`, `ShopOfferBuyApiTest.php` |
+| `src/Shop/Rotation/` | `ShopRotation.php`, `ShopRotationEnum.php`, `ShopRotationFactory.php`, `ShopRotationRepository.php`, `ShopRotationProvider.php`, `ShopRotationApiTest.php`, `RotationGenerator.php`, `RotationGeneratorUnitTest.php`, `GenerateShopRotationsCommand.php` |
+| `src/Item/Definition/` | `ItemDefinition.php`, `ItemDefinitionFactory.php`, `ItemDefinitionRepository.php`, `ItemRarityEnum.php`, `ItemSlotEnum.php`, `ElixirDefinition.php`, `ElixirDefinitionFactory.php`, `ElixirTypeEnum.php` |
+| `src/Item/Item/` | `Item.php`, `ItemFactory.php`, `ItemFactoryUnitTest.php`, `ItemRepository.php`, `ItemViewDTO.php` |
+| `src/Item/Stats/` | `ItemConfig.php`, `ItemStatCalculator.php`, `ItemStatCalculatorUnitTest.php` |
+| `src/Auth/Login/` | `LoginInput.php`, `LoginOutput.php`, `LoginProcessor.php`, `LoginApiTest.php` |
+| `src/Auth/ChangePassword/` | `ChangePasswordInput.php`, `ChangePasswordProcessor.php`, `ChangePasswordApiTest.php` |
 | `src/Auth/Registration/` | `RegisterInput.php`, `RegisterProcessor.php`, `RegisterApiTest.php`, `RegisterOptionsProvider.php`, `RegisterOptionsResponse.php`, `RegisterOptionsApiTest.php`, `AppearanceGroupDto.php`, `AppearanceOptionDto.php`, `RaceDto.php` |
 | `src/Auth/EmailVerification/` | `EmailVerificationToken.php`, `EmailVerificationTokenFactory.php`, `EmailVerificationTokenRepository.php`, `EmailVerificationService.php`, `EmailVerificationServiceUnitTest.php`, `VerifyEmailProcessor.php`, `VerifyEmailApiTest.php` |
 | `src/Auth/PasswordReset/` | `PasswordResetToken.php`, `PasswordResetTokenFactory.php`, `PasswordResetTokenRepository.php`, `PasswordResetInput.php`, `PasswordResetProcessor.php`, `PasswordResetApiTest.php`, `RequestPasswordResetInput.php`, `RequestPasswordResetProcessor.php`, `RequestPasswordResetApiTest.php` |
-| `src/Shared/` | `CurrencyEnum.php`, `GameCostEnum.php`, `GameCostEnumUnitTest.php`, `CurrentUserScope.php`, `CurrentUserScopeExtension.php`, `RateLimitSubscriber.php`, `JwtOpenApiFactory.php` |
+| `src/Auth/` | `RateLimitSubscriber.php` |
+| `src/Infrastructure/Api/` | `CurrentUserScope.php`, `CurrentUserScopeExtension.php`, `JwtOpenApiFactory.php` |
+| `src/Economy/` | `CurrencyEnum.php`, `GameCostEnum.php`, `GameCostEnumUnitTest.php` |
 | `tests/Support/` | `AbstractApiTestCase.php`, `EntityHelper.php` |
 | Existing locations | `src/Kernel.php`, `src/Story/AppStory.php`, `src/Story/CharacterStory.php`, `src/Story/ItemDefinitionStory.php`, `tests/bootstrap.php` |
 
-`InventoryManager` and `InventoryContainerEnum` belong to character inventory. `ItemViewDTO` belongs to `Item` because both inventory and shop use it. `AppearanceValidationService` belongs to `Character/Appearance` because registration and character updates both use it. Keep `LoggedInCharacter` in `Character/Character/` since it resolves the character and coordinates elixir cleanup and shop rotation. Existing cross-feature calls stay in place.
+`InventoryManager` and `InventoryContainerEnum` belong to character inventory. `ItemViewDTO` lives with the item instance in `Item/Item/` and provides the item view used by inventory and shop. `AppearanceValidationService` belongs to `Character/Appearance` because registration and character updates both use it. Keep `LoggedInCharacter` in `Character/Character/` since it resolves the character and coordinates elixir cleanup and shop rotation. Existing cross-feature calls stay in place.
 
 ## HTTP and database baselines
 
@@ -164,7 +170,7 @@ Rename the filename and class together when moving a unit test. For example, `In
 
 Run the commands from the project's Docker app environment with dev dependencies installed. Use the existing local test database and JWT setup. Compare test methods and data sets after accounting for the intentional class and namespace changes.
 
-Before starting the next slice, clear the dev and test caches with `php bin/console cache:clear` and `php bin/console cache:clear --env=test`. Check both test inventories against the baseline and run `php bin/phpunit`. Compare the router and OpenAPI exports with the baseline. For slices that move entities, also compare mapping coverage and schema SQL.
+After each namespace move, rebuild the optimized class map with `composer dump-autoload --optimize --strict-psr --no-scripts`. Clear the dev and test system cache pools with `php bin/console cache:pool:clear cache.system_clearer` in each environment. Before starting the next slice, clear the dev and test caches with `php bin/console cache:clear` and `php bin/console cache:clear --env=test`. Check both test inventories against the baseline and run `php bin/phpunit`. Compare the router and OpenAPI exports with the baseline. For slices that move entities, also compare mapping coverage and schema SQL.
 
 ### 0. Record the baseline
 
@@ -185,8 +191,8 @@ Before starting the next slice, clear the dev and test caches with `php bin/cons
 
 ### 3. Move Shop and Item
 
-- [ ] Move the files in the `Shop` row as one slice and add the `Shop` Doctrine mapping. Update cross-feature imports and keep the `app:shop:generate-rotations` command name. Run `php bin/phpunit src/Shop`.
-- [ ] Move the files in the `Item` row as the next slice and add the `Item` Doctrine mapping. Update references to `ItemViewDTO`, the item definitions and their factories across Shop, Character and fixture stories. Run `php bin/phpunit src/Item` and rerun Shop and Inventory tests.
+- [ ] Move the files in the `Shop` rows as one slice and add the `Shop` Doctrine mapping. Update cross-feature imports and keep the `app:shop:generate-rotations` command name. Run `php bin/phpunit src/Shop`.
+- [ ] Move the files in the `Item` rows as the next slice and add the `Item` Doctrine mapping. Update references to `ItemViewDTO`, the item definitions and their factories across Shop, Character and fixture stories. Run `php bin/phpunit src/Item` and rerun Shop and Inventory tests.
 - [ ] Confirm that Doctrine still discovers `ItemDefinition` and its `ElixirDefinition` subtype with the original discriminator mapping.
 
 ### 4. Move the remaining Character slices
@@ -195,10 +201,10 @@ Before starting the next slice, clear the dev and test caches with `php bin/cons
 - [ ] Move the `Character/Character/` branch under the `App\Character\Character` namespace. Change the JWT user provider class at the same time. Update ORM associations, PHPDoc generics, provider and processor references, and fixture imports throughout the project.
 - [ ] Run `php bin/phpunit src/Character`, plus the existing Auth integration suite files, since login, registration and JWT authentication resolve the moved character.
 
-### 5. Move Auth and Shared
+### 5. Move Auth, Infrastructure and Economy
 
-- [ ] Move the four Auth rows and add the `Auth` Doctrine mapping when the first token entity moves. Keep operation metadata on the class that currently declares it. Run `php bin/phpunit src/Auth`.
-- [ ] Move the files in the `Shared` row. Verify that the current-user query extension, rate limiter and JWT OpenAPI decorator remain registered through the existing service import. Rerun the friends and auth API tests.
+- [ ] Move the Auth rows and add the `Auth` Doctrine mapping when the first token entity moves. Keep operation metadata on the class that currently declares it. Run `php bin/phpunit src/Auth`.
+- [ ] Move the files in the `Infrastructure/Api` and `Economy` rows. Verify that the current-user query extension, rate limiter and JWT OpenAPI decorator remain registered through the existing service import. Rerun the friends and auth API tests.
 
 ### 6. Remove legacy discovery and verify the result
 

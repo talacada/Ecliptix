@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Story;
 
-use App\Entity\Item\ElixirTypeEnum;
-use App\Entity\Item\ItemRarityEnum;
-use App\Entity\Item\ItemSlotEnum;
-use App\Factory\ElixirDefinitionFactory;
-use App\Factory\ItemDefinitionFactory;
+use App\Item\Definition\ElixirDefinitionFactory;
+use App\Item\Definition\ElixirTypeEnum;
+use App\Item\Definition\ItemDefinitionFactory;
+use App\Item\Definition\ItemRarityEnum;
+use App\Item\Definition\ItemSlotEnum;
 
 final class ItemDefinitionStory
 {

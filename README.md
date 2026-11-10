@@ -32,10 +32,9 @@ Backend for a browser RPG (inspired by Shakes & Fidget), built as a learning pro
 
 HTTP requests flow through **DTO → Processor/Provider → Entity → Repository**, following a lightweight CQRS pattern:
 
-- `src/ApiResource/` — input/output DTOs
-- `src/State/Processor/` — write operations (registration, purchases, inventory changes)
-- `src/State/Provider/` — read operations with custom query logic
-- `src/Service/` — domain logic (item factory, inventory manager, rotation generator)
+- `src/Character/Inventory/` contains the inventory entity, repository, API operations and tests.
+- `src/Auth/`, `src/Item/`, `src/Leaderboard/` and `src/Shop/` use the same feature-based layout.
+- Unit tests (`*UnitTest.php`) and API tests (`*ApiTest.php`) live next to their feature classes. Run them with `php bin/phpunit --testsuite=unit` or `php bin/phpunit --testsuite=integration` inside the app container.
 
 API documentation is available at `/docs` (Swagger/OpenAPI).
 
