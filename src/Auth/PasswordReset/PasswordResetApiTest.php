@@ -45,7 +45,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
             ],
         ]);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         // Old password not working
 
@@ -90,7 +90,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
             ],
         ]);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function testPasswordResetFailsWithExpiredToken(): void
@@ -114,7 +114,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
             ],
         ]);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function testPasswordResetFailsWithAlreadyUsedToken(): void
@@ -138,7 +138,7 @@ class PasswordResetApiTest extends AbstractApiTestCase
             ],
         ]);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function testPasswordResetFailsWithShortPassword(): void

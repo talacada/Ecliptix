@@ -10,11 +10,12 @@ use App\Auth\EmailVerification\EmailVerificationService;
 use App\Character\Appearance\AppearanceValidationService;
 use App\Character\Character\Character;
 use App\Character\Character\CharacterRepository;
+use App\Exception\Auth\EmailAlreadyRegisteredException;
+use App\Exception\Auth\UsernameAlreadyTakenException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -51,11 +52,11 @@ readonly class RegisterProcessor implements ProcessorInterface
         array $context = [],
     ): Response {
         if (null !== $this->characterRepository->findOneBy(['email' => $data->getEmail()])) {
-            throw new UnprocessableEntityHttpException('Email already registered');
+            throw new EmailAlreadyRegisteredException($data->getEmail());
         }
 
         if (null !== $this->characterRepository->findOneBy(['username' => $data->getUsername()])) {
-            throw new UnprocessableEntityHttpException('Username already registered');
+            throw new UsernameAlreadyTakenException($data->getUsername());
         }
 
         $appearanceOptions = $this->appearanceValidationService->verifiesAppearance(

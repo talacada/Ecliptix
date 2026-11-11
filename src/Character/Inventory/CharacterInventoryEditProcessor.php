@@ -7,10 +7,13 @@ namespace App\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
+use App\Exception\Inventory\ElixirCannotBeEquippedException;
+use App\Exception\Inventory\InvalidInventoryOperationException;
+use App\Exception\Inventory\ItemSlotMismatchException;
+use App\Exception\ResourceNotFoundException;
 use App\Item\Definition\ElixirDefinition;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, CharacterInventory>
@@ -33,11 +36,11 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getPosition() > $character->getBackpackCapacity()) {
-            throw new Exception('Position exceeds backpack capacity.');
+            throw new InvalidInventoryOperationException('Position exceeds backpack capacity.');
         }
 
         if ($data->getItem()->getDefinition() instanceof ElixirDefinition && InventoryContainerEnum::Equipped === $data->getContainer()) {
-            throw new Exception('Elixir cant be equipped.');
+            throw new ElixirCannotBeEquippedException('');
         }
 
         $originalData = $this->entityManager->getUnitOfWork()->getOriginalEntityData($data);
@@ -55,14 +58,14 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
         }
 
         if (null === $wasContainer) {
-            throw new NotFoundHttpException('Invalid inventory.');
+            throw new ResourceNotFoundException(InventoryContainerEnum::class, null, 'Container not found');
         }
 
         // User must send [equipped = true, position = 0]
         if (InventoryContainerEnum::Equipped === $data->getContainer() && 0 !== $data->getPosition()) {
             // Client explicitly sent position != 0 with equip → error
             if ($wasPosition !== $data->getPosition()) {
-                throw new Exception('Equipped items do not have position.');
+                throw new InvalidInventoryOperationException('Equipped items do not have position.');
             }
             // Client didn't send position, item was in backpack → auto-set to 0
             $data->setPosition(0);
@@ -88,7 +91,7 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
                         $itemToMove->setPosition($wasPosition);
                         $itemToMove->setContainer($wasContainer);
                     } else {
-                        throw new Exception(sprintf('Items does not match slots. Equipped item type %s cant swap with %s', $data->getItem()->getDefinition()->getDesiredSlot()->value, $itemToMove->getItem()->getDefinition()->getDesiredSlot()->value));
+                        throw new ItemSlotMismatchException($data->getItem()->getDefinition()->getDesiredSlot(), $itemToMove->getItem()->getDefinition()->getDesiredSlot());
                     }
                 }
             }

@@ -7,8 +7,9 @@ namespace App\Auth\Login;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\CharacterRepository;
+use App\Exception\Auth\EmailNotVerifiedException;
+use App\Exception\Auth\InvalidCredentialsException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -32,11 +33,11 @@ readonly class LoginProcessor implements ProcessorInterface
         $character = $this->characterRepository->findOneBy(['email' => $data->getEmail()]);
 
         if (!$character || !$this->passwordHasher->isPasswordValid($character, $data->getPassword())) {
-            throw new UnauthorizedHttpException('', 'Invalid credentials');
+            throw new InvalidCredentialsException();
         }
 
         if (false === $character->isEmailVerified()) {
-            throw new UnauthorizedHttpException('', 'Email is not verified');
+            throw new EmailNotVerifiedException();
         }
 
         $token = $this->jwtManager->create($character);

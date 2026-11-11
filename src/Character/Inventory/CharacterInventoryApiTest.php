@@ -330,7 +330,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         $client = static::createAuthenticatedClient($charater2);
 
         $client->request('POST', '/api/character/inventory/'.$elixir->getId().'/sell');
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
     public function testCantUseNonElixirItems(): void
@@ -354,7 +354,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
 
         $this->assertJsonContains([
-            'detail' => 'Cant activate this',
+            'detail' => 'This item cannot be activated',
         ]);
 
         $client->request('GET', '/api/character');

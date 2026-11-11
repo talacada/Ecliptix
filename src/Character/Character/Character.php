@@ -21,6 +21,8 @@ use App\Character\Appearance\Race;
 use App\Character\Elixir\ActiveElixir;
 use App\Character\Friends\FriendRelation;
 use App\Character\Inventory\CharacterInventory;
+use App\Exception\Character\InsufficientDiamondsException;
+use App\Exception\Character\InsufficientGoldException;
 use App\Shop\Rotation\ShopRotation;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,7 +30,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use LogicException;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -437,7 +438,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractGold(int $amount): void
     {
         if ($amount > $this->gold) {
-            throw new UnprocessableEntityHttpException('Not enough gold');
+            throw new InsufficientGoldException($amount, $this->gold);
         }
         $this->gold -= $amount;
     }
@@ -445,7 +446,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     public function subtractDiamonds(int $amount): void
     {
         if ($amount > $this->diamonds) {
-            throw new UnprocessableEntityHttpException('Not enough diamonds');
+            throw new InsufficientDiamondsException($amount, $this->diamonds);
         }
         $this->diamonds -= $amount;
     }

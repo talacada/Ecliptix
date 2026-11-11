@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Character\Appearance;
 
+use App\Exception\Appearance\InvalidAppearanceException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class AppearanceValidationServiceUnitTest extends TestCase
 {
@@ -81,7 +81,7 @@ class AppearanceValidationServiceUnitTest extends TestCase
             ->expects($this->never())
             ->method($this->anything());
 
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InvalidAppearanceException::class);
         $this->expectExceptionMessage('Invalid race_id');
 
         $this->service->verifiesAppearance(1, 1, 2, 3, 4, 5);
@@ -113,7 +113,7 @@ class AppearanceValidationServiceUnitTest extends TestCase
                 },
             );
 
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InvalidAppearanceException::class);
         $this->expectExceptionMessage($errorMessage);
 
         $this->service->verifiesAppearance(

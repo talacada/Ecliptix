@@ -6,10 +6,11 @@ namespace App\Leaderboard;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Character\Character\Character;
 use App\Character\Character\CharacterRepository;
 use App\Character\Character\LoggedInCharacter;
+use App\Exception\ResourceNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProviderInterface<LeaderboardResponse>
@@ -40,12 +41,12 @@ class LeaderboardProvider implements ProviderInterface
             $searchedCharacter = $this->characterRepository->getCharacterByUserName($searchedName);
 
             if (null === $searchedCharacter) {
-                throw new NotFoundHttpException("Character with name {$searchedName} not found");
+                throw new ResourceNotFoundException(Character::class, $searchedName, sprintf('Character with username "%s" not found.', $searchedName));
             }
             $characterRank = $this->leaderboardRepository->findRankOfCharacter($searchedCharacter);
         } elseif (0 !== $searchedRank) {
             if ($this->leaderboardRepository->getLastRank() < $searchedRank) {
-                throw new NotFoundHttpException("Rank {$searchedRank} not found");
+                throw new ResourceNotFoundException('Rank', $searchedRank, "Rank {$searchedRank} not found.");
             }
             $characterRank = $searchedRank;
         } else {

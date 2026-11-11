@@ -9,14 +9,18 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
 use App\Character\Inventory\CharacterInventoryRepository;
 use App\Character\Inventory\InventoryManager;
+use App\Exception\Character\InsufficientDiamondsException;
+use App\Exception\Character\InsufficientGoldException;
+use App\Exception\Inventory\BackpackFullException;
+use App\Exception\ResourceNotFoundException;
+use App\Exception\Shop\ShopRotationNotAvailableException;
 use App\Item\Definition\ElixirDefinition;
+use App\Item\Item\ItemFactory;
 use App\Item\Item\ItemViewDTO;
+use App\Shop\Rotation\ShopRotation;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 /**
  * @implements ProcessorInterface<ShopOffer, ItemViewDTO>
@@ -26,7 +30,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private CharacterInventoryRepository $characterInventoryRepository,
-        private \App\Item\Item\ItemFactory $itemFactory,
+        private ItemFactory $itemFactory,
         private InventoryManager $inventoryManager,
         private EntityManagerInterface $entityManager,
     ) {
@@ -42,25 +46,25 @@ class ShopOfferBuyProcessor implements ProcessorInterface
         $rotation = $data->getRotation();
 
         if ($rotation->getCharacter() !== $character) {
-            throw new NotFoundHttpException('Rotation not found');
+            throw new ResourceNotFoundException(ShopRotation::class);
         }
 
         if ($rotation->getValidUntil() < new DateTime() || $rotation->getValidFrom() > new DateTime()) {
-            throw new BadRequestHttpException('Rotation not available');
+            throw new ShopRotationNotAvailableException();
         }
 
         if ($data->getGoldPrice() > $character->getGold()) {
-            throw new UnprocessableEntityHttpException('Not enough gold');
+            throw new InsufficientGoldException($data->getGoldPrice(), $character->getGold());
         }
 
         if ($data->getDiamondPrice() > $character->getDiamonds()) {
-            throw new UnprocessableEntityHttpException('Not enough diamonds');
+            throw new InsufficientDiamondsException($data->getDiamondPrice(), $character->getDiamonds());
         }
 
         $isElixir = $data->getItemDefinition() instanceof ElixirDefinition;
 
         if (!$isElixir && $character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
-            throw new BadRequestHttpException('Not enough backpack space');
+            throw new BackpackFullException();
         }
 
         $item = $this->itemFactory->createFromDefinitionAndOffer($data);

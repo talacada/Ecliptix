@@ -6,7 +6,7 @@ namespace App\Shop\Offer;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Exception\ResourceNotFoundException;
 
 /**
  * @implements ProviderInterface<ShopOffer>
@@ -26,7 +26,7 @@ class ShopOfferProvider implements ProviderInterface
         $offer = $this->shopOfferRepository->getById($uriVariables['id']);
 
         if (null === $offer) {
-            throw new NotFoundHttpException('Shop offer not found');
+            throw new ResourceNotFoundException(ShopOffer::class, $uriVariables['id']);
         }
 
         return $offer;

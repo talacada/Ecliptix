@@ -42,7 +42,7 @@ class VerifyEmailApiTest extends AbstractApiTestCase
 
         $data = $request->toArray(false);
         $this->assertArrayHasKey('detail', $data);
-        $this->assertSame('Invalid or expired token', $data['detail']);
+        $this->assertSame('Invalid or expired token.', $data['detail']);
 
         $client->request('POST', '/api/auth/login', [
             'json' => [
@@ -74,7 +74,7 @@ class VerifyEmailApiTest extends AbstractApiTestCase
 
         $data = $request->toArray(false);
         $this->assertArrayHasKey('detail', $data);
-        $this->assertSame('Invalid or expired token', $data['detail']);
+        $this->assertSame('Invalid or expired token.', $data['detail']);
     }
 
     public function testVerifyEmailFailsWithAlreadyUsedToken(): void
@@ -97,7 +97,7 @@ class VerifyEmailApiTest extends AbstractApiTestCase
 
         $data = $request->toArray(false);
         $this->assertArrayHasKey('detail', $data);
-        $this->assertSame('Invalid or expired token', $data['detail']);
+        $this->assertSame('Invalid or expired token.', $data['detail']);
     }
 
     public function testVerifyEmailFailsWithInvalidTokenFormat(): void

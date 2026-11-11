@@ -6,11 +6,11 @@ namespace App\Auth\PasswordReset;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Exception\Auth\InvalidTokenException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -30,7 +30,7 @@ class PasswordResetProcessor implements ProcessorInterface
         $token = $this->passwordResetTokenRepository->getByToken($data->getToken());
 
         if (null === $token) {
-            throw new NotFoundHttpException('Token does not exist or is invalid.');
+            throw new InvalidTokenException();
         }
 
         $character = $token->getCharacter();

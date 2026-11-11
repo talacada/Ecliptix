@@ -8,8 +8,8 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Character\Elixir\ElixirCleanUp;
 use App\Character\Friends\FriendRelationRepository;
+use App\Exception\ResourceNotFoundException;
 use Exception;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProviderInterface<Character>
@@ -36,7 +36,7 @@ class PublicCharacterProvider implements ProviderInterface
             $searchedCharacter = $this->characterRepository->getCharacterById($id);
 
             if (!$searchedCharacter instanceof Character) {
-                throw new NotFoundHttpException('Character not found');
+                throw new ResourceNotFoundException(Character::class, $id);
             }
 
             $this->elixirCleanUp->removeExpired($searchedCharacter);
@@ -47,6 +47,6 @@ class PublicCharacterProvider implements ProviderInterface
 
             return $searchedCharacter;
         }
-        throw new Exception("Missing parameter 'id' in uriVariables");
+        throw new ResourceNotFoundException(Character::class);
     }
 }

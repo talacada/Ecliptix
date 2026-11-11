@@ -7,8 +7,8 @@ namespace App\Character\Elixir;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
+use App\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @implements ProcessorInterface<ActiveElixir, null>
@@ -26,7 +26,7 @@ class ActiveElixirRemoveProcessor implements ProcessorInterface
         $character = $this->loggedInCharacter->getCharacter();
 
         if ($data->getCharacter() !== $character) {
-            throw new NotFoundHttpException('Not found');
+            throw new ResourceNotFoundException(ActiveElixir::class);
         }
 
         $character->removeActiveElixir($data);
