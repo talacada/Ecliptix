@@ -21,8 +21,6 @@ use App\Character\Appearance\Race;
 use App\Character\Elixir\ActiveElixir;
 use App\Character\Friends\FriendRelation;
 use App\Character\Inventory\CharacterInventory;
-use App\Exception\Character\InsufficientDiamondsException;
-use App\Exception\Character\InsufficientGoldException;
 use App\Shop\Rotation\ShopRotation;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;

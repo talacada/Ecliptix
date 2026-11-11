@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Character\Appearance;
 
-use App\Exception\Appearance\InvalidAppearanceException;
-
 class AppearanceValidationService
 {
     public function __construct(

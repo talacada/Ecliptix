@@ -6,7 +6,7 @@ namespace App\Shop\Offer;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Exception\ResourceNotFoundException;
+use App\Support\Exception\ResourceNotFoundException;
 
 /**
  * @implements ProviderInterface<ShopOffer>

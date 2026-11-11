@@ -22,7 +22,8 @@ HTTP Request → ApiResource/Input DTO → Processor (validation, business logic
 
 - `src/Character/` groups the core character, appearance, elixirs, friends and inventory into separate feature directories.
 - `src/Auth/`, `src/Item/`, `src/Leaderboard/` and `src/Shop/` group classes by feature.
-- `src/Infrastructure/Api/` contains API Platform extensions and OpenAPI configuration. `src/Economy/` contains currencies and game costs used across features.
+- `src/Support/` holds shared code and tools without a natural owner among the features, such as economy rules, shared exceptions and Foundry stories.
+- `src/Support/Infrastructure/Api/` contains API Platform extensions and OpenAPI configuration.
 - Entities, repositories, DTOs, providers, processors, factories and concrete tests share the directory of their feature.
 - PHPUnit finds `*UnitTest.php` and `*ApiTest.php` under `src/`. The bootstrap and shared test utilities live in `tests/`.
 
@@ -40,6 +41,7 @@ HTTP Request → ApiResource/Input DTO → Processor (validation, business logic
 
 ## Conventions
 
+- Use English for all code, comments and output, including emails, API messages and console output.
 - **Serialization**: `#[Groups(['entity:read', 'entity:write'])]`, static constants `READ_GROUP` / `WRITE_GROUP`
 - Feature directories use class names such as `CharacterInventoryEditProcessor`, `RegisterInput` and `ShopOfferRepository`.
 - Pass the fully qualified class name when generating an entity, for example with `php bin/console make:entity '\App\Character\Inventory\ExampleEntity'`. Move the generated repository alongside the entity and update its namespace and the entity's repository reference.

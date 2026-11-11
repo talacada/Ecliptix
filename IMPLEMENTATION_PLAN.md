@@ -88,12 +88,16 @@ Use the following destination map for the remaining files. A move keeps the exis
 | `src/Auth/EmailVerification/` | `EmailVerificationToken.php`, `EmailVerificationTokenFactory.php`, `EmailVerificationTokenRepository.php`, `EmailVerificationService.php`, `EmailVerificationServiceUnitTest.php`, `VerifyEmailProcessor.php`, `VerifyEmailApiTest.php` |
 | `src/Auth/PasswordReset/` | `PasswordResetToken.php`, `PasswordResetTokenFactory.php`, `PasswordResetTokenRepository.php`, `PasswordResetInput.php`, `PasswordResetProcessor.php`, `PasswordResetApiTest.php`, `RequestPasswordResetInput.php`, `RequestPasswordResetProcessor.php`, `RequestPasswordResetApiTest.php` |
 | `src/Auth/` | `RateLimitSubscriber.php` |
-| `src/Infrastructure/Api/` | `CurrentUserScope.php`, `CurrentUserScopeExtension.php`, `JwtOpenApiFactory.php` |
-| `src/Economy/` | `CurrencyEnum.php`, `GameCostEnum.php`, `GameCostEnumUnitTest.php` |
+| `src/Support/Economy/` | `CurrencyEnum.php`, `GameCostEnum.php`, `GameCostEnumUnitTest.php` |
+| `src/Support/Exception/` | `DomainException.php`, `ResourceNotFoundException.php` |
+| `src/Support/Infrastructure/Api/` | `CurrentUserScope.php`, `CurrentUserScopeExtension.php`, `JwtOpenApiFactory.php` |
+| `src/Support/Story/` | `AppStory.php`, `CharacterStory.php`, `ItemDefinitionStory.php` |
 | `tests/Support/` | `AbstractApiTestCase.php`, `EntityHelper.php` |
-| Existing locations | `src/Kernel.php`, `src/Story/AppStory.php`, `src/Story/CharacterStory.php`, `src/Story/ItemDefinitionStory.php`, `tests/bootstrap.php` |
+| Existing locations | `src/Kernel.php`, `tests/bootstrap.php` |
 
 `InventoryManager` and `InventoryContainerEnum` belong to character inventory. `ItemViewDTO` lives with the item instance in `Item/Item/` and provides the item view used by inventory and shop. `AppearanceValidationService` belongs to `Character/Appearance` because registration and character updates both use it. Keep `LoggedInCharacter` in `Character/Character/` since it resolves the character and coordinates elixir cleanup and shop rotation. Existing cross-feature calls stay in place.
+
+Place each feature-specific exception beside the feature whose rule it describes. For example, `CharacterNotFoundException` belongs in `Character/Character/`, even when thrown by Friends. Keep `InvalidTokenException` in `Auth/` because both email verification and password reset use it.
 
 ## HTTP and database baselines
 
@@ -201,10 +205,10 @@ After each namespace move, rebuild the optimized class map with `composer dump-a
 - [ ] Move the `Character/Character/` branch under the `App\Character\Character` namespace. Change the JWT user provider class at the same time. Update ORM associations, PHPDoc generics, provider and processor references, and fixture imports throughout the project.
 - [ ] Run `php bin/phpunit src/Character`, plus the existing Auth integration suite files, since login, registration and JWT authentication resolve the moved character.
 
-### 5. Move Auth, Infrastructure and Economy
+### 5. Move Auth and Support
 
 - [ ] Move the Auth rows and add the `Auth` Doctrine mapping when the first token entity moves. Keep operation metadata on the class that currently declares it. Run `php bin/phpunit src/Auth`.
-- [ ] Move the files in the `Infrastructure/Api` and `Economy` rows. Verify that the current-user query extension, rate limiter and JWT OpenAPI decorator remain registered through the existing service import. Rerun the friends and auth API tests.
+- [ ] Move the files in the `Support` rows. Verify that the current-user query extension, rate limiter, JWT OpenAPI decorator and Foundry stories remain registered through the existing service import. Rerun the friends and auth API tests.
 
 ### 6. Remove legacy discovery and verify the result
 

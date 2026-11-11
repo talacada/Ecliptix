@@ -7,11 +7,9 @@ namespace App\Character\Friends;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\Character;
+use App\Character\Character\CharacterNotFoundException;
 use App\Character\Character\CharacterRepository;
 use App\Character\Character\LoggedInCharacter;
-use App\Exception\Character\CharacterNotFoundException;
-use App\Exception\Friend\AlreadyFriendsException;
-use App\Exception\Friend\CannotFriendSelfException;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 

@@ -7,11 +7,8 @@ namespace App\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
-use App\Exception\Inventory\ElixirCannotBeEquippedException;
-use App\Exception\Inventory\InvalidInventoryOperationException;
-use App\Exception\Inventory\ItemSlotMismatchException;
-use App\Exception\ResourceNotFoundException;
 use App\Item\Definition\ElixirDefinition;
+use App\Support\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 

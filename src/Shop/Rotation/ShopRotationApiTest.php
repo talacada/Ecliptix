@@ -42,7 +42,7 @@ class ShopRotationApiTest extends AbstractApiTestCase
         ]);
     }
 
-    // TODO - testGetShopRotationReturnsCurrentActiveOffers - Overit, ze GET /api/shop/rotation vrati aktivni nabidky rotace s cenami a atributy predmetu
+    // TODO - Verify that GET /api/shop/rotation returns active offers with prices and item attributes.
     public function testGetShopRotationReturnsCurrentActiveOffers(): void
     {
         $character = CharacterFactory::createOne();

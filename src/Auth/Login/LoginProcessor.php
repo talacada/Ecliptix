@@ -7,8 +7,6 @@ namespace App\Auth\Login;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\CharacterRepository;
-use App\Exception\Auth\EmailNotVerifiedException;
-use App\Exception\Auth\InvalidCredentialsException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 

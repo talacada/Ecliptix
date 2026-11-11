@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Character\Character;
 
 use App\Character\Elixir\ActiveElixir;
-use App\Exception\Character\InsufficientDiamondsException;
-use App\Exception\Character\InsufficientGoldException;
 use App\Shop\Rotation\ShopRotation;
 use App\Tests\Support\EntityHelper;
 use DateTimeImmutable;

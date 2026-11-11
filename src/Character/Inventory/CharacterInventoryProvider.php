@@ -7,8 +7,8 @@ namespace App\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Character\Character\LoggedInCharacter;
-use App\Exception\ResourceNotFoundException;
 use App\Item\Item\ItemViewDTO;
+use App\Support\Exception\ResourceNotFoundException;
 use Exception;
 
 /**

@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Character\Elixir\ElixirCleanUp;
 use App\Character\Friends\FriendRelationRepository;
-use App\Exception\ResourceNotFoundException;
+use App\Support\Exception\ResourceNotFoundException;
 use Exception;
 
 /**

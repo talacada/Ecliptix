@@ -7,7 +7,7 @@ namespace App\Character\Elixir;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Character\Character\LoggedInCharacter;
-use App\Exception\ResourceNotFoundException;
+use App\Support\Exception\ResourceNotFoundException;
 
 /**
  * @implements ProviderInterface<ActiveElixir>

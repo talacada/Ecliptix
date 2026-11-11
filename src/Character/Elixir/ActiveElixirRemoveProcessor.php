@@ -7,7 +7,7 @@ namespace App\Character\Elixir;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
-use App\Exception\ResourceNotFoundException;
+use App\Support\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

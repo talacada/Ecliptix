@@ -224,7 +224,7 @@ class RegisterApiTest extends AbstractApiTestCase
         $email = $message->getMessage();
 
         $this->assertSame('newplayer@ecliptix.com', $email->getTo()[0]->getAddress());
-        $this->assertSame('Vítej v Ecliptixu — ověř svůj účet', $email->getSubject());
+        $this->assertSame('Welcome to Ecliptix — verify your account', $email->getSubject());
 
         $context = $email->getContext();
         $this->assertArrayHasKey('token', $context);

@@ -10,8 +10,6 @@ use App\Auth\EmailVerification\EmailVerificationService;
 use App\Character\Appearance\AppearanceValidationService;
 use App\Character\Character\Character;
 use App\Character\Character\CharacterRepository;
-use App\Exception\Auth\EmailAlreadyRegisteredException;
-use App\Exception\Auth\UsernameAlreadyTakenException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -88,7 +86,7 @@ readonly class RegisterProcessor implements ProcessorInterface
         $email = new TemplatedEmail()
             ->from($this->mailerFrom)
             ->to($character->getEmail())
-            ->subject('Vítej v Ecliptixu — ověř svůj účet')
+            ->subject('Welcome to Ecliptix — verify your account')
             ->htmlTemplate('email/verify.html.twig')
             ->textTemplate('email/verify.txt.twig')
             ->context([

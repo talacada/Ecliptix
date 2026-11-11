@@ -4,7 +4,7 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
-    # Definuje jak systém hledá uživatele - hledá Character entitu podle pole 'username'
+    # The provider looks up users by the configured property of the Character entity.
     providers:
         app_user_provider:
             entity:

@@ -7,7 +7,7 @@ namespace App\Character\Character;
 use App\Character\Appearance\AppearanceOptionFactory;
 use App\Character\Appearance\AppearanceTypeEnum;
 use App\Character\Appearance\RaceFactory;
-use App\Economy\GameCostEnum;
+use App\Support\Economy\GameCostEnum;
 use App\Tests\Support\AbstractApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 

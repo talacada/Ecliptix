@@ -6,7 +6,7 @@ namespace App\Auth\EmailVerification;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Exception\Auth\InvalidTokenException;
+use App\Auth\InvalidTokenException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -34,6 +34,7 @@ HTTP requests flow through **DTO → Processor/Provider → Entity → Repositor
 
 - `src/Character/Inventory/` contains the inventory entity, repository, API operations and tests.
 - `src/Auth/`, `src/Item/`, `src/Leaderboard/` and `src/Shop/` use the same feature-based layout.
+- `src/Support/` contains economy rules, shared exceptions, Foundry stories and API infrastructure.
 - Unit tests (`*UnitTest.php`) and API tests (`*ApiTest.php`) live next to their feature classes. Run them with `php bin/phpunit --testsuite=unit` or `php bin/phpunit --testsuite=integration` inside the app container.
 
 API documentation is available at `/docs` (Swagger/OpenAPI).

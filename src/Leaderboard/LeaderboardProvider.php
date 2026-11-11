@@ -9,7 +9,7 @@ use ApiPlatform\State\ProviderInterface;
 use App\Character\Character\Character;
 use App\Character\Character\CharacterRepository;
 use App\Character\Character\LoggedInCharacter;
-use App\Exception\ResourceNotFoundException;
+use App\Support\Exception\ResourceNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**

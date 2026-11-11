@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Character\Character\Character;
-use App\Infrastructure\Api\CurrentUserScope;
+use App\Support\Infrastructure\Api\CurrentUserScope;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 

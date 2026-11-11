@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Character\Inventory;
 
 use App\Character\Character\Character;
-use App\Exception\Inventory\BackpackFullException;
 use App\Item\Definition\ElixirDefinition;
 use App\Item\Definition\ItemSlotEnum;
 use App\Item\Item\Item;

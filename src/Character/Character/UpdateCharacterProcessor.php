@@ -7,8 +7,8 @@ namespace App\Character\Character;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Appearance\AppearanceValidationService;
-use App\Economy\CurrencyEnum;
-use App\Economy\GameCostEnum;
+use App\Support\Economy\CurrencyEnum;
+use App\Support\Economy\GameCostEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 

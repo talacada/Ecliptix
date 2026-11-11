@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Character\Appearance;
 
-use App\Exception\Appearance\InvalidAppearanceException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
