@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Character\Friends;
+
+use ApiPlatform\Metadata\Operation;
+use ApiPlatform\State\ProcessorInterface;
+use App\Character\Character\Character;
+use App\Character\Character\CharacterNotFoundException;
+use App\Character\Character\CharacterRepository;
+use App\Character\Character\LoggedInCharacter;
+use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+
+/**
+ * @implements ProcessorInterface<Character, FriendRelation>
+ */
+class FriendsAddProcessor implements ProcessorInterface
+{
+    public function __construct(
+        private LoggedInCharacter $loggedInCharacter,
+        private FriendRelationRepository $friendRelationRepository,
+        private CharacterRepository $characterRepository,
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): FriendRelation
+    {
+        $character = $this->loggedInCharacter->getCharacter();
+
+        if (!isset($uriVariables['id']) || !is_numeric($uriVariables['id'])) {
+            throw new CharacterNotFoundException($uriVariables['id']);
+        }
+
+        $followed = $this->characterRepository->getCharacterById((int) $uriVariables['id']);
+
+        if (!$followed) {
+            throw new CharacterNotFoundException(intval($uriVariables['id']));
+        }
+
+        if ($followed === $character) {
+            throw new CannotFriendSelfException();
+        }
+
+        $searchedRelation = $this->friendRelationRepository->findRelation($character, $followed);
+        if ($searchedRelation) {
+            throw new AlreadyFriendsException();
+        }
+
+        $newRelation = new FriendRelation();
+        $newRelation->setFriend($followed);
+        $newRelation->setCharacter($character);
+
+        $this->entityManager->persist($newRelation);
+        $this->entityManager->flush();
+
+        return $newRelation;
+    }
+}

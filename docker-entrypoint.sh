@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-# Pokud chybí složka vendor, automaticky nainstaluj závislosti (řeší start z prázdným diskem přes volume)
+# Install dependencies automatically if the vendor directory is missing, such as when starting with an empty volume.
 if [ ! -d "vendor" ]; then
-    echo "Složka 'vendor' nenalezena. Spouštím 'composer install'..."
+    echo "The 'vendor' directory is missing. Running 'composer install'..."
     composer install --no-interaction
 fi
 
-# Volání rodičovského entrypointu FrankenPHP / případně našeho procesu
+# Run the FrankenPHP entrypoint or the supplied command.
 exec "$@"

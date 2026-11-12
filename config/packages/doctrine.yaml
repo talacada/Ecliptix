@@ -17,12 +17,30 @@ doctrine:
             numeric_functions:
                 rand: DoctrineExtensions\Query\Sqlite\Random
         mappings:
-            App:
+            Character:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
+                dir: '%kernel.project_dir%/src/Character'
+                prefix: 'App\Character'
+                alias: Character
+            Shop:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Shop'
+                prefix: 'App\Shop'
+                alias: Shop
+            Item:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Item'
+                prefix: 'App\Item'
+                alias: Item
+            Auth:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Auth'
+                prefix: 'App\Auth'
+                alias: Auth
 
 when@test:
     doctrine:

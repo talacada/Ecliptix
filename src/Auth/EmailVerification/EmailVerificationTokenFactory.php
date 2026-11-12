@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Auth\EmailVerification;
+
+use App\Character\Character\CharacterFactory;
+use DateTimeImmutable;
+use Symfony\Component\Uid\Uuid;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+/**
+ * @extends PersistentObjectFactory<EmailVerificationToken>
+ */
+class EmailVerificationTokenFactory extends PersistentObjectFactory
+{
+    public static function class(): string
+    {
+        return EmailVerificationToken::class;
+    }
+
+    protected function defaults(): array
+    {
+        return [
+            'character' => CharacterFactory::new(),
+            'token' => Uuid::v4(),
+            'expires_at' => new DateTimeImmutable('+ 1 hour'),
+            'used_at' => null,
+        ];
+    }
+}
