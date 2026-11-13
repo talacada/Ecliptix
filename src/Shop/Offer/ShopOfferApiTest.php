@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class ShopOfferBuyApiTest extends AbstractApiTestCase
+class ShopOfferApiTest extends AbstractApiTestCase
 {
     /**
      * @throws DecodingExceptionInterface
@@ -86,6 +86,23 @@ class ShopOfferBuyApiTest extends AbstractApiTestCase
                 'requiredLevel' => $offer->getItemDefinition()->getRequiredLevel(),
                 'slot' => $offer->getItemDefinition()->getDesiredSlot()->value,
             ],
+        ]);
+    }
+
+    public function testGetOffer(): void
+    {
+        $character = CharacterFactory::createOne();
+        $rotation = ShopRotationFactory::createOne(['character' => $character]);
+        $offer = ShopOfferFactory::createOne(['rotation' => $rotation, 'goldPrice' => 100]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('GET', '/api/shop/offer/'.$offer->getId());
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->assertJsonContains([
+            'id' => $offer->getId(),
         ]);
     }
 

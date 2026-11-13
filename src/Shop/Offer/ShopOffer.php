@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shop\Offer;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use App\Item\Definition\ItemDefinition;
 use App\Item\Item\ItemViewDTO;
@@ -16,12 +17,16 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ApiResource(
     operations: [
         new Post(
-            uriTemplate: '{id}',
+            uriTemplate: '/{id}',
             provider: ShopOfferProvider::class,
             processor: ShopOfferBuyProcessor::class,
         ),
+        new Get(
+            uriTemplate: '/{id}',
+            provider: ShopOfferProvider::class,
+        ),
     ],
-    routePrefix: 'shop/offer/',
+    routePrefix: 'shop/offer',
     security: 'is_granted("ROLE_USER")',
 )]
 #[ORM\Entity(repositoryClass: ShopOfferRepository::class)]
