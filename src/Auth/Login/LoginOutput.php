@@ -9,11 +9,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 readonly class LoginOutput
 {
+    public const string READ_GROUP = 'login:read';
+
     public function __construct(
-        #[Groups(['login:read'])]
+        #[Groups([self::READ_GROUP])]
         public string $token,
 
-        #[Groups(['login:read'])]
+        #[Groups([self::READ_GROUP])]
         public Character $character,
     ) {
     }

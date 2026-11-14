@@ -36,11 +36,4 @@ class LoggedInCharacter
 
         return $character;
     }
-
-    public function getCharacterOrNull(): ?Character
-    {
-        $character = $this->security->getUser();
-
-        return $character instanceof Character ? $character : null;
-    }
 }
