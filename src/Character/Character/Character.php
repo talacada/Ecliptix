@@ -8,14 +8,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use App\Auth\ChangePassword\ChangePasswordInput;
-use App\Auth\ChangePassword\ChangePasswordProcessor;
-use App\Auth\Login\LoginInput;
-use App\Auth\Login\LoginOutput;
-use App\Auth\Login\LoginProcessor;
-use App\Auth\Registration\RegisterInput;
-use App\Auth\Registration\RegisterProcessor;
 use App\Character\Appearance\AppearanceOption;
 use App\Character\Appearance\Race;
 use App\Character\Elixir\ActiveElixir;
@@ -35,24 +27,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
-        new Post(
-            uriTemplate: '/auth/register',
-            input: RegisterInput::class,
-            processor: RegisterProcessor::class,
-        ),
-        new Post(
-            uriTemplate: '/auth/login',
-            normalizationContext: ['groups' => ['login:read']],
-            input: LoginInput::class,
-            output: LoginOutput::class,
-            processor: LoginProcessor::class,
-        ),
-        new Post(
-            uriTemplate: '/auth/change-password',
-            security: 'is_granted("ROLE_USER")',
-            input: ChangePasswordInput::class,
-            processor: ChangePasswordProcessor::class,
-        ),
         new Get(
             uriTemplate: '/character/{id}',
             requirements: ['id' => '\d+'],

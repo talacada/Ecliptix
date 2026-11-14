@@ -4,8 +4,23 @@ declare(strict_types=1);
 
 namespace App\Auth\ChangePassword;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+use App\Character\Character\Character;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/auth/change-password',
+            normalizationContext: ['groups' => [Character::READ_GROUP]],
+            security: 'is_granted("ROLE_USER")',
+            input: ChangePasswordInput::class,
+            output: Character::class,
+            processor: ChangePasswordProcessor::class
+        ),
+    ]
+)]
 class ChangePasswordInput
 {
     public function __construct(string $oldPassword, string $newPassword)
