@@ -36,5 +36,4 @@ class LoggedInCharacter
 
         return $character;
     }
-
 }

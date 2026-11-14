@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             output: LoginOutput::class,
             processor: LoginProcessor::class,
         ),
-    ]
+    ],
 )]
 class LoginInput
 {

@@ -17,9 +17,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'is_granted("ROLE_USER")',
             input: ChangePasswordInput::class,
             output: Character::class,
-            processor: ChangePasswordProcessor::class
+            processor: ChangePasswordProcessor::class,
         ),
-    ]
+    ],
 )]
 class ChangePasswordInput
 {

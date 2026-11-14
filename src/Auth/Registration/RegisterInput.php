@@ -16,9 +16,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             normalizationContext: ['groups' => [Character::READ_GROUP]],
             input: RegisterInput::class,
             output: false,
-            processor: RegisterProcessor::class
-        )
-    ]
+            processor: RegisterProcessor::class,
+        ),
+    ],
 )]
 class RegisterInput
 {
