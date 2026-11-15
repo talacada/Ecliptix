@@ -438,6 +438,23 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
      */
     public function getActiveElixirs(): Collection
     {
+        $notExpired = new ArrayCollection();
+        $now = new DateTimeImmutable();
+
+        foreach ($this->activeElixirs as $activeElixir) {
+            if ($activeElixir->getExpiresAt() > $now) {
+                $notExpired->add($activeElixir);
+            }
+        }
+
+        return $notExpired;
+    }
+
+    /**
+     * @return Collection<int, ActiveElixir>
+     */
+    public function getAllElixirs(): Collection
+    {
         return $this->activeElixirs;
     }
 

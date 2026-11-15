@@ -36,7 +36,7 @@ class ElixirCleanUpUnitTest extends TestCase
         $character->addActiveElixir($activeElixirInMinutes);
         $character->addActiveElixir($activeElixirExpiresTomorrow);
 
-        $this->assertCount(3, $character->getActiveElixirs());
+        $this->assertCount(3, $character->getAllElixirs());
 
         $this->entityManager
             ->expects($this->exactly(1))

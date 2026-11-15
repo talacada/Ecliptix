@@ -42,7 +42,6 @@ class ShopRotationApiTest extends AbstractApiTestCase
         ]);
     }
 
-    // TODO - Verify that GET /api/shop/rotation returns active offers with prices and item attributes.
     public function testGetShopRotationReturnsCurrentActiveOffers(): void
     {
         $character = CharacterFactory::createOne();
