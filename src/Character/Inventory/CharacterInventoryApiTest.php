@@ -99,16 +99,15 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
     public function testPatchInventoryEquipsItem(): void
     {
-        $inventory = CharacterInventoryFactory::createOne([
-            'container' => InventoryContainerEnum::Backpack,
-            'position' => '2',
-        ]);
-
         $character = CharacterFactory::createOne([
             'backpackCapacity' => 8,
         ]);
 
-        $character->addCharacterInventory($inventory);
+        $inventory = CharacterInventoryFactory::createOne([
+            'container' => InventoryContainerEnum::Backpack,
+            'position' => '2',
+            'character' => $character,
+        ]);
 
         $client = static::createAuthenticatedClient($character);
 
@@ -150,6 +149,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                     'desiredSlot' => ItemSlotEnum::Helmet,
                 ]),
             ]),
+            'character' => $character,
         ]);
         $inventoryEquipped = CharacterInventoryFactory::createOne([
             'container' => InventoryContainerEnum::Equipped,
@@ -158,10 +158,8 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                     'desiredSlot' => ItemSlotEnum::Helmet,
                 ]),
             ]),
+            'character' => $character,
         ]);
-
-        $character->addCharacterInventory($inventoryEquipped);
-        $character->addCharacterInventory($inventoryUnequipped);
 
         $client = static::createAuthenticatedClient($character);
 
@@ -343,9 +341,8 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'item' => ItemFactory::createOne([
                 'definition' => ItemDefinitionFactory::createOne(),
             ]),
+            'character' => $character,
         ]);
-
-        $character->addCharacterInventory($item);
 
         $client = static::createAuthenticatedClient($character);
 
