@@ -20,8 +20,8 @@ class ElixirCleanUp
         $now = new DateTime();
         $hasRemovedExpired = false;
 
-        foreach ($character->getActiveElixirs()->toArray() as $elixir) {
-            if ($elixir->getExpiresAt() < $now) {
+        foreach ($character->getAllElixirs()->toArray() as $elixir) {
+            if ($elixir->getExpiresAt() <= $now) {
                 $character->removeActiveElixir($elixir);
                 $hasRemovedExpired = true;
             }

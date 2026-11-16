@@ -154,8 +154,8 @@ class CharacterUnitTest extends TestCase
 
         $character->addActiveElixir($elixir);
 
-        $this->assertContains($elixir, $character->getActiveElixirs());
-        $this->assertCount(1, $character->getActiveElixirs());
+        $this->assertContains($elixir, $character->getAllElixirs());
+        $this->assertCount(1, $character->getAllElixirs());
     }
 
     public function testRemoveActiveElixirUnsetsCharacterReference(): void

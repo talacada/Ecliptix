@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Character\Character;
 
-use App\Character\Elixir\ElixirCleanUp;
-use App\Shop\Rotation\RotationGenerator;
-use App\Shop\Rotation\ShopRotationRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -14,9 +11,6 @@ class LoggedInCharacter
 {
     public function __construct(
         private readonly Security $security,
-        private readonly ElixirCleanUp $elixirCleanUp,
-        private readonly ShopRotationRepository $shopRotationRepository,
-        private readonly RotationGenerator $rotationGenerator,
     ) {
     }
 
@@ -28,19 +22,6 @@ class LoggedInCharacter
             throw new UnauthorizedHttpException('Not authenticated');
         }
 
-        $this->elixirCleanUp->removeExpired($character);
-
-        if (false === $this->shopRotationRepository->hasActiveDailyRotation($character)) {
-            $this->rotationGenerator->generateDaily($character);
-        }
-
         return $character;
-    }
-
-    public function getCharacterOrNull(): ?Character
-    {
-        $character = $this->security->getUser();
-
-        return $character instanceof Character ? $character : null;
     }
 }

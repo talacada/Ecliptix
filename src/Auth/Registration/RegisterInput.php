@@ -4,8 +4,22 @@ declare(strict_types=1);
 
 namespace App\Auth\Registration;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+use App\Character\Character\Character;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/auth/register',
+            normalizationContext: ['groups' => [Character::READ_GROUP]],
+            input: RegisterInput::class,
+            output: false,
+            processor: RegisterProcessor::class,
+        ),
+    ],
+)]
 class RegisterInput
 {
     #[Assert\NotBlank(message: 'Username should not be blank.')]

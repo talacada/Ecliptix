@@ -16,6 +16,7 @@ class ShopRotationProvider implements ProviderInterface
     public function __construct(
         private LoggedInCharacter $loggedInCharacter,
         private ShopRotationRepository $shopRotationRepository,
+        private readonly RotationGenerator $rotationGenerator,
     ) {
     }
 
@@ -26,8 +27,10 @@ class ShopRotationProvider implements ProviderInterface
     {
         $character = $this->loggedInCharacter->getCharacter();
 
-        $allShopRotations = $this->shopRotationRepository->findAllByCharacter($character);
+        if (false === $this->shopRotationRepository->hasActiveDailyRotation($character)) {
+            $this->rotationGenerator->generateDaily($character);
+        }
 
-        return $allShopRotations;
+        return $this->shopRotationRepository->findAllByCharacter($character);
     }
 }

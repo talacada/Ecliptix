@@ -4,9 +4,22 @@ declare(strict_types=1);
 
 namespace App\Auth\Login;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
 use Symfony\Component\Validator\Constraints as Assert;
 
-readonly class LoginInput
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/auth/login',
+            normalizationContext: ['groups' => [LoginOutput::READ_GROUP]],
+            input: LoginInput::class,
+            output: LoginOutput::class,
+            processor: LoginProcessor::class,
+        ),
+    ],
+)]
+class LoginInput
 {
     public function __construct(
         #[Assert\NotBlank]
