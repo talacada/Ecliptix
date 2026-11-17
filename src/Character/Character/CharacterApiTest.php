@@ -55,6 +55,8 @@ class CharacterApiTest extends AbstractApiTestCase
             'level' => $characterEnemy->getLevel(),
             'experience' => $characterEnemy->getExperience(),
             'damage' => $characterEnemy->getDamage(),
+            'health' => $characterEnemy->getHealth(),
+            'crit' => $characterEnemy->getCrit(),
         ]);
 
         // This is private info, and other characters cant see it.
