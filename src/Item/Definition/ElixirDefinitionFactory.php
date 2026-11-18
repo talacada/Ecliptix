@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Item\Definition;
 
+use App\Item\Stats\ElixirStatsConfig;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -16,19 +17,11 @@ final class ElixirDefinitionFactory extends PersistentObjectFactory
         return ElixirDefinition::class;
     }
 
-    public const array VARIANTS = [
-        ['bonus' => 10, 'days' => 3],
-        ['bonus' => 20, 'days' => 3],
-        ['bonus' => 25, 'days' => 6],
-    ];
-
-    private const int COST_FACTOR = 50;
-
     protected function defaults(): array
     {
         $type = self::faker()->randomElement(ElixirTypeEnum::cases());
         /** @var array{days: int, bonus: int} $variant */
-        $variant = self::faker()->randomElement(self::VARIANTS);
+        $variant = self::faker()->randomElement(ElixirStatsConfig::VARIANTS);
 
         assert($type instanceof ElixirTypeEnum);
 
@@ -51,6 +44,6 @@ final class ElixirDefinitionFactory extends PersistentObjectFactory
     {
         $days = $durationSeconds / 86400;
 
-        return (int) round($percentageBonus * $days * self::COST_FACTOR);
+        return (int) round($percentageBonus * $days * ElixirStatsConfig::COST_FACTOR);
     }
 }

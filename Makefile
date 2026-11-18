@@ -22,7 +22,9 @@ bash:
 # FROM CONTAINER
 .PHONY: cc
 cc:
+	composer dump-autoload
 	php bin/console cache:clear
+	php bin/console cache:clear --env=test
 
 .PHONY: cs
 cs:
