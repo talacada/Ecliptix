@@ -1,8 +1,8 @@
 - [ ]  Opravit cenu prodeje, možná přidat snapshot ceny při nákupu
   - Prodej se násobí levelem v okamžiku prodeje. Příklad: 10 %/3 d elixír má base 1 500. Koupíš ho na L1 za ~1 500 a na L10 prodáš za 0,75 × 1 500 × 10 = 11 250.
-  - findByName (ActiveElixirRepository.php:45) nahradit za findByEffect(type, bonus)
 - [x] Mit vlastni ElixirConfig ElixirDefinitionFactory
-- [ ] Aktivace elixiru nepodle jmena ale podle toho jestli je stejny ElixirType a percentage bonus
+- [x] Aktivace elixiru nepodle jmena ale podle toho jestli je stejny ElixirType a percentage bonus
+    - findByName (ActiveElixirRepository.php:45) nahradit za findByEffect(type, bonus)
 - [x] prehodnotit jake hodnoty by meli byt float misto int
 - [ ] Story: jméno, popis a cenu odvodit z efektu. Story přepisuje jen 3 pole, zbytek se losuje
 - [ ] Povinný efekt v ElixirDefinition (typ, síla, délka). Dělat jako první, protože elixirType a percentageBonus jsou teď nullable a klíč by pracoval s null.

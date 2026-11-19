@@ -315,8 +315,6 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->crit = $crit;
     }
 
-
-
     /**
      * @return Collection<int, ShopRotation>
      */

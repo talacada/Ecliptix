@@ -72,18 +72,6 @@ class ItemDefinition
     #[Groups(ShopRotation::READ_GROUP)]
     private int $baseDiamondPrice = 0;
 
-    #[ORM\Column(nullable: true, enumType: ElixirTypeEnum::class)]
-    #[Groups(ShopRotation::READ_GROUP)]
-    private ?ElixirTypeEnum $elixirType = null;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    #[Groups(ShopRotation::READ_GROUP)]
-    private ?int $percentageBonus = null;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    #[Groups(ShopRotation::READ_GROUP)]
-    private ?int $durationSeconds = null;
-
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -239,39 +227,4 @@ class ItemDefinition
         return $this;
     }
 
-    public function getElixirType(): ?ElixirTypeEnum
-    {
-        return $this->elixirType;
-    }
-
-    public function setElixirType(?ElixirTypeEnum $elixirType): static
-    {
-        $this->elixirType = $elixirType;
-
-        return $this;
-    }
-
-    public function getPercentageBonus(): ?int
-    {
-        return $this->percentageBonus;
-    }
-
-    public function setPercentageBonus(?int $percentageBonus): static
-    {
-        $this->percentageBonus = $percentageBonus;
-
-        return $this;
-    }
-
-    public function getDurationSeconds(): ?int
-    {
-        return $this->durationSeconds;
-    }
-
-    public function setDurationSeconds(?int $durationSeconds): static
-    {
-        $this->durationSeconds = $durationSeconds;
-
-        return $this;
-    }
 }
