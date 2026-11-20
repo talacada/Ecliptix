@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use App\Character\Character\Character;
 use App\Item\Definition\ElixirDefinition;
-use App\Item\Definition\ItemDefinition;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity]
 class ElixirDefinition extends ItemDefinition
 {
-
     #[ORM\Column(nullable: true, enumType: ElixirTypeEnum::class)]
     #[Groups(ShopRotation::READ_GROUP)]
     private ElixirTypeEnum $elixirType;
@@ -35,7 +34,6 @@ class ElixirDefinition extends ItemDefinition
         $this->setDesiredSlot(ItemSlotEnum::Elixir);
         $this->setRarity(ItemRarityEnum::Common);
     }
-
 
     public function getElixirType(): ElixirTypeEnum
     {

@@ -5,4 +5,4 @@
     - findByName (ActiveElixirRepository.php:45) nahradit za findByEffect(type, bonus)
 - [x] prehodnotit jake hodnoty by meli byt float misto int
 - [ ] Story: jméno, popis a cenu odvodit z efektu. Story přepisuje jen 3 pole, zbytek se losuje
-- [ ] Povinný efekt v ElixirDefinition (typ, síla, délka). Dělat jako první, protože elixirType a percentageBonus jsou teď nullable a klíč by pracoval s null.
+- [x] Povinný efekt v ElixirDefinition (typ, síla, délka). Dělat jako první, protože elixirType a percentageBonus jsou teď nullable a klíč by pracoval s null.

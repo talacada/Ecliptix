@@ -226,5 +226,4 @@ class ItemDefinition
 
         return $this;
     }
-
 }

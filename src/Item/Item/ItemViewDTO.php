@@ -46,7 +46,7 @@ class ItemViewDTO
 
         $this->setSlot($definition->getDesiredSlot());
         if ($definition instanceof ElixirDefinition) {
-            $this->setElixirType($definition->getElixirType()?->value);
+            $this->setElixirType($definition->getElixirType()->value);
             $this->setPercentageBonus($definition->getPercentageBonus());
             $this->setDurationSeconds($definition->getDurationSeconds());
         } else {
@@ -65,7 +65,7 @@ class ItemViewDTO
         $this->setDescription($definition->getDescription());
         $this->setSlot($definition->getDesiredSlot());
         if ($definition instanceof ElixirDefinition) {
-            $this->setElixirType($definition->getElixirType()?->value);
+            $this->setElixirType($definition->getElixirType()->value);
             $this->setPercentageBonus($definition->getPercentageBonus());
             $this->setDurationSeconds($definition->getDurationSeconds());
         } else {
