@@ -270,11 +270,13 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
     {
         $character = CharacterFactory::createOne();
 
+        $definition = ElixirDefinitionFactory::createOne();
+
         $elixir = CharacterInventoryFactory::createOne([
             'container' => InventoryContainerEnum::Backpack,
             'quantity' => 3,
             'item' => ItemFactory::createOne([
-                'definition' => ElixirDefinitionFactory::createOne(),
+                'definition' => $definition,
             ]),
         ]);
 
@@ -299,7 +301,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                 [
                     '@type' => 'ActiveElixir',
                     'name' => $elixir->getItem()->getDefinition()->getName(),
-                    'percentageBonus' => $elixir->getItem()->getDefinition()->getPercentageBonus(),
+                    'percentageBonus' => $definition->getPercentageBonus(),
                 ],
             ],
         ]);

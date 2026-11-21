@@ -245,7 +245,7 @@ final class CharacterStory
 
             $active = new ActiveElixir();
             $active->setCharacter($character);
-            $active->setItemDefinition($elixirDef);
+            $active->setElixirDefinition($elixirDef);
             $active->setExpiresAt(
                 new DateTimeImmutable()->modify('+'.$elixirDef->getDurationSeconds().' seconds'),
             );

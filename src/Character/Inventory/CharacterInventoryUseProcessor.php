@@ -50,7 +50,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
 
         $this->elixirCleanUp->removeExpired($character);
 
-        $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);
+        $existingSameElixir = $this->activeElixirRepository->findByEffect($definition->getElixirType(), $definition->getPercentageBonus(), $character);
 
         if (null === $existingSameElixir && count($character->getActiveElixirs()) >= 3) {
             throw new MaxActiveElixirsReachedException();
@@ -64,7 +64,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         } else {
             $activeElixir = new ActiveElixir();
             $activeElixir->setCharacter($character);
-            $activeElixir->setItemDefinition($definition);
+            $activeElixir->setElixirDefinition($definition);
             $activeElixir->setExpiresAt(new DateTimeImmutable()->modify(
                 '+'.$definition->getDurationSeconds().' seconds', ),
             );
