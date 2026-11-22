@@ -79,7 +79,11 @@ class ShopOfferBuyProcessor implements ProcessorInterface
 
         $this->entityManager->remove($data);
 
-        $this->entityManager->persist($item);
+        //Dont want to persist item when i only added elixir to existing inventory slot
+        if ($inventory->getId() === null) {
+            $this->entityManager->persist($item);
+        }
+
         $this->entityManager->persist($inventory);
         $this->entityManager->flush();
 

@@ -6,3 +6,6 @@
 - [x] prehodnotit jake hodnoty by meli byt float misto int
 - [x] Story: jméno, popis a cenu odvodit z efektu. Story přepisuje jen 3 pole, zbytek se losuje
 - [x] Povinný efekt v ElixirDefinition (typ, síla, délka). Dělat jako první, protože elixirType a percentageBonus jsou teď nullable a klíč by pracoval s null.
+- [x]  Osiřelý Item při stackování elixíru
+  - ShopOfferBuyProcessor.php:82 volá persist($item) i když addToBackpack elixír jen stackne (quantity + 1) a nový Item nikam nepřipojí. Item se uloží do DB bez CharacterInventory.
+  - Řešení: persist($item) jen když addToBackpack vytvořil nový řádek inventáře (nebo createFromDefinitionAndOffer volat až po zjištění, že se nestackuje). Přidat test, že po koupi druhého kusu elixíru nepřibyde řádek v tabulce item.
