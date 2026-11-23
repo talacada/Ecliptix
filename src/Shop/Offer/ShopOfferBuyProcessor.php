@@ -62,7 +62,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
 
         $isStackable = $data->getItemDefinition()->isStackable();
 
-        if (!$isStackable &&$character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
+        if (!$isStackable && $character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
             throw new BackpackFullException();
         }
 
@@ -78,8 +78,8 @@ class ShopOfferBuyProcessor implements ProcessorInterface
 
         $this->entityManager->remove($data);
 
-        //Dont want to persist item when i only added elixir to existing inventory slot
-        if ($inventory->getId() === null) {
+        // Dont want to persist item when i only added elixir to existing inventory slot
+        if (null === $inventory->getId()) {
             $this->entityManager->persist($item);
         }
 
