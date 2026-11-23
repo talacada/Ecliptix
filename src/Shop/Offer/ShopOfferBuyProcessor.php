@@ -12,7 +12,6 @@ use App\Character\Character\LoggedInCharacter;
 use App\Character\Inventory\BackpackFullException;
 use App\Character\Inventory\CharacterInventoryRepository;
 use App\Character\Inventory\InventoryManager;
-use App\Item\Definition\ElixirDefinition;
 use App\Item\Item\ItemFactory;
 use App\Item\Item\ItemViewDTO;
 use App\Shop\Rotation\ShopRotation;
@@ -61,9 +60,9 @@ class ShopOfferBuyProcessor implements ProcessorInterface
             throw new InsufficientDiamondsException($data->getDiamondPrice(), $character->getDiamonds());
         }
 
-        $isElixir = $data->getItemDefinition() instanceof ElixirDefinition;
+        $isStackable = $data->getItemDefinition()->isStackable();
 
-        if (!$isElixir && $character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
+        if (!$isStackable &&$character->getBackpackCapacity() <= count($this->characterInventoryRepository->getUnequippedItems($character))) {
             throw new BackpackFullException();
         }
 

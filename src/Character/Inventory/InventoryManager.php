@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Character\Inventory;
 
 use App\Character\Character\Character;
-use App\Item\Definition\ElixirDefinition;
 use App\Item\Definition\ItemSlotEnum;
 use App\Item\Item\Item;
 
@@ -20,7 +19,7 @@ class InventoryManager
     {
         $definition = $item->getDefinition();
 
-        if ($definition instanceof ElixirDefinition) {
+        if ($definition->isStackable()) {
             $existingElixirStack = $this->characterInventoryRepository->getByDefinition($character, $definition->getId() ?? 0);
 
             if (null !== $existingElixirStack) {

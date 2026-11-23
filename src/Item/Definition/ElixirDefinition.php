@@ -7,6 +7,7 @@ namespace App\Item\Definition;
 use App\Shop\Rotation\ShopRotation;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
@@ -33,6 +34,12 @@ class ElixirDefinition extends ItemDefinition
         $this->setRequiredLevel(1);
         $this->setDesiredSlot(ItemSlotEnum::Elixir);
         $this->setRarity(ItemRarityEnum::Common);
+    }
+
+    #[Override]
+    public function isStackable(): bool
+    {
+        return true;
     }
 
     public function getElixirType(): ElixirTypeEnum

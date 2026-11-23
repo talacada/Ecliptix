@@ -215,6 +215,14 @@ class ItemDefinition
         return $this;
     }
 
+    /**
+     * Stackable items share one inventory row and only increase its quantity.
+     */
+    public function isStackable(): bool
+    {
+        return false;
+    }
+
     public function getBaseDiamondPrice(): int
     {
         return $this->baseDiamondPrice;

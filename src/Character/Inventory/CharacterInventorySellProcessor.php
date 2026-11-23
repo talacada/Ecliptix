@@ -7,7 +7,6 @@ namespace App\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
-use App\Item\Definition\ElixirDefinition;
 use App\Item\Stats\ItemConfig;
 use App\Support\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,13 +37,13 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();
         $sellPrice = (int) ($defaultGoldBuyPrice * ItemConfig::SELL_PRICE_MULTIPLIER);
 
-        $isElixir = $data->getItem()->getDefinition() instanceof ElixirDefinition;
+        $isStackable = $data->getItem()->getDefinition()->isStackable();
 
-        if ($isElixir) {
+        if ($isStackable) {
             $sellPrice = $sellPrice * $character->getLevel();
         }
 
-        if ($isElixir && $data->getQuantity() > 1) {
+        if ($isStackable && $data->getQuantity() > 1) {
             $data->setQuantity($data->getQuantity() - 1);
         } else {
             $this->entityManager->remove($data->getItem());
