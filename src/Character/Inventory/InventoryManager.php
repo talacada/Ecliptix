@@ -7,6 +7,7 @@ namespace App\Character\Inventory;
 use App\Character\Character\Character;
 use App\Item\Definition\ItemSlotEnum;
 use App\Item\Item\Item;
+use App\Item\Stats\ItemConfig;
 
 class InventoryManager
 {
@@ -15,15 +16,20 @@ class InventoryManager
     ) {
     }
 
-    public function addToBackpack(Character $character, Item $item): CharacterInventory
+    public function addToBackpack(Character $character, Item $item, int $goldPaid, int $diamondPaid): CharacterInventory
     {
         $definition = $item->getDefinition();
+
+        $willSellForGold = (int) ($goldPaid * ItemConfig::SELL_GOLD_PRICE_MULTIPLIER);
+        $willSellForDiamond = (int) ($diamondPaid * ItemConfig::SELL_DIAMOND_PRICE_MULTIPLIER);
 
         if ($definition->isStackable()) {
             $existingElixirStack = $this->characterInventoryRepository->getByDefinition($character, $definition->getId() ?? 0);
 
             if (null !== $existingElixirStack) {
-                $existingElixirStack->setQuantity($existingElixirStack->getQuantity() + 1);
+                $existingElixirStack->addQuantity(1);
+                $existingElixirStack->addGoldPaid($willSellForGold);
+                $existingElixirStack->addDiamondPaid($willSellForDiamond);
 
                 return $existingElixirStack;
             }
@@ -38,6 +44,8 @@ class InventoryManager
         $characterInventory->setItem($item);
         $characterInventory->setPosition($this->getFirstAvailablePosition($character));
         $characterInventory->setContainer(InventoryContainerEnum::Backpack);
+        $characterInventory->setGoldPaid($willSellForGold);
+        $characterInventory->setDiamondPaid($willSellForDiamond);
 
         return $characterInventory;
     }

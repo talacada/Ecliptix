@@ -227,14 +227,14 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         $client = static::createAuthenticatedClient($character);
 
         // SELL 1
-        $client->request('POST', '/api/character/inventory/'.$inventoryEquipped->getId().'/sell');
+        $client->request('POST', '/api/character/inventory/' . $inventoryEquipped->getId() . '/sell');
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $response = $client->request('GET', '/api/character');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
-            'gold' => intval(10 + $inventoryEquipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_PRICE_MULTIPLIER),
+            'gold' => intval(10 + $inventoryEquipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_GOLD_PRICE_MULTIPLIER),
         ]);
         $data = $response->toArray(false);
         $this->assertCount(2, $data['characterInventories']);
@@ -248,7 +248,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
-            'gold' => intval($gold + $inventoryUnequipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_PRICE_MULTIPLIER),
+            'gold' => intval($gold + $inventoryUnequipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_GOLD_PRICE_MULTIPLIER),
         ]);
         $data = $response->toArray(false);
         $this->assertCount(1, $data['characterInventories']);

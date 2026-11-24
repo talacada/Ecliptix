@@ -57,5 +57,8 @@ final class ItemConfig
     public const int BONUS_STAT_VARIANCE_PERCENT = 20;
 
     /** Multiplier applied to base gold price when selling an item back to shop/system. */
-    public const float SELL_PRICE_MULTIPLIER = 0.75;
+    public const float SELL_GOLD_PRICE_MULTIPLIER = 0.75;
+
+    /** Multiplier applied to base diamond price when selling an item back to shop/system. */
+    public const float SELL_DIAMOND_PRICE_MULTIPLIER = 0.3;
 }

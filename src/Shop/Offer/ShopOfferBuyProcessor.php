@@ -68,7 +68,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
 
         $item = $this->itemFactory->createFromDefinitionAndOffer($data);
 
-        $inventory = $this->inventoryManager->addToBackpack($character, $item);
+        $inventory = $this->inventoryManager->addToBackpack($character, $item, $data->getGoldPrice(), $data->getDiamondPrice());
 
         $character->subtractGold($data->getGoldPrice());
         $character->subtractDiamonds($data->getDiamondPrice());

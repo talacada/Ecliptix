@@ -34,23 +34,23 @@ class CharacterInventorySellProcessor implements ProcessorInterface
             throw new ResourceNotFoundException(CharacterInventory::class);
         }
 
-        $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();
-        $sellPrice = (int) ($defaultGoldBuyPrice * ItemConfig::SELL_PRICE_MULTIPLIER);
-
         $isStackable = $data->getItem()->getDefinition()->isStackable();
 
-        if ($isStackable) {
-            $sellPrice = $sellPrice * $character->getLevel();
-        }
-
         if ($isStackable && $data->getQuantity() > 1) {
-            $data->setQuantity($data->getQuantity() - 1);
+            $willGetGold = $data->removeGoldPriceByUnits(1);
+            $willGetDia = $data->removeDiaPriceByUnits(1);
+            $character->addGold($willGetGold);
+            $character->addDiamonds($willGetDia);
+
+            $data->removeQuantity(1);
+
         } else {
+            $character->addGold($data->getGoldPrice());
+            $character->addDiamonds($data->getDiamondPrice());
+
             $this->entityManager->remove($data->getItem());
             $this->entityManager->remove($data);
         }
-
-        $character->addGold($sellPrice);
 
         $this->entityManager->flush();
 

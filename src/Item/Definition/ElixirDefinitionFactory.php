@@ -19,11 +19,6 @@ final class ElixirDefinitionFactory extends PersistentObjectFactory
         return ElixirDefinition::class;
     }
 
-    /**
-     * Only the effect (type, bonus, duration) is generated here.
-     * Name, description and price are derived from it in initialize(),
-     * so they stay consistent even when the effect is overridden via with().
-     */
     protected function defaults(): array
     {
         $type = self::faker()->randomElement(ElixirTypeEnum::cases());

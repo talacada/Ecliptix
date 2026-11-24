@@ -109,6 +109,12 @@ class CharacterInventory
     #[SerializedName('item')]
     private ?ItemViewDTO $itemViewDTO = null;
 
+    #[ORM\Column]
+    private int $goldPaid = 0;
+
+    #[ORM\Column]
+    private int $diamondPaid = 0;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -170,6 +176,16 @@ class CharacterInventory
         return $this;
     }
 
+    public function addQuantity(int $quantity): void
+    {
+        $this->quantity += $quantity;
+    }
+
+    public function removeQuantity(int $quantity): static
+    {
+        $this->quantity -= $quantity;
+    }
+
     public function getPosition(): int
     {
         return $this->position;
@@ -178,5 +194,56 @@ class CharacterInventory
     public function setPosition(int $position): void
     {
         $this->position = $position;
+    }
+
+    public function getGoldPaid(): int
+    {
+        return $this->goldPaid;
+    }
+
+    public function setGoldPaid(int $goldPaid): void
+    {
+        $this->goldPaid = $goldPaid;
+    }
+
+    public function removeGoldPrice(int $gold): void
+    {
+        $this->goldPaid -= $gold;
+    }
+
+    public function removeGoldPriceByUnits(int $units): int
+    {
+        $removing = $this->quantity === $units ? $this->goldPaid : intdiv($this->goldPaid, $this->quantity) * $units;
+        $this->goldPaid -= $removing;
+
+        return $removing;
+    }
+
+    public function addGoldPaid(int $goldPaid): void
+    {
+        $this->goldPaid += $goldPaid;
+    }
+
+    public function getDiamondPaid(): int
+    {
+        return $this->diamondPaid;
+    }
+
+    public function setDiamondPaid(int $diamondPaid): void
+    {
+        $this->diamondPaid = $diamondPaid;
+    }
+
+    public function addDiamondPaid(int $diamondPaid): void
+    {
+        $this->diamondPaid += $diamondPaid;
+    }
+
+    public function removeDiaPriceByUnits(int $units): int
+    {
+        $removing = $this->quantity === $units ? $this->diamondPaid : intdiv($this->diamondPaid, $this->quantity) * $units;
+        $this->diamondPaid -= $removing;
+
+        return $removing;
     }
 }

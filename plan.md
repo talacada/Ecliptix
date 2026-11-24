@@ -1,5 +1,6 @@
 - [ ]  Opravit cenu prodeje, možná přidat snapshot ceny při nákupu
   - Prodej se násobí levelem v okamžiku prodeje. Příklad: 10 %/3 d elixír má base 1 500. Koupíš ho na L1 za ~1 500 a na L10 prodáš za 0,75 × 1 500 × 10 = 11 250.
+  - [ ] Dalsi, prejmenovat na gold_sell_price...
 - [x] Mit vlastni ElixirConfig ElixirDefinitionFactory
 - [x] Aktivace elixiru nepodle jmena ale podle toho jestli je stejny ElixirType a percentage bonus
     - findByName (ActiveElixirRepository.php:45) nahradit za findByEffect(type, bonus)
