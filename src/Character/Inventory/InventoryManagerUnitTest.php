@@ -118,7 +118,7 @@ class InventoryManagerUnitTest extends TestCase
             ->with($character)
             ->willReturn([4, 3, 2]);
 
-        $result = $this->manager->addToBackpack($character, $item, 1,1);
+        $result = $this->manager->addToBackpack($character, $item, 1, 1);
 
         $this->assertSame(InventoryContainerEnum::Backpack, $result->getContainer());
         $this->assertSame(1, $result->getPosition());

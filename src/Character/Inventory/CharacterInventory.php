@@ -110,10 +110,10 @@ class CharacterInventory
     private ?ItemViewDTO $itemViewDTO = null;
 
     #[ORM\Column]
-    private int $goldPaid = 0;
+    private int $goldSellPrice = 0;
 
     #[ORM\Column]
-    private int $diamondPaid = 0;
+    private int $diamondSellPrice = 0;
 
     public function getId(): ?int
     {
@@ -181,7 +181,7 @@ class CharacterInventory
         $this->quantity += $quantity;
     }
 
-    public function removeQuantity(int $quantity): static
+    public function removeQuantity(int $quantity): void
     {
         $this->quantity -= $quantity;
     }
@@ -196,53 +196,53 @@ class CharacterInventory
         $this->position = $position;
     }
 
-    public function getGoldPaid(): int
+    public function getGoldSellPrice(): int
     {
-        return $this->goldPaid;
+        return $this->goldSellPrice;
     }
 
-    public function setGoldPaid(int $goldPaid): void
+    public function setGoldSellPrice(int $goldSellPrice): void
     {
-        $this->goldPaid = $goldPaid;
+        $this->goldSellPrice = $goldSellPrice;
     }
 
-    public function removeGoldPrice(int $gold): void
+    public function removeGoldSellPrice(int $gold): void
     {
-        $this->goldPaid -= $gold;
+        $this->goldSellPrice -= $gold;
     }
 
-    public function removeGoldPriceByUnits(int $units): int
+    public function removeGoldSellPriceByUnits(int $units): int
     {
-        $removing = $this->quantity === $units ? $this->goldPaid : intdiv($this->goldPaid, $this->quantity) * $units;
-        $this->goldPaid -= $removing;
+        $removing = $this->quantity === $units ? $this->goldSellPrice : intdiv($this->goldSellPrice, $this->quantity) * $units;
+        $this->goldSellPrice -= $removing;
 
         return $removing;
     }
 
-    public function addGoldPaid(int $goldPaid): void
+    public function addGoldSellPrice(int $goldPrice): void
     {
-        $this->goldPaid += $goldPaid;
+        $this->goldSellPrice += $goldPrice;
     }
 
-    public function getDiamondPaid(): int
+    public function getDiamondSellPrice(): int
     {
-        return $this->diamondPaid;
+        return $this->diamondSellPrice;
     }
 
-    public function setDiamondPaid(int $diamondPaid): void
+    public function setDiamondSellPrice(int $diamondSellPrice): void
     {
-        $this->diamondPaid = $diamondPaid;
+        $this->diamondSellPrice = $diamondSellPrice;
     }
 
-    public function addDiamondPaid(int $diamondPaid): void
+    public function addDiamondSellPrice(int $diamondPaid): void
     {
-        $this->diamondPaid += $diamondPaid;
+        $this->diamondSellPrice += $diamondPaid;
     }
 
-    public function removeDiaPriceByUnits(int $units): int
+    public function removeDiamondSellPriceByUnits(int $units): int
     {
-        $removing = $this->quantity === $units ? $this->diamondPaid : intdiv($this->diamondPaid, $this->quantity) * $units;
-        $this->diamondPaid -= $removing;
+        $removing = $this->quantity === $units ? $this->diamondSellPrice : intdiv($this->diamondSellPrice, $this->quantity) * $units;
+        $this->diamondSellPrice -= $removing;
 
         return $removing;
     }

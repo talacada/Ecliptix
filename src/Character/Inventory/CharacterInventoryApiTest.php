@@ -9,7 +9,6 @@ use App\Item\Definition\ElixirDefinitionFactory;
 use App\Item\Definition\ItemDefinitionFactory;
 use App\Item\Definition\ItemSlotEnum;
 use App\Item\Item\ItemFactory;
-use App\Item\Stats\ItemConfig;
 use App\Tests\Support\AbstractApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -201,6 +200,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                     'desiredSlot' => ItemSlotEnum::Helmet,
                 ]),
             ]),
+            'goldSellPrice' => 132,
         ]);
 
         $inventoryEquipped = CharacterInventoryFactory::createOne([
@@ -210,6 +210,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
                     'desiredSlot' => ItemSlotEnum::Helmet,
                 ]),
             ]),
+            'goldSellPrice' => 1456,
         ]);
 
         $elixir = CharacterInventoryFactory::createOne([
@@ -218,6 +219,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
             'item' => ItemFactory::createOne([
                 'definition' => ElixirDefinitionFactory::createOne(),
             ]),
+            'goldSellPrice' => 452,
         ]);
 
         $character->addCharacterInventory($inventoryEquipped);
@@ -227,14 +229,14 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
         $client = static::createAuthenticatedClient($character);
 
         // SELL 1
-        $client->request('POST', '/api/character/inventory/' . $inventoryEquipped->getId() . '/sell');
+        $client->request('POST', '/api/character/inventory/'.$inventoryEquipped->getId().'/sell');
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $response = $client->request('GET', '/api/character');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
-            'gold' => intval(10 + $inventoryEquipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_GOLD_PRICE_MULTIPLIER),
+            'gold' => intval(10 + $inventoryEquipped->getGoldSellPrice()),
         ]);
         $data = $response->toArray(false);
         $this->assertCount(2, $data['characterInventories']);
@@ -248,7 +250,7 @@ class CharacterInventoryApiTest extends AbstractApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertJsonContains([
-            'gold' => intval($gold + $inventoryUnequipped->getItem()->getDefinition()->getBaseGoldPrice() * ItemConfig::SELL_GOLD_PRICE_MULTIPLIER),
+            'gold' => intval($gold + $inventoryUnequipped->getGoldSellPrice()),
         ]);
         $data = $response->toArray(false);
         $this->assertCount(1, $data['characterInventories']);

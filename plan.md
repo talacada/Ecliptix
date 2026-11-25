@@ -1,6 +1,6 @@
 - [ ]  Opravit cenu prodeje, možná přidat snapshot ceny při nákupu
   - Prodej se násobí levelem v okamžiku prodeje. Příklad: 10 %/3 d elixír má base 1 500. Koupíš ho na L1 za ~1 500 a na L10 prodáš za 0,75 × 1 500 × 10 = 11 250.
-  - [ ] Dalsi, prejmenovat na gold_sell_price...
+  - [x] Dalsi, prejmenovat na gold_sell_price...
 - [x] Mit vlastni ElixirConfig ElixirDefinitionFactory
 - [x] Aktivace elixiru nepodle jmena ale podle toho jestli je stejny ElixirType a percentage bonus
     - findByName (ActiveElixirRepository.php:45) nahradit za findByEffect(type, bonus)
@@ -10,3 +10,6 @@
 - [x]  Osiřelý Item při stackování elixíru
   - ShopOfferBuyProcessor.php:82 volá persist($item) i když addToBackpack elixír jen stackne (quantity + 1) a nový Item nikam nepřipojí. Item se uloží do DB bez CharacterInventory.
   - Řešení: persist($item) jen když addToBackpack vytvořil nový řádek inventáře (nebo createFromDefinitionAndOffer volat až po zjištění, že se nestackuje). Přidat test, že po koupi druhého kusu elixíru nepřibyde řádek v tabulce item.
+
+
+- [ ] v CharacterInventorySellProcessor $data nevi co to je nekde

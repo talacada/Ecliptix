@@ -7,7 +7,6 @@ namespace App\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
-use App\Item\Stats\ItemConfig;
 use App\Support\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -37,16 +36,15 @@ class CharacterInventorySellProcessor implements ProcessorInterface
         $isStackable = $data->getItem()->getDefinition()->isStackable();
 
         if ($isStackable && $data->getQuantity() > 1) {
-            $willGetGold = $data->removeGoldPriceByUnits(1);
-            $willGetDia = $data->removeDiaPriceByUnits(1);
+            $willGetGold = $data->removeGoldSellPriceByUnits(1);
+            $willGetDia = $data->removeDiamondSellPriceByUnits(1);
             $character->addGold($willGetGold);
             $character->addDiamonds($willGetDia);
 
             $data->removeQuantity(1);
-
         } else {
-            $character->addGold($data->getGoldPrice());
-            $character->addDiamonds($data->getDiamondPrice());
+            $character->addGold($data->getGoldSellPrice());
+            $character->addDiamonds($data->getDiamondSellPrice());
 
             $this->entityManager->remove($data->getItem());
             $this->entityManager->remove($data);

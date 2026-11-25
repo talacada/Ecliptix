@@ -28,8 +28,8 @@ class InventoryManager
 
             if (null !== $existingElixirStack) {
                 $existingElixirStack->addQuantity(1);
-                $existingElixirStack->addGoldPaid($willSellForGold);
-                $existingElixirStack->addDiamondPaid($willSellForDiamond);
+                $existingElixirStack->addGoldSellPrice($willSellForGold);
+                $existingElixirStack->addDiamondSellPrice($willSellForDiamond);
 
                 return $existingElixirStack;
             }
@@ -44,8 +44,8 @@ class InventoryManager
         $characterInventory->setItem($item);
         $characterInventory->setPosition($this->getFirstAvailablePosition($character));
         $characterInventory->setContainer(InventoryContainerEnum::Backpack);
-        $characterInventory->setGoldPaid($willSellForGold);
-        $characterInventory->setDiamondPaid($willSellForDiamond);
+        $characterInventory->setGoldSellPrice($willSellForGold);
+        $characterInventory->setDiamondSellPrice($willSellForDiamond);
 
         return $characterInventory;
     }
