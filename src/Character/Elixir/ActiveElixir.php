@@ -69,7 +69,7 @@ class ActiveElixir
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[SerializedName('percentageBonus')]
-    public function getElixirPercentageBonus(): ?int
+    public function getElixirPercentageBonus(): int
     {
         return $this->elixirDefinition->getPercentageBonus();
     }

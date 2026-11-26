@@ -19,7 +19,6 @@ use App\Shop\Rotation\ShopRotationNotAvailableException;
 use App\Support\Exception\ResourceNotFoundException;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<ShopOffer, ItemViewDTO>
@@ -36,7 +35,7 @@ class ShopOfferBuyProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @param ShopOffer $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ItemViewDTO
     {

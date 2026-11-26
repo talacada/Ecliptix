@@ -9,7 +9,6 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
 use App\Support\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, null>
@@ -23,7 +22,7 @@ class CharacterInventorySellProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @param CharacterInventory $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): null
     {

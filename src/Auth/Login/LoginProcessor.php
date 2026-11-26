@@ -22,6 +22,9 @@ readonly class LoginProcessor implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @param LoginInput $data
+     */
     public function process(
         mixed $data,
         Operation $operation,

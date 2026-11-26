@@ -1,4 +1,4 @@
-- [ ]  Opravit cenu prodeje, možná přidat snapshot ceny při nákupu
+- [x]  Opravit cenu prodeje, možná přidat snapshot ceny při nákupu
   - Prodej se násobí levelem v okamžiku prodeje. Příklad: 10 %/3 d elixír má base 1 500. Koupíš ho na L1 za ~1 500 a na L10 prodáš za 0,75 × 1 500 × 10 = 11 250.
   - [x] Dalsi, prejmenovat na gold_sell_price...
 - [x] Mit vlastni ElixirConfig ElixirDefinitionFactory
@@ -13,3 +13,10 @@
 
 
 - [ ] v CharacterInventorySellProcessor $data nevi co to je nekde
+- [ ] Odečet prodejní ceny při použití elixíru ze stacku
+  - `CharacterInventoryUseProcessor.php:71-73` při `quantity > 1` sníží jen `quantity`, ale neodečte poměrnou část `goldSellPrice` a `diamondSellPrice` (na rozdíl od `CharacterInventorySellProcessor`).
+  - Řešení: při `quantity > 1` snížit i `goldSellPrice` a `diamondSellPrice` za 1 kus (např. přes `removeGoldSellPriceByUnits(1)` / `removeDiamondSellPriceByUnits(1)` a `removeQuantity(1)`).
+- [ ] Doplnit testy pro stackování, ceny a aktivaci elixírů
+  - `CharacterInventoryApiTest::testSellInventoryItemAddsGoldAndRemovesItem()`: u prodeje 1 kusu ze stacku (`SELL 3`) ověřit kromě `quantity` i připsané zlato (případně diamanty) a zbývající prodejní cenu.
+  - `CharacterInventoryApiTest`: přidat test na použití elixíru ze stacku + následný prodej zbylého kusu, že se nevrátí cena za celý původní stack.
+  - `CharacterInventoryApiTest`: přidat test na aktivaci elixírů podle efektu (`findByEffect` — stejný `elixirType` + `percentageBonus` prodlouží expiraci, jiný bonus přidá další slot do limitu 3).

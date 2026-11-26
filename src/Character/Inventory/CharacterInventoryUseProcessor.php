@@ -13,10 +13,8 @@ use App\Character\Elixir\ElixirCleanUp;
 use App\Character\Elixir\MaxActiveElixirsReachedException;
 use App\Item\Definition\ElixirDefinition;
 use App\Support\Exception\ResourceNotFoundException;
-use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, ActiveElixir>
@@ -32,8 +30,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws DateMalformedStringException
-     * @throws Exception
+     * @param CharacterInventory $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ActiveElixir
     {

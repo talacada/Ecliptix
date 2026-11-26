@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -36,7 +35,7 @@ readonly class RequestPasswordResetProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws ExceptionInterface
+     * @param RequestPasswordResetInput $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): JsonResponse
     {

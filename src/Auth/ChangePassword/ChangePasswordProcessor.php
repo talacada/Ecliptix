@@ -23,6 +23,9 @@ class ChangePasswordProcessor implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @param ChangePasswordInput $data
+     */
     public function process(mixed $data, Operation $operation, $uriVariables = [], $context = []): Character
     {
         $character = $this->loggedInCharacter->getCharacter();
