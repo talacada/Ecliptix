@@ -69,7 +69,9 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         }
 
         if ($data->getQuantity() > 1) {
-            $data->setQuantity($data->getQuantity() - 1);
+            $data->removeGoldSellPriceByUnits(1);
+            $data->removeDiamondSellPriceByUnits(1);
+            $data->removeQuantity(1);
         } else {
             $this->entityManager->remove($data->getItem());
             $this->entityManager->remove($data);
