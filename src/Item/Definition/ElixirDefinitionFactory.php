@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Item\Definition;
 
+use App\Item\Stats\ElixirStatsConfig;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -11,46 +12,57 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class ElixirDefinitionFactory extends PersistentObjectFactory
 {
+    private const int SECONDS_PER_DAY = 86400;
+
     public static function class(): string
     {
         return ElixirDefinition::class;
     }
 
-    public const array VARIANTS = [
-        ['bonus' => 10, 'days' => 3],
-        ['bonus' => 20, 'days' => 3],
-        ['bonus' => 25, 'days' => 6],
-    ];
-
-    private const int COST_FACTOR = 50;
-
     protected function defaults(): array
     {
         $type = self::faker()->randomElement(ElixirTypeEnum::cases());
-        /** @var array{days: int, bonus: int} $variant */
-        $variant = self::faker()->randomElement(self::VARIANTS);
+        /** @var array{days: int, bonus: int, name: string} $variant */
+        $variant = self::faker()->randomElement(ElixirStatsConfig::VARIANTS);
 
         assert($type instanceof ElixirTypeEnum);
-
-        $durationSeconds = $variant['days'] * 86400;
-        $price = self::calculatePrice($variant['bonus'], $durationSeconds);
 
         return [
             'elixirType' => $type,
             'percentageBonus' => $variant['bonus'],
-            'durationSeconds' => $durationSeconds,
-            'baseGoldPrice' => $price,
+            'durationSeconds' => $variant['days'] * self::SECONDS_PER_DAY,
             'baseDiamondPrice' => 0,
             'rarity' => ItemRarityEnum::Common,
-            'name' => sprintf('%s elixir +%d%%', ucfirst($type->value), $variant['bonus']),
-            'description' => sprintf('+%d%% %s for %d days', $variant['bonus'], $type->value, $variant['days']),
         ];
+    }
+
+    protected function initialize(): static
+    {
+        return $this->afterInstantiate(static function (ElixirDefinition $elixir): void {
+            $type = $elixir->getElixirType();
+            $bonus = $elixir->getPercentageBonus();
+            $duration = $elixir->getDurationSeconds();
+            $days = (int) round($duration / self::SECONDS_PER_DAY);
+
+            $variantName = null;
+            foreach (ElixirStatsConfig::VARIANTS as $variant) {
+                if ($variant['bonus'] === $bonus && $variant['days'] * self::SECONDS_PER_DAY === $duration) {
+                    $variantName = $variant['name'];
+                    break;
+                }
+            }
+
+            $elixir
+                ->setName(sprintf('%s %s potion', $variantName ?? sprintf('+%d%%', $bonus), $type->value))
+                ->setDescription(sprintf('Increases %s by %d%% for %d days', $type->value, $bonus, $days))
+                ->setBaseGoldPrice(self::calculatePrice($bonus, $duration));
+        });
     }
 
     public static function calculatePrice(int $percentageBonus, int $durationSeconds): int
     {
-        $days = $durationSeconds / 86400;
+        $days = $durationSeconds / self::SECONDS_PER_DAY;
 
-        return (int) round($percentageBonus * $days * self::COST_FACTOR);
+        return (int) round($percentageBonus * $days * ElixirStatsConfig::COST_FACTOR);
     }
 }

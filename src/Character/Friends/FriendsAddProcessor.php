@@ -11,7 +11,6 @@ use App\Character\Character\CharacterNotFoundException;
 use App\Character\Character\CharacterRepository;
 use App\Character\Character\LoggedInCharacter;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<Character, FriendRelation>
@@ -27,7 +26,7 @@ class FriendsAddProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @param Character $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): FriendRelation
     {

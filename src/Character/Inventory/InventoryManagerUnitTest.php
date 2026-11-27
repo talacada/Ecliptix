@@ -52,7 +52,7 @@ class InventoryManagerUnitTest extends TestCase
             ->with($character, 10)
             ->willReturn($characterInventory);
 
-        $result = $this->manager->addToBackpack($character, $item);
+        $result = $this->manager->addToBackpack($character, $item, 1, 1);
 
         $this->assertSame(InventoryContainerEnum::Backpack, $result->getContainer());
         $this->assertSame(3, $result->getQuantity());
@@ -89,7 +89,7 @@ class InventoryManagerUnitTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Not enough backpack space');
 
-        $this->manager->addToBackpack($character, $item);
+        $this->manager->addToBackpack($character, $item, 1, 1);
     }
 
     /**
@@ -118,7 +118,7 @@ class InventoryManagerUnitTest extends TestCase
             ->with($character)
             ->willReturn([4, 3, 2]);
 
-        $result = $this->manager->addToBackpack($character, $item);
+        $result = $this->manager->addToBackpack($character, $item, 1, 1);
 
         $this->assertSame(InventoryContainerEnum::Backpack, $result->getContainer());
         $this->assertSame(1, $result->getPosition());
@@ -158,7 +158,7 @@ class InventoryManagerUnitTest extends TestCase
             ->with($character)
             ->willReturn([1]);
 
-        $result = $this->manager->addToBackpack($character, $item);
+        $result = $this->manager->addToBackpack($character, $item, 1, 1);
 
         $this->assertSame(InventoryContainerEnum::Backpack, $result->getContainer());
         $this->assertSame(2, $result->getPosition());
@@ -287,7 +287,7 @@ class InventoryManagerUnitTest extends TestCase
             ->expects($this->never())
             ->method('getUnequippedItems');
 
-        $result = $this->manager->addToBackpack($character, $elixir);
+        $result = $this->manager->addToBackpack($character, $elixir, 1, 1);
 
         $this->assertSame($characterInventoryElixir, $result);
         $this->assertSame(3, $result->getQuantity());

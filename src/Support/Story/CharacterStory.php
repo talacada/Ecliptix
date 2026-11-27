@@ -44,7 +44,7 @@ final class CharacterStory
     }
 
     private const int BATCH_SIZE = 50;
-    private const int TOTAL_CHARACTERS = 200;
+    private const int TOTAL_CHARACTERS = 100;
 
     /**
      * @throws OptimisticLockException
@@ -79,14 +79,18 @@ final class CharacterStory
             }
         }
 
+        // Hashing is slow by design, so hash only a few passwords once and reuse them for the padding characters
+        $passwordHashes = [];
+        foreach (['Heslo1Heslo1', 'Heslo2Heslo2', 'Heslo3Heslo3'] as $plainPassword) {
+            $passwordHashes[] = $this->passwordHasher->hashPassword(new Character(), $plainPassword);
+        }
+
         // Generate bare characters with random PP (leaderboard padding, no equipment needed)
         for ($i = 0; $i < self::TOTAL_CHARACTERS; ++$i) {
             $character = new Character();
             $character->setEmail(faker()->email());
             $character->setUsername(faker()->userName().$i);
-            $character->setPasswordHash(
-                $this->passwordHasher->hashPassword($character, faker()->password()),
-            );
+            $character->setPasswordHash($passwordHashes[array_rand($passwordHashes)]);
             $character->setPrestigePoints(random_int(0, 10000));
             $this->setRandomAppearance($character, $raceIds, $optionsByRace);
             $this->entityManager->persist($character);
@@ -245,7 +249,7 @@ final class CharacterStory
 
             $active = new ActiveElixir();
             $active->setCharacter($character);
-            $active->setItemDefinition($elixirDef);
+            $active->setElixirDefinition($elixirDef);
             $active->setExpiresAt(
                 new DateTimeImmutable()->modify('+'.$elixirDef->getDurationSeconds().' seconds'),
             );

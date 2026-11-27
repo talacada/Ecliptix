@@ -14,4 +14,5 @@ final class CharacterConfig
     public const int INITIAL_DIAMONDS = 1;
     public const int INITIAL_EXPERIENCE = 0;
     public const int INITIAL_PRESTIGE_POINTS = 1;
+    public const int INITIAL_CRIT = 0;
 }

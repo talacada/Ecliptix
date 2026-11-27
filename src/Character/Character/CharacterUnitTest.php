@@ -23,6 +23,7 @@ class CharacterUnitTest extends TestCase
         $this->assertSame(0, $character->getExperience());
         $this->assertSame(1, $character->getDamage());
         $this->assertSame(100, $character->getHealth());
+        $this->assertSame(0, $character->getCrit());
         $this->assertSame(4, $character->getBackpackCapacity());
         $this->assertSame(1, $character->getPrestigePoints());
         $this->assertFalse($character->isEmailVerified());

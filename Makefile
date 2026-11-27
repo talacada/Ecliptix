@@ -22,7 +22,9 @@ bash:
 # FROM CONTAINER
 .PHONY: cc
 cc:
+	composer dump-autoload
 	php bin/console cache:clear
+	php bin/console cache:clear --env=test
 
 .PHONY: cs
 cs:
@@ -67,4 +69,4 @@ db-reset:
 	php bin/console doctrine:database:drop --force && \
 	php bin/console doctrine:database:create --if-not-exists && \
 	php bin/console doctrine:migrations:migrate --no-interaction && \
-	php bin/console foundry:load-fixtures --append --no-interaction
+	XDEBUG_MODE=off php bin/console foundry:load-fixtures --append --no-interaction

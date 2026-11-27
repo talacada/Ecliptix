@@ -109,6 +109,12 @@ class CharacterInventory
     #[SerializedName('item')]
     private ?ItemViewDTO $itemViewDTO = null;
 
+    #[ORM\Column]
+    private int $goldSellPrice = 0;
+
+    #[ORM\Column]
+    private int $diamondSellPrice = 0;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -170,6 +176,16 @@ class CharacterInventory
         return $this;
     }
 
+    public function addQuantity(int $quantity): void
+    {
+        $this->quantity += $quantity;
+    }
+
+    public function removeQuantity(int $quantity): void
+    {
+        $this->quantity -= $quantity;
+    }
+
     public function getPosition(): int
     {
         return $this->position;
@@ -178,5 +194,56 @@ class CharacterInventory
     public function setPosition(int $position): void
     {
         $this->position = $position;
+    }
+
+    public function getGoldSellPrice(): int
+    {
+        return $this->goldSellPrice;
+    }
+
+    public function setGoldSellPrice(int $goldSellPrice): void
+    {
+        $this->goldSellPrice = $goldSellPrice;
+    }
+
+    public function removeGoldSellPrice(int $gold): void
+    {
+        $this->goldSellPrice -= $gold;
+    }
+
+    public function removeGoldSellPriceByUnits(int $units): int
+    {
+        $removing = $this->quantity === $units ? $this->goldSellPrice : intdiv($this->goldSellPrice, $this->quantity) * $units;
+        $this->goldSellPrice -= $removing;
+
+        return $removing;
+    }
+
+    public function addGoldSellPrice(int $goldPrice): void
+    {
+        $this->goldSellPrice += $goldPrice;
+    }
+
+    public function getDiamondSellPrice(): int
+    {
+        return $this->diamondSellPrice;
+    }
+
+    public function setDiamondSellPrice(int $diamondSellPrice): void
+    {
+        $this->diamondSellPrice = $diamondSellPrice;
+    }
+
+    public function addDiamondSellPrice(int $diamondPaid): void
+    {
+        $this->diamondSellPrice += $diamondPaid;
+    }
+
+    public function removeDiamondSellPriceByUnits(int $units): int
+    {
+        $removing = $this->quantity === $units ? $this->diamondSellPrice : intdiv($this->diamondSellPrice, $this->quantity) * $units;
+        $this->diamondSellPrice -= $removing;
+
+        return $removing;
     }
 }

@@ -10,7 +10,6 @@ use App\Character\Character\LoggedInCharacter;
 use App\Item\Definition\ElixirDefinition;
 use App\Support\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, CharacterInventory>
@@ -26,7 +25,7 @@ class CharacterInventoryEditProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @param CharacterInventory $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): CharacterInventory
     {

@@ -23,6 +23,9 @@ class VerifyEmailProcessor implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @param EmailVerificationToken $data
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): JsonResponse
     {
         $dbToken = $this->emailVerificationTokenRepository->getToken($data);

@@ -13,10 +13,8 @@ use App\Character\Elixir\ElixirCleanUp;
 use App\Character\Elixir\MaxActiveElixirsReachedException;
 use App\Item\Definition\ElixirDefinition;
 use App\Support\Exception\ResourceNotFoundException;
-use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, ActiveElixir>
@@ -32,8 +30,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws DateMalformedStringException
-     * @throws Exception
+     * @param CharacterInventory $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ActiveElixir
     {
@@ -50,7 +47,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
 
         $this->elixirCleanUp->removeExpired($character);
 
-        $existingSameElixir = $this->activeElixirRepository->findByName($definition->getName(), $character);
+        $existingSameElixir = $this->activeElixirRepository->findByEffect($definition->getElixirType(), $definition->getPercentageBonus(), $character);
 
         if (null === $existingSameElixir && count($character->getActiveElixirs()) >= 3) {
             throw new MaxActiveElixirsReachedException();
@@ -64,7 +61,7 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         } else {
             $activeElixir = new ActiveElixir();
             $activeElixir->setCharacter($character);
-            $activeElixir->setItemDefinition($definition);
+            $activeElixir->setElixirDefinition($definition);
             $activeElixir->setExpiresAt(new DateTimeImmutable()->modify(
                 '+'.$definition->getDurationSeconds().' seconds', ),
             );
@@ -72,7 +69,9 @@ class CharacterInventoryUseProcessor implements ProcessorInterface
         }
 
         if ($data->getQuantity() > 1) {
-            $data->setQuantity($data->getQuantity() - 1);
+            $data->removeGoldSellPriceByUnits(1);
+            $data->removeDiamondSellPriceByUnits(1);
+            $data->removeQuantity(1);
         } else {
             $this->entityManager->remove($data->getItem());
             $this->entityManager->remove($data);

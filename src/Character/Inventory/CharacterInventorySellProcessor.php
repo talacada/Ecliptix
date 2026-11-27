@@ -7,11 +7,8 @@ namespace App\Character\Inventory;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Character\Character\LoggedInCharacter;
-use App\Item\Definition\ElixirDefinition;
-use App\Item\Stats\ItemConfig;
 use App\Support\Exception\ResourceNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<CharacterInventory, null>
@@ -25,7 +22,7 @@ class CharacterInventorySellProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @param CharacterInventory $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): null
     {
@@ -35,23 +32,22 @@ class CharacterInventorySellProcessor implements ProcessorInterface
             throw new ResourceNotFoundException(CharacterInventory::class);
         }
 
-        $defaultGoldBuyPrice = $data->getItem()->getDefinition()->getBaseGoldPrice();
-        $sellPrice = (int) ($defaultGoldBuyPrice * ItemConfig::SELL_PRICE_MULTIPLIER);
+        $isStackable = $data->getItem()->getDefinition()->isStackable();
 
-        $isElixir = $data->getItem()->getDefinition() instanceof ElixirDefinition;
+        if ($isStackable && $data->getQuantity() > 1) {
+            $willGetGold = $data->removeGoldSellPriceByUnits(1);
+            $willGetDia = $data->removeDiamondSellPriceByUnits(1);
+            $character->addGold($willGetGold);
+            $character->addDiamonds($willGetDia);
 
-        if ($isElixir) {
-            $sellPrice = $sellPrice * $character->getLevel();
-        }
-
-        if ($isElixir && $data->getQuantity() > 1) {
-            $data->setQuantity($data->getQuantity() - 1);
+            $data->removeQuantity(1);
         } else {
+            $character->addGold($data->getGoldSellPrice());
+            $character->addDiamonds($data->getDiamondSellPrice());
+
             $this->entityManager->remove($data->getItem());
             $this->entityManager->remove($data);
         }
-
-        $character->addGold($sellPrice);
 
         $this->entityManager->flush();
 

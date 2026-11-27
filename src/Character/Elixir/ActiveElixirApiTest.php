@@ -26,7 +26,7 @@ class ActiveElixirApiTest extends AbstractApiTestCase
         $this->assertGreaterThanOrEqual(3500, $data['remainingSeconds']);
 
         $this->assertArrayHasKey('name', $data);
-        $this->assertSame($elixir->getItemDefinition()->getName(), $data['name']);
+        $this->assertSame($elixir->getElixirDefinition()->getName(), $data['name']);
     }
 
     public function testDeleteActiveElixirRemovesBuff(): void

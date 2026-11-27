@@ -7,6 +7,8 @@ namespace App\Shop\Offer;
 use App\Character\Character\CharacterFactory;
 use App\Character\Inventory\CharacterInventoryFactory;
 use App\Character\Inventory\InventoryContainerEnum;
+use App\Item\Definition\ElixirDefinitionFactory;
+use App\Item\Item\ItemFactory;
 use App\Shop\Rotation\ShopRotationFactory;
 use App\Tests\Support\AbstractApiTestCase;
 use DateTimeImmutable;
@@ -87,6 +89,37 @@ class ShopOfferApiTest extends AbstractApiTestCase
                 'slot' => $offer->getItemDefinition()->getDesiredSlot()->value,
             ],
         ]);
+    }
+
+    public function testBuyingSameElixirTwiceDoesNotCreateOrphanedItem(): void
+    {
+        $character = CharacterFactory::createOne(['gold' => 1000]);
+        $rotation = ShopRotationFactory::createOne(['character' => $character]);
+        $elixir = ElixirDefinitionFactory::createOne();
+        $firstOffer = ShopOfferFactory::createOne([
+            'rotation' => $rotation,
+            'ItemDefinition' => $elixir,
+            'goldPrice' => 10,
+            'diamondPrice' => 0,
+        ]);
+        $secondOffer = ShopOfferFactory::createOne([
+            'rotation' => $rotation,
+            'ItemDefinition' => $elixir,
+            'goldPrice' => 10,
+            'diamondPrice' => 0,
+        ]);
+
+        $client = static::createAuthenticatedClient($character);
+
+        $client->request('POST', '/api/shop/offer/'.$firstOffer->getId(), ['json' => []]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $client->request('POST', '/api/shop/offer/'.$secondOffer->getId(), ['json' => []]);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        CharacterInventoryFactory::assert()->count(1, ['character' => $character]);
+        CharacterInventoryFactory::assert()->exists(['character' => $character, 'quantity' => 2]);
+        ItemFactory::assert()->count(1);
     }
 
     public function testGetOffer(): void

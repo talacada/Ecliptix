@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Character\Elixir;
 
 use App\Character\Character\Character;
+use App\Item\Definition\ElixirTypeEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -42,18 +43,6 @@ class ActiveElixirRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function findByName(string $name, Character $character): ?ActiveElixir
-    {
-        /** @var ActiveElixir|null */
-        return $this->createQueryBuilder('a')
-            ->innerJoin('a.itemDefinition', 'd')
-            ->andWhere('a.character = :character')
-            ->andWhere('d.name = :name')
-            ->setParameter('character', $character)
-            ->setParameter('name', $name)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
 
     public function findOneById(int $id): ?ActiveElixir
     {
@@ -61,6 +50,21 @@ class ActiveElixirRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('a')
             ->andWhere('a.id = :id')
             ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findByEffect(ElixirTypeEnum $elixirType, int $bonus, Character $character): ?ActiveElixir
+    {
+        /** @var ActiveElixir|null */
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.elixirDefinition', 'd')
+            ->andWhere('a.character = :character')
+            ->andWhere('d.percentageBonus = :bonus')
+            ->andWhere('d.elixirType = :type')
+            ->setParameter('character', $character)
+            ->setParameter('bonus', $bonus)
+            ->setParameter('type', $elixirType)
             ->getQuery()
             ->getOneOrNullResult();
     }

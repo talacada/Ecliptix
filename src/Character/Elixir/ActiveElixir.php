@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use App\Character\Character\Character;
-use App\Item\Definition\ItemDefinition;
+use App\Item\Definition\ElixirDefinition;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -46,9 +46,9 @@ class ActiveElixir
     #[ORM\JoinColumn(nullable: false)]
     private ?Character $character = null;
 
-    #[ORM\ManyToOne(targetEntity: ItemDefinition::class)]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ItemDefinition $itemDefinition;
+    private ElixirDefinition $elixirDefinition;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $expiresAt;
@@ -57,21 +57,21 @@ class ActiveElixir
     #[SerializedName('name')]
     public function getElixirName(): string
     {
-        return $this->itemDefinition->getName();
+        return $this->elixirDefinition->getName();
     }
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[SerializedName('description')]
     public function getElixirDescription(): ?string
     {
-        return $this->itemDefinition->getDescription();
+        return $this->elixirDefinition->getDescription();
     }
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
     #[SerializedName('percentageBonus')]
-    public function getElixirPercentageBonus(): ?int
+    public function getElixirPercentageBonus(): int
     {
-        return $this->itemDefinition->getPercentageBonus();
+        return $this->elixirDefinition->getPercentageBonus();
     }
 
     #[Groups([Character::READ_GROUP, self::READ_GROUP])]
@@ -98,14 +98,14 @@ class ActiveElixir
         return $this;
     }
 
-    public function getItemDefinition(): ItemDefinition
+    public function getElixirDefinition(): ElixirDefinition
     {
-        return $this->itemDefinition;
+        return $this->elixirDefinition;
     }
 
-    public function setItemDefinition(ItemDefinition $itemDefinition): static
+    public function setElixirDefinition(ElixirDefinition $elixirDefinition): static
     {
-        $this->itemDefinition = $itemDefinition;
+        $this->elixirDefinition = $elixirDefinition;
 
         return $this;
     }

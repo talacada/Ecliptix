@@ -25,6 +25,9 @@ class PasswordResetProcessor implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @param PasswordResetInput $data
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): JsonResponse
     {
         $token = $this->passwordResetTokenRepository->getByToken($data->getToken());

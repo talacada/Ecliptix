@@ -10,7 +10,6 @@ use App\Character\Appearance\AppearanceValidationService;
 use App\Support\Economy\CurrencyEnum;
 use App\Support\Economy\GameCostEnum;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 /**
  * @implements ProcessorInterface<Character, Character>
@@ -24,7 +23,7 @@ class UpdateCharacterProcessor implements ProcessorInterface
     }
 
     /**
-     * @throws Exception
+     * @param Character $data
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Character
     {

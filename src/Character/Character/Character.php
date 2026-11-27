@@ -105,6 +105,10 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
     #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
     private int $health;
 
+    #[ORM\Column]
+    #[Groups([self::READ_GROUP, self::READ_PUBLIC_GROUP])]
+    private int $crit;
+
     /**
      * @var Collection<int, ShopRotation>
      */
@@ -190,6 +194,7 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->experience = CharacterConfig::INITIAL_EXPERIENCE;
         $this->damage = CharacterConfig::INITIAL_DAMAGE;
         $this->health = CharacterConfig::INITIAL_HEALTH;
+        $this->crit = CharacterConfig::INITIAL_CRIT;
         $this->backpackCapacity = CharacterConfig::INITIAL_BACKPACK_CAPACITY;
         $this->prestigePoints = CharacterConfig::INITIAL_PRESTIGE_POINTS;
         $this->shopRotations = new ArrayCollection();
@@ -298,6 +303,16 @@ class Character implements PasswordAuthenticatedUserInterface, UserInterface
         $this->health = $health;
 
         return $this;
+    }
+
+    public function getCrit(): int
+    {
+        return $this->crit;
+    }
+
+    public function setCrit(int $crit): void
+    {
+        $this->crit = $crit;
     }
 
     /**

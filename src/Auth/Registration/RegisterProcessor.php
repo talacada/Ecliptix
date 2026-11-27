@@ -15,7 +15,6 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -40,8 +39,6 @@ readonly class RegisterProcessor implements ProcessorInterface
 
     /**
      * @param RegisterInput $data
-     *
-     * @throws ExceptionInterface
      */
     public function process(
         mixed $data,

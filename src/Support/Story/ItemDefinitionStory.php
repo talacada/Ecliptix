@@ -9,6 +9,7 @@ use App\Item\Definition\ElixirTypeEnum;
 use App\Item\Definition\ItemDefinitionFactory;
 use App\Item\Definition\ItemRarityEnum;
 use App\Item\Definition\ItemSlotEnum;
+use App\Item\Stats\ElixirStatsConfig;
 
 final class ItemDefinitionStory
 {
@@ -42,7 +43,7 @@ final class ItemDefinitionStory
                 }
             } else {
                 foreach (ElixirTypeEnum::cases() as $elixirType) {
-                    foreach (ElixirDefinitionFactory::VARIANTS as $variant) {
+                    foreach (ElixirStatsConfig::VARIANTS as $variant) {
                         ElixirDefinitionFactory::new()
                             // With is rewriting default values in factory...
                             ->with([

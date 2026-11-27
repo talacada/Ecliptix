@@ -21,6 +21,9 @@ class ActiveElixirRemoveProcessor implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @param ActiveElixir $data
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): null
     {
         $character = $this->loggedInCharacter->getCharacter();
